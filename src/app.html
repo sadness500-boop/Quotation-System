@@ -116,6 +116,21 @@ textarea.inp{resize:vertical;min-height:110px;line-height:1.6}
 .paper .df-person small{font-size:9.5px;color:#6b7390}
 .paper .df-person b{font-size:12px;color:#16192a}
 .paper .df-person span{font-size:10px;color:#5d6784}
+.qr-card .qr-row{display:flex;gap:12px;align-items:center;margin-top:8px}
+.qr-box{position:relative;flex:none;width:118px;height:118px;padding:0;border:1px solid var(--line);border-radius:10px;background:#fff;cursor:zoom-in;overflow:hidden}
+.qr-box svg{width:100%;height:100%;display:block}
+.qr-logo{position:absolute;left:50%;top:50%;width:24%;height:24%;transform:translate(-50%,-50%);background:#fff;border-radius:6px;padding:2px;object-fit:contain}
+.qr-tx{display:flex;flex-direction:column;gap:3px;font-size:12px;color:var(--muted);min-width:0}
+.qr-tx b{color:var(--ink);font-size:13px}
+.qr-tx code{font-family:var(--f-mono);font-size:10.5px;color:var(--accent);overflow-wrap:anywhere;user-select:all}
+.qr-btns{margin-top:10px;gap:6px}
+.qr-btns a.btn{text-decoration:none;color:inherit}
+#qrEditBox{margin-top:8px}
+.qr-ov{position:fixed;inset:0;background:rgba(10,16,40,.6);z-index:200;display:grid;place-items:center;padding:20px}
+.qr-pop{background:#fff;color:#16192a;border-radius:16px;padding:24px;display:flex;flex-direction:column;align-items:center;gap:8px;max-width:360px;width:100%;text-align:center}
+.qr-pop-box{position:relative;width:min(280px,70vw);aspect-ratio:1}
+.qr-pop-box svg{width:100%;height:100%}
+.qr-pop span{font-size:11.5px;color:#5d6784;overflow-wrap:anywhere}
 .ratenote{font-size:12.5px;line-height:1.8;background:var(--field);border:1px solid var(--line);border-radius:8px;padding:8px 12px;margin-bottom:12px}
 .row{display:flex;gap:8px;align-items:center;flex-wrap:wrap}
 
@@ -381,7 +396,7 @@ aside.rail{position:sticky;top:calc(env(safe-area-inset-top,0px) + 82px);align-s
 
 <header class="topbar">
   <div class="logo-plate"><img src="__LOGO__" alt="S-Tec 에스텍베스트"></div>
-  <div class="brand"><b>용역인력 견적시스템</b><span>에스텍베스트 동부지사 · v2.1</span></div>
+  <div class="brand"><b>용역인력 견적시스템</b><span>에스텍베스트 동부지사 · v2.2</span></div>
   <div class="sp"></div>
   <div class="tb-actions">
     <select id="sampleSel" class="tbtn" aria-label="예시 견적 불러오기" style="appearance:auto">
@@ -548,6 +563,7 @@ aside.rail{position:sticky;top:calc(env(safe-area-inset-top,0px) + 82px);align-s
 
   <aside class="rail" aria-label="견적 요약">
     <div class="sum person-card" id="personCard"></div>
+    <div class="sum qr-card" id="qrCard"></div>
     <div class="sum">
       <div class="lbl">월 견적금액 · VAT 별도</div>
       <div class="big" id="sumMonth">0<small> 원</small></div>
@@ -570,6 +586,7 @@ aside.rail{position:sticky;top:calc(env(safe-area-inset-top,0px) + 82px);align-s
 
 <script>/*__LEAFLET_JS__*/</script>
 <script>/*__EXCELJS__*/</script>
+<script>/*__QRCODE__*/</script>
 <script>
 "use strict";
 const IMG = /*__IMG__*/{};
@@ -1525,6 +1542,32 @@ function renderPerson(){
   el.innerHTML=`<img src="${IMG.person}" alt="견적 담당자"><div class="pc-tx"><span class="lbl">견적 담당</span><b>${esc(S.coPerson||"담당자 미지정")}${S.coPersonTitle?` <small>${esc(S.coPersonTitle)}</small>`:""}</b><span>${esc(S.coBranch)}</span>${S.coPersonTel?`<span class="num">${esc(S.coPersonTel)}</span>`:""}<button type="button" class="btn sm ghost" id="pcEdit">담당자 정보 수정</button></div>`;
   $("#pcEdit").onclick=()=>{ go(4); setTimeout(()=>{ const x=document.querySelector('[data-s="coPerson"]'); if(x){ x.scrollIntoView({block:"center"}); x.focus(); } },250); };
 }
+/* ── 앱 다운로드 QR ── */
+const APP_URL_DEFAULT="https://sadness500-boop.github.io/Quotation-System/";
+const APP_FILE_URL="https://github.com/sadness500-boop/Quotation-System/raw/main/index.html";
+function appUrl(){ try{ return localStorage.getItem("stec_app_url")||APP_URL_DEFAULT; }catch(e){ return APP_URL_DEFAULT; } }
+function qrSvg(text, cell){
+  if(typeof qrcode!=="function") return "";
+  const q=qrcode(0,"H"); q.addData(text); q.make();
+  return q.createSvgTag({cellSize:cell||4, margin:2, scalable:true});
+}
+let installEvt=null;
+window.addEventListener("beforeinstallprompt",e=>{ e.preventDefault(); installEvt=e; const b=document.querySelector("#qrInstall"); if(b) b.hidden=false; });
+function renderQR(){
+  const el=$("#qrCard"); if(!el) return; const url=appUrl();
+  el.innerHTML=`<div class="lbl">앱 다운로드 QR</div>
+    <div class="qr-row"><button type="button" class="qr-box" id="qrBig" aria-label="QR 크게 보기">${qrSvg(url,4)}<img class="qr-logo" src="${IMG.cube}" alt=""></button>
+      <div class="qr-tx"><b>휴대폰 카메라로 찍으세요</b><span>견적시스템이 열리면 ‘홈 화면에 추가’로 앱처럼 설치됩니다.</span>
+        <code id="qrUrl">${esc(url.replace(/^https?:\/\//,""))}</code></div></div>
+    <div class="row qr-btns"><button type="button" class="btn sm" id="qrCopy">링크 복사</button><a class="btn sm" href="${APP_FILE_URL}" target="_blank" rel="noopener">PC용 파일 받기</a>
+      <button type="button" class="btn sm pri" id="qrInstall" ${installEvt?"":"hidden"}>이 기기에 앱 설치</button><button type="button" class="btn sm ghost" id="qrEdit">주소 변경</button></div>
+    <div class="row" id="qrEditBox" hidden><input class="inp" id="qrUrlIn" value="${esc(url)}"><button type="button" class="btn sm pri" id="qrSave">저장</button></div>`;
+  $("#qrCopy").onclick=async()=>{ try{ await navigator.clipboard.writeText(url); toast("링크를 복사했습니다"); }catch(e){ const r=document.createRange(); r.selectNodeContents($("#qrUrl")); const s=getSelection(); s.removeAllRanges(); s.addRange(r); toast("링크를 선택했습니다 · Ctrl+C로 복사하세요"); } };
+  $("#qrInstall").onclick=async()=>{ if(!installEvt) return; installEvt.prompt(); try{ await installEvt.userChoice; }catch(e){} installEvt=null; $("#qrInstall").hidden=true; };
+  $("#qrEdit").onclick=()=>{ $("#qrEditBox").hidden=!$("#qrEditBox").hidden; };
+  $("#qrSave").onclick=()=>{ const v=$("#qrUrlIn").value.trim(); try{ if(v&&v!==APP_URL_DEFAULT) localStorage.setItem("stec_app_url",v); else localStorage.removeItem("stec_app_url"); }catch(e){} renderQR(); toast("QR 주소를 바꿨습니다"); };
+  $("#qrBig").onclick=()=>{ const ov=document.createElement("div"); ov.className="qr-ov"; ov.innerHTML=`<div class="qr-pop"><div class="qr-pop-box">${qrSvg(url,8)}<img class="qr-logo" src="${IMG.cube}" alt=""></div><b>에스텍 용역인력 견적시스템</b><span>${esc(url)}</span><button type="button" class="btn pri">닫기</button></div>`; ov.onclick=e=>{ if(e.target===ov||e.target.tagName==="BUTTON") ov.remove(); }; document.body.appendChild(ov); };
+}
 function recalc(){
   const R=calcAll(state); lastR=R;
   $("#sumMonth").innerHTML=`${won(R.monthAll)}<small> 원</small>`;
@@ -1631,7 +1674,7 @@ function loadSample(k){
   }
   st.set.cond=DEFAULT_COND; st.meta.mode="renew";
   applyState(st);
-  toast(`${st.meta.year}년 예시 견적을 불러왔습니다 · ‘새 견적’을 누르면 ${st.meta.year+1}년 갱신 견적이 산출됩니다`);
+  toast(`${st.meta.year}년 예시 견적을 불러왔습니다 · ‘갱신 견적’을 누르면 ${st.meta.year+1}년 견적이 산출됩니다`);
 }
 
 /* ───────── 다음연도 갱신 견적 ───────── */
@@ -2308,7 +2351,8 @@ function boot(){
   $$("[data-doc]").forEach(b=>b.onclick=()=>{ $$("[data-doc]").forEach(x=>x.setAttribute("aria-selected",x===b)); $("#docQuote").hidden=b.dataset.doc!=="quote"; $("#docBd").hidden=b.dataset.doc!=="bd"; $("#docAdd").hidden=b.dataset.doc!=="add"; $("#docCmp").hidden=b.dataset.doc!=="cmp"; });
   $("#btnJson").onclick=()=>offerFile(`견적_${state.meta.client||"백업"}.json`, JSON.stringify(state,null,1), "application/json");
   $("#fileJson").onchange=e=>{ const f=e.target.files[0]; if(!f) return; const rd=new FileReader(); rd.onload=()=>{ try{ const st=JSON.parse(rd.result); applyState(Object.assign(newState(),st,{set:Object.assign(defaultSettings(st.meta.year),st.set)})); toast("JSON 견적을 불러왔습니다"); }catch(err){ toast("JSON 형식이 올바르지 않습니다"); } }; rd.readAsText(f); e.target.value=""; };
-  renderSaved();
+  renderSaved(); renderQR();
+  if(location.protocol==="https:" && !inFrame && "serviceWorker" in navigator) navigator.serviceWorker.register("sw.js").catch(()=>{});
   let st=1; try{ st=+localStorage.getItem("stec_step")||1; }catch(e){}
   go(st);
 }

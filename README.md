@@ -24,13 +24,15 @@
 ## 소스 구조
 
 ```
-index.html            빌드된 단독 실행 파일
+index.html            빌드된 단독 실행 파일 (웹 주소용)
+에스텍_용역인력_견적시스템_v2.2.html  같은 파일 (PC 내려받기용)
+manifest.webmanifest, sw.js, icon-*.png  휴대폰 앱 설치(PWA)용
 src/app.html          화면·계산 엔진·엑셀 생성 코드 (템플릿)
 src/leaflet.css       지도 스타일
 assets/img.json       로고·직종 그림·담당자 사진 (base64)
 assets/sites.json     에스텍 사업장·지사 위치 데이터
 assets/adm.json       시·도/시·군·구/읍·면·동 경계 데이터
-vendor/               Leaflet 1.9.4, ExcelJS 4.4.0 (MIT)
+vendor/               Leaflet 1.9.4, ExcelJS 4.4.0, qrcode-generator 1.4.4 (MIT)
 tools/build.py        src + assets + vendor → index.html
 ```
 
@@ -44,3 +46,9 @@ python3 tools/build.py
 
 - 2027년 장기요양·산재·임금채권·석면 요율과 고용보험 실업급여 인상분은 고시 전 잠정값입니다. 고시되면 요율·기준 화면에서 수정하세요.
 - 카카오맵 검색은 카카오 디벨로퍼스 REST API 키가 필요하며, 키는 사용하는 PC의 브라우저에만 저장됩니다.
+
+## 휴대폰 앱으로 쓰기
+
+1. 저장소 **Settings → Pages**에서 Source를 `Deploy from a branch`, Branch를 `main` / `/(root)`로 저장합니다(최초 1회).
+2. 몇 분 뒤 `https://sadness500-boop.github.io/Quotation-System/` 주소가 열립니다. 메인 화면 오른쪽 **앱 다운로드 QR**이 이 주소를 가리킵니다.
+3. 휴대폰 카메라로 QR을 찍어 연 뒤 브라우저 메뉴의 **홈 화면에 추가**(아이폰 Safari: 공유 → 홈 화면에 추가)를 누르면 앱처럼 설치됩니다.
