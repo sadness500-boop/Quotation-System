@@ -1,0 +1,2318 @@
+<title>에스텍 용역인력 견적시스템</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="icon" href="__CUBE__">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans+KR:wght@400;500;600;700&family=IBM+Plex+Mono:wght@500&display=swap">
+<style>
+/*__LEAFLET_CSS__*/
+</style>
+<style>
+/* Layout: 상단 브랜드 바 → 좌측 단계 내비 · 가운데 작업영역 · 우측 견적 요약 레일 (좁은 화면에서는 1열) */
+:root{
+  --navy:#1b2a86; --navy-ink:#121c5c; --green:#2b8a3e; --green-soft:#e3f2e6;
+  --bg:#f3f5f9; --paper:#ffffff; --ink:#18203a; --muted:#5d6784; --line:#dbe0ea; --line-2:#eaeef5;
+  --field:#f8f9fc; --accent:#1b2a86; --accent-soft:#e7eaf8; --warn:#b4561b; --warn-soft:#fbeee4; --ok:#2b8a3e;
+  --bar:#1b2a86; --bar-ink:#ffffff;
+  --f-body:"IBM Plex Sans KR","Apple SD Gothic Neo","Malgun Gothic","Noto Sans KR",sans-serif;
+  --f-mono:"IBM Plex Mono",ui-monospace,Consolas,monospace;
+  --r:10px;
+}
+@media (prefers-color-scheme: dark){:root:not([data-theme="light"]){
+  --bg:#0f1426; --paper:#171d33; --ink:#e6e9f4; --muted:#9aa3c0; --line:#2b3354; --line-2:#222a47; --field:#121830;
+  --accent:#8fa0ff; --accent-soft:#232c55; --green-soft:#1a3324; --warn:#f0a36b; --warn-soft:#3a2617; --ok:#5fcf7a;
+  --bar:#121a4a; --bar-ink:#ffffff; --navy-ink:#c9d1ff; color-scheme:dark }}
+:root[data-theme="dark"]{
+  --bg:#0f1426; --paper:#171d33; --ink:#e6e9f4; --muted:#9aa3c0; --line:#2b3354; --line-2:#222a47; --field:#121830;
+  --accent:#8fa0ff; --accent-soft:#232c55; --green-soft:#1a3324; --warn:#f0a36b; --warn-soft:#3a2617; --ok:#5fcf7a;
+  --bar:#121a4a; --bar-ink:#ffffff; --navy-ink:#c9d1ff; color-scheme:dark }
+*{box-sizing:border-box}
+[hidden]{display:none!important}
+html,body{background:var(--bg);color:var(--ink)}
+body{font-family:var(--f-body);font-size:14px;line-height:1.5;margin:0}
+body::before{content:"";position:fixed;inset:0 0 auto;height:env(safe-area-inset-top,0px);z-index:50;background:var(--bar)}
+button,input,select,textarea{font:inherit;color:inherit}
+.num,td.n,th.n{font-variant-numeric:tabular-nums}
+h1,h2,h3{text-wrap:balance;margin:0}
+a{color:var(--accent)}
+:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
+
+/* top bar */
+.topbar{position:sticky;top:env(safe-area-inset-top,0px);z-index:40;background:var(--bar);color:var(--bar-ink);
+  padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px));padding-block:10px;
+  display:flex;align-items:center;gap:14px;flex-wrap:wrap}
+.logo-plate{background:#fff;border-radius:8px;padding:4px 8px;display:flex;align-items:center;height:44px}
+.logo-plate img{height:34px;width:auto;display:block}
+.brand{display:flex;flex-direction:column;line-height:1.2;min-width:0}
+.brand b{font-size:17px;letter-spacing:-.01em}
+.brand span{font-size:12px;opacity:.75}
+.topbar .sp{flex:1}
+.tb-actions{display:flex;gap:6px;flex-wrap:wrap}
+.tbtn{background:rgba(255,255,255,.12);border:1px solid rgba(255,255,255,.22);color:#fff;border-radius:8px;padding:7px 12px;cursor:pointer;font-weight:500;font-size:13px;white-space:nowrap}
+.tbtn:hover{background:rgba(255,255,255,.2)}
+.tbtn.pri{background:var(--green);border-color:var(--green)}
+.tbtn.pri:hover{filter:brightness(1.08)}
+
+.shell{display:grid;grid-template-columns:200px minmax(0,1fr) 300px;gap:18px;max-width:1500px;margin:0 auto;
+  padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px));padding-block:18px 60px}
+nav.steps{position:sticky;top:calc(env(safe-area-inset-top,0px) + 82px);align-self:start;display:flex;flex-direction:column;gap:4px}
+.step{display:flex;gap:10px;align-items:center;padding:10px 12px;border-radius:9px;border:1px solid transparent;background:none;cursor:pointer;text-align:left;color:var(--muted)}
+.step .k{width:24px;height:24px;border-radius:50%;display:grid;place-items:center;font-size:12px;font-weight:600;background:var(--line-2);color:var(--muted);flex:none}
+.step b{font-weight:600;font-size:14px;display:block;color:var(--ink)}
+.step small{font-size:11.5px;display:block}
+.step[aria-selected="true"]{background:var(--paper);border-color:var(--line)}
+.step[aria-selected="true"] .k{background:var(--navy);color:#fff}
+.step.done .k{background:var(--green);color:#fff}
+main{min-width:0}
+.panel{display:flex;flex-direction:column;gap:16px}
+.card{background:var(--paper);border:1px solid var(--line);border-radius:var(--r);padding:18px}
+.card h2{font-size:16px;font-weight:700;margin-bottom:4px}
+.card .sub{color:var(--muted);font-size:12.5px;margin:0 0 14px}
+.h-row{display:flex;align-items:flex-end;justify-content:space-between;gap:12px;flex-wrap:wrap;margin-bottom:12px}
+.h-row .sub{margin:0}
+
+.grid{display:grid;gap:12px}
+.g2{grid-template-columns:repeat(2,minmax(0,1fr))}
+.g3{grid-template-columns:repeat(3,minmax(0,1fr))}
+.g4{grid-template-columns:repeat(4,minmax(0,1fr))}
+.g6{grid-template-columns:repeat(6,minmax(0,1fr))}
+label.f{display:flex;flex-direction:column;gap:4px;min-width:0}
+label.f>span{font-size:12px;color:var(--muted);font-weight:500;letter-spacing:.01em}
+label.f>span em{font-style:normal;color:var(--accent);font-weight:600}
+.inp,select.inp,textarea.inp{background:var(--field);border:1px solid var(--line);border-radius:8px;padding:8px 10px;width:100%;min-width:0}
+.inp:focus{border-color:var(--accent);outline:none;box-shadow:0 0 0 3px var(--accent-soft)}
+input.inp.n{text-align:right;font-variant-numeric:tabular-nums}
+textarea.inp{resize:vertical;min-height:110px;line-height:1.6}
+.chk{display:flex;align-items:center;gap:8px;font-size:13px;cursor:pointer}
+.chk input{width:16px;height:16px;accent-color:var(--navy)}
+.btn{border:1px solid var(--line);background:var(--paper);border-radius:8px;padding:7px 12px;cursor:pointer;font-weight:500;font-size:13px;white-space:nowrap}
+.btn:hover{border-color:var(--accent);color:var(--accent)}
+.btn.pri{background:var(--navy);border-color:var(--navy);color:#fff}
+.btn.pri:hover{filter:brightness(1.12);color:#fff}
+.btn.ghost{border-color:transparent;background:none;color:var(--muted)}
+.btn.ghost:hover{color:var(--warn)}
+.btn.sm{padding:4px 9px;font-size:12px}
+.pill{display:inline-flex;align-items:center;gap:4px;padding:2px 8px;border-radius:99px;font-size:11.5px;font-weight:600;background:var(--accent-soft);color:var(--accent)}
+.pill.g{background:var(--green-soft);color:var(--ok)}
+.pill.w{background:var(--warn-soft);color:var(--warn)}
+.hint{font-size:12px;color:var(--muted)}
+.mini{font-size:13px;font-weight:700;margin:16px 0 8px}
+.instbl td .inp{max-width:130px}
+.instbl .st{white-space:nowrap}
+.kakao-box{border:1px dashed var(--line);border-radius:8px;padding:10px 12px;margin-bottom:12px;background:var(--field)}
+.seg{display:inline-flex;border:1px solid var(--line);border-radius:8px;overflow:hidden}
+.seg button{border:0;background:var(--paper);padding:6px 12px;font-size:12.5px;cursor:pointer;color:var(--muted)}
+.seg button[aria-checked="true"]{background:var(--navy);color:#fff;font-weight:600}
+.sugg .sg-own{color:var(--warn);font-size:11px;font-weight:600;margin-left:4px}
+.person-card{display:flex;gap:12px;align-items:center;padding:12px}
+.person-card img{width:76px;height:96px;object-fit:cover;object-position:top;border-radius:10px;border:1px solid var(--line);flex:none}
+.person-card .pc-tx{display:flex;flex-direction:column;gap:1px;min-width:0;font-size:12px;color:var(--muted)}
+.person-card .pc-tx b{font-size:16px;color:var(--ink)}
+.person-card .pc-tx b small{font-size:12px;font-weight:500;color:var(--muted)}
+.person-card .pc-tx .btn{align-self:flex-start;padding-left:0;margin-top:2px}
+.paper .df-person{margin-left:auto;display:flex;align-items:center;gap:8px}
+.paper .df-person img{width:38px;height:48px;object-fit:cover;object-position:top;border-radius:6px;border:1px solid #dde2ee}
+.paper .df-person div{display:flex;flex-direction:column;line-height:1.3}
+.paper .df-person small{font-size:9.5px;color:#6b7390}
+.paper .df-person b{font-size:12px;color:#16192a}
+.paper .df-person span{font-size:10px;color:#5d6784}
+.ratenote{font-size:12.5px;line-height:1.8;background:var(--field);border:1px solid var(--line);border-radius:8px;padding:8px 12px;margin-bottom:12px}
+.row{display:flex;gap:8px;align-items:center;flex-wrap:wrap}
+
+/* step 1 */
+.hero{display:grid;grid-template-columns:minmax(0,1.1fr) minmax(0,1fr);border-radius:var(--r);overflow:hidden;background:var(--navy);color:#fff;border:1px solid var(--line)}
+.hero .tx{padding:20px 22px;display:flex;flex-direction:column;gap:8px;justify-content:center}
+.hero .tx h1{font-size:21px;letter-spacing:-.02em}
+.hero .tx p{margin:0;opacity:.85;font-size:13px;max-width:46ch}
+.hero img{width:100%;height:100%;object-fit:cover;min-height:150px;display:block}
+.site-search{position:relative}
+.sugg{position:absolute;left:0;right:0;top:100%;margin-top:4px;background:var(--paper);border:1px solid var(--line);border-radius:8px;z-index:30;max-height:280px;overflow:auto;box-shadow:0 10px 30px rgba(10,20,60,.15)}
+.sugg button{display:flex;justify-content:space-between;gap:10px;width:100%;padding:8px 12px;border:0;background:none;text-align:left;cursor:pointer;border-bottom:1px solid var(--line-2)}
+.sugg button:hover,.sugg button.on{background:var(--accent-soft)}
+.sugg small{color:var(--muted)}
+.sugg{max-height:420px}
+.sugg .sg-h{position:sticky;top:0;background:var(--field);padding:6px 12px;font-size:11.5px;color:var(--muted);font-weight:600;border-bottom:1px solid var(--line);z-index:1}
+.sugg .sg-h b{color:var(--accent)}
+.sugg .linkbtn{display:inline;border:0;background:none;padding:0;width:auto;color:var(--accent);text-decoration:underline;font-size:11px;cursor:pointer}
+.sugg .sg-none{padding:8px 12px;font-size:12px;color:var(--muted)}
+.sugg .sg-br{display:inline-block;font-size:10.5px;font-weight:700;color:var(--accent);background:var(--accent-soft);border-radius:4px;padding:0 5px;margin-right:6px}
+.sugg button small{text-align:right;flex:none;max-width:55%;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.info .blk.detail{border-color:var(--accent)}
+.mapwrap{display:grid;grid-template-columns:minmax(0,1.35fr) minmax(0,1fr);gap:14px}
+#map{height:460px;border-radius:9px;border:1px solid var(--line);background:#cfe1ef;z-index:1}
+#map.tiles{background:#e9eef3}
+.admlbl{white-space:nowrap;transform:translate(-50%,-50%);font-family:var(--f-body);color:#5a6070;text-shadow:0 0 3px #fff,0 0 3px #fff,0 0 2px #fff;pointer-events:none}
+.admlbl.s{font-size:14px;font-weight:700;color:#4a5060;letter-spacing:.08em}
+.admlbl.m{font-size:11.5px;font-weight:600}
+.admlbl.d{font-size:10px;color:#7b8190}
+.leaflet-control-layers{font-size:12px}
+.leaflet-control-layers-toggle{background-image:none!important;width:auto!important;height:30px!important;padding:0 10px;display:flex!important;align-items:center;font-weight:600;color:#1b2a86;text-decoration:none}
+.leaflet-control-layers-toggle::after{content:"지도 종류"}
+
+
+.mapnote{font-size:11.5px;color:var(--muted);margin-top:6px}
+.info{display:flex;flex-direction:column;gap:10px;min-width:0}
+.info .blk{border:1px solid var(--line);border-radius:9px;padding:12px;min-width:0}
+.info h3{font-size:13.5px;font-weight:700;margin-bottom:6px;display:flex;gap:6px;align-items:center;flex-wrap:wrap}
+dl.kv{display:grid;grid-template-columns:auto minmax(0,1fr);gap:4px 12px;margin:0;font-size:12.5px}
+dl.kv dt{color:var(--muted)}
+dl.kv dd{margin:0;overflow-wrap:anywhere}
+.linkrow{display:flex;flex-wrap:wrap;gap:6px}
+.linkrow a{font-size:12px;text-decoration:none;border:1px solid var(--line);border-radius:6px;padding:3px 8px;color:var(--ink)}
+.linkrow a:hover{border-color:var(--accent);color:var(--accent)}
+.near li{font-size:12.5px;display:flex;justify-content:space-between;gap:8px}
+.near{list-style:none;margin:0;padding:0;display:flex;flex-direction:column;gap:3px}
+.online-res{display:flex;flex-direction:column;gap:6px}
+.online-res button{text-align:left;border:1px solid var(--line);border-radius:7px;background:var(--field);padding:6px 9px;cursor:pointer;font-size:12.5px}
+.online-res button:hover{border-color:var(--accent)}
+.wiki{display:flex;gap:10px;font-size:12.5px}
+.wiki img{width:64px;height:64px;object-fit:cover;border-radius:6px;flex:none}
+.leaflet-container{font-family:var(--f-body)}
+.mk{width:10px;height:10px;border-radius:50%;border:2px solid #fff;box-shadow:0 0 0 1px rgba(0,0,0,.25)}
+.mk.sec{background:#1b2a86}.mk.cln{background:#2b8a3e}.mk.mix{background:#7a4fc0}.mk.etc{background:#b4561b}
+.pin{width:30px;height:30px;border-radius:50% 50% 50% 0;transform:rotate(-45deg);background:#d9363e;border:3px solid #fff;box-shadow:0 3px 10px rgba(0,0,0,.35)}
+.pin.int{background:var(--green)}
+.brmk{background:#fff;border:2px solid #1b2a86;border-radius:6px;font-size:11px;font-weight:700;color:#1b2a86;padding:1px 5px;white-space:nowrap;box-shadow:0 2px 6px rgba(0,0,0,.2)}
+
+/* roles */
+.cats{display:grid;grid-template-columns:repeat(6,minmax(0,1fr));gap:10px}
+.cat{border:1px solid var(--line);border-radius:10px;background:var(--paper);padding:8px 6px 10px;cursor:pointer;display:flex;flex-direction:column;align-items:center;gap:4px;text-align:center}
+.cat:hover{border-color:var(--accent);transform:translateY(-1px)}
+.cat img{width:100%;max-width:96px;aspect-ratio:300/412;object-fit:cover;border-radius:8px;background:#e9edf4}
+.cat b{font-size:13px}
+.cat small{font-size:11px;color:var(--muted)}
+.role{display:grid;grid-template-columns:112px minmax(0,1fr);gap:16px;border:1px solid var(--line);border-radius:var(--r);background:var(--paper);padding:14px;position:relative}
+.role .fig{display:flex;flex-direction:column;gap:6px;align-items:center}
+.role .fig img{width:112px;aspect-ratio:300/412;object-fit:cover;border-radius:9px;background:#e9edf4}
+.role .fig .price{font-weight:700;font-size:15px;color:var(--navy-ink)}
+.role .fig .hc{font-size:12px;color:var(--muted)}
+.role .top{display:flex;gap:8px;align-items:center;flex-wrap:wrap;margin-bottom:10px}
+.role .top .ttl{font-weight:700;font-size:15px;margin-right:auto}
+details.more{border-top:1px dashed var(--line);margin-top:10px;padding-top:8px}
+details.more summary{cursor:pointer;font-size:12.5px;color:var(--accent);font-weight:600}
+details.more[open] summary{margin-bottom:10px}
+.calcline{font-size:12px;color:var(--muted);margin-top:8px;display:flex;gap:14px;flex-wrap:wrap}
+.calcline b{color:var(--ink);font-weight:600}
+
+/* addons */
+table.t{width:100%;border-collapse:collapse;font-size:12.5px}
+table.t th,table.t td{border-bottom:1px solid var(--line-2);padding:6px 6px;text-align:left;vertical-align:middle}
+table.t th{color:var(--muted);font-weight:600;font-size:11.5px;white-space:nowrap}
+table.t td.n,table.t th.n{text-align:right}
+table.t .inp{padding:5px 7px}
+.tscroll{overflow-x:auto;max-width:100%}
+.addsum{display:flex;justify-content:flex-end;gap:16px;font-size:13px;margin-top:8px;flex-wrap:wrap}
+.addsum b{font-size:15px}
+
+/* summary rail */
+aside.rail{position:sticky;top:calc(env(safe-area-inset-top,0px) + 82px);align-self:start;display:flex;flex-direction:column;gap:12px}
+.sum{background:var(--paper);border:1px solid var(--line);border-radius:var(--r);padding:16px}
+.sum .lbl{font-size:11.5px;color:var(--muted);font-weight:600;letter-spacing:.04em}
+.sum .big{font-size:26px;font-weight:700;letter-spacing:-.02em;color:var(--navy-ink);font-variant-numeric:tabular-nums;line-height:1.15}
+.sum .big small{font-size:13px;font-weight:500;color:var(--muted)}
+.sum dl{display:grid;grid-template-columns:1fr auto;gap:5px 10px;margin:12px 0 0;font-size:12.5px}
+.sum dl dt{color:var(--muted)}
+.sum dl dd{margin:0;text-align:right;font-variant-numeric:tabular-nums;font-weight:500}
+.sum dl .tot{border-top:1px solid var(--line);padding-top:6px;font-weight:700;color:var(--ink)}
+.mix{display:flex;height:8px;border-radius:99px;overflow:hidden;background:var(--line-2);margin-top:12px}
+.mix i{display:block;height:100%}
+.legend{display:flex;flex-wrap:wrap;gap:4px 10px;margin-top:6px;font-size:11.5px;color:var(--muted)}
+.legend span::before{content:"";display:inline-block;width:8px;height:8px;border-radius:2px;margin-right:4px;background:var(--c)}
+.crew{display:flex;flex-wrap:wrap;gap:6px}
+.crew div{display:flex;flex-direction:column;align-items:center;width:52px;font-size:11px;color:var(--muted)}
+.crew img{width:44px;aspect-ratio:300/412;object-fit:cover;border-radius:6px;background:#e9edf4}
+.crew b{color:var(--ink);font-size:12px}
+.saved{display:flex;flex-direction:column;gap:6px;max-height:220px;overflow:auto}
+.saved .it{display:flex;gap:6px;align-items:center;font-size:12.5px;border:1px solid var(--line-2);border-radius:7px;padding:5px 8px}
+.saved .it span{flex:1;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+
+/* documents */
+.doc-tabs{display:flex;gap:6px;flex-wrap:wrap}
+.doc-tabs button[aria-selected="true"]{background:var(--navy);color:#fff;border-color:var(--navy)}
+.paper .cmp-top{display:grid;grid-template-columns:minmax(0,1.1fr) minmax(0,1fr);gap:22px}
+.paper table.cmp td:first-child{white-space:normal}
+.paper table.cmp{width:100%;border-collapse:collapse;font-size:11.5px}
+.paper table.cmp th{background:#1b2a86;color:#fff;font-weight:600;padding:6px;white-space:nowrap;border:1px solid #33429a}
+.paper table.cmp td{border:1px solid #dde2ee;padding:5px 6px;vertical-align:middle;white-space:nowrap}
+.paper table.cmp td.n{text-align:right;font-variant-numeric:tabular-nums}
+.paper table.cmp td.inc{color:#c8323a;font-weight:600}
+.paper table.cmp td.dec{color:#1f5fbf;font-weight:600}
+.paper table.cmp td.per{font-size:10.5px;color:#444}
+.paper table.cmp td.g{background:#f3f5fa;font-weight:700;text-align:center;color:#1b2a86}
+.paper table.cmp tr.s td{background:#eef1f7;font-weight:700}
+.paper table.cmp tr.k td{background:#1b2a86;color:#fff;font-weight:700}
+.paper table.cmp tr.k td.inc,.paper table.cmp tr.k td.dec,.paper table.cmp tr.k td.per{color:#fff}
+.paper table.cmp th.rh2{font-size:10.5px;line-height:1.3}
+.paper table.cmp th small{font-weight:400;opacity:.8}
+.paper table.cmp td.qcat{white-space:nowrap}
+.paper table.cmp td.qcat img{width:22px;height:28px;object-fit:cover;object-position:top;border-radius:4px;vertical-align:middle;margin-right:6px;background:#eef1f7}
+.paper table.cmp td.qcat span{font-weight:700}
+/* 문서: 인쇄물이라 테마와 무관하게 흰 종이로 고정 */
+.paper{background:#fff;color:#16192a;border:1px solid var(--line);border-radius:4px;padding:34px 38px 26px;font-size:12.5px;line-height:1.55;box-shadow:0 12px 34px rgba(16,26,80,.10);margin-inline:auto;width:100%}
+.paper.portrait{max-width:880px}
+.paper .dh{display:grid;grid-template-columns:auto 1fr auto;align-items:center;gap:18px}
+.paper .dh-logo img{height:58px;width:auto;display:block}
+.paper .dh-t{text-align:center}
+.paper .dh-t h1{font-size:30px;letter-spacing:.45em;padding-left:.45em;font-weight:700;color:#1b2a86;line-height:1.1}
+.paper .dh-t span{display:block;font-size:10.5px;letter-spacing:.42em;color:#7a8199;margin-top:4px;font-family:var(--f-mono)}
+.paper .dh-no{display:flex;flex-direction:column;align-items:flex-end;font-size:11px;color:#5d6784;gap:2px;font-variant-numeric:tabular-nums}
+.paper .dh-rule{margin:14px 0 18px}
+.paper .dh-rule i{display:block;height:5px;background:#1b2a86}
+.paper .dh-rule b{display:block;height:2px;background:#2b8a3e;margin-top:2px}
+.paper .dh-sub{margin:-8px 0 14px;font-size:12px;color:#444}
+.paper .q-grid{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1.05fr);gap:24px;align-items:start}
+.paper .q-client{font-size:21px;font-weight:700;border-bottom:2px solid #16192a;padding-bottom:6px;margin-bottom:10px;letter-spacing:-.01em}
+.paper .q-client small{font-size:13px;font-weight:500;color:#5d6784;margin-left:10px}
+.paper .q-dl{display:grid;grid-template-columns:auto minmax(0,1fr);gap:5px 14px;margin:0}
+.paper .q-dl dt{color:#6b7390;letter-spacing:.08em}
+.paper .q-dl dd{margin:0;font-weight:500}
+.paper .q-lead{margin:14px 0 0;color:#444}
+.paper table.sup{width:100%;border-collapse:collapse;font-size:11.5px}
+.paper table.sup th,.paper table.sup td{border:1px solid #2a2f45;padding:5px 7px}
+.paper table.sup th{background:#eef1f7;font-weight:600;white-space:nowrap;width:1%}
+.paper td.seal{position:relative;white-space:nowrap}
+.paper .stamp{display:inline-grid;place-items:center;width:24px;height:24px;border:1.5px solid #c8323a;color:#c8323a;border-radius:50%;font-size:11px;font-weight:700;margin-left:6px;vertical-align:middle}
+.paper .q-amt{display:grid;grid-template-columns:minmax(0,1.25fr) minmax(0,1fr);margin:20px 0 6px;border-radius:8px;overflow:hidden;border:1px solid #1b2a86}
+.paper .q-amt-main{background:#1b2a86;color:#fff;padding:14px 18px;display:flex;flex-direction:column;gap:2px}
+.paper .q-amt-main span{font-size:11px;opacity:.8;letter-spacing:.06em}
+.paper .q-amt-main b{font-size:28px;letter-spacing:-.01em;font-variant-numeric:tabular-nums;line-height:1.15}
+.paper .q-amt-main small{font-size:11.5px;opacity:.85}
+.paper .q-amt-side{margin:0;padding:12px 16px;background:#eef6f0;display:grid;grid-template-columns:auto 1fr;gap:4px 12px;align-content:center;font-size:12px}
+.paper .q-amt-side dt{color:#4f5874}
+.paper .q-amt-side dd{margin:0;text-align:right;font-weight:600;font-variant-numeric:tabular-nums}
+.paper h3.q-h{font-size:14px;color:#1b2a86;margin:22px 0 10px;display:flex;align-items:center;gap:8px}
+.paper h3.q-h::before{content:"";width:4px;height:15px;background:#2b8a3e;border-radius:2px}
+.paper h3.q-h span{font-size:11px;color:#6b7390;font-weight:500;margin-left:auto}
+.paper .q-crew{display:grid;grid-template-columns:repeat(auto-fill,minmax(132px,1fr));gap:10px}
+.paper .q-crew figure{margin:0;border:1px solid #dde2ee;border-radius:10px;overflow:hidden;background:#fff;display:flex;flex-direction:column}
+.paper .q-crew .imgs{display:flex;justify-content:center;align-items:flex-end;gap:2px;background:linear-gradient(180deg,#f3f5fa,#e6eaf3);padding:10px 6px 0;border-bottom:3px solid var(--cc,#1b2a86);min-height:118px}
+.paper .q-crew .imgs img{height:112px;width:auto;aspect-ratio:300/412;object-fit:cover;border-radius:6px 6px 0 0}
+.paper .q-crew .addon-ic{font-size:44px;color:#2b8a3e;align-items:center}
+.paper .q-crew figcaption{padding:8px 10px 10px;display:flex;flex-direction:column;align-items:center;text-align:center;gap:1px}
+.paper .q-crew .cn{font-size:11.5px;font-weight:700;color:var(--cc,#1b2a86)}
+.paper .q-crew figcaption b{font-size:20px;line-height:1.2}
+.paper .q-crew figcaption b small{font-size:12px;font-weight:500;margin-left:1px}
+.paper .q-crew .rk{font-size:10.5px;color:#5d6784}
+.paper .q-crew em{font-style:normal;font-size:11px;font-weight:600;margin-top:3px;font-variant-numeric:tabular-nums}
+.paper table.q{width:100%;border-collapse:collapse;font-size:12px}
+.paper table.q th{background:#1b2a86;color:#fff;font-weight:600;padding:7px 6px;border:1px solid #1b2a86;white-space:nowrap}
+.paper table.q td{border-bottom:1px solid #dde2ee;padding:6px 6px;vertical-align:middle}
+.paper table.q tbody tr:nth-child(even) td{background:#f8f9fc}
+.paper table.q td.n{text-align:right;font-variant-numeric:tabular-nums;white-space:nowrap}
+.paper table.q td.c{text-align:center}
+.paper table.q td.qcat{white-space:nowrap}
+.paper table.q td.qcat img{width:24px;height:30px;object-fit:cover;object-position:top;border-radius:4px;vertical-align:middle;margin-right:6px;background:#eef1f7}
+.paper table.q td.qcat span{font-weight:700}
+.paper table.q td.rm{font-size:11px;color:#555}
+.paper table.q .up{color:#2b8a3e;font-weight:700}
+.paper table.q tfoot td{border-bottom:1px solid #c9cdd6;font-weight:500;padding:7px 6px}
+.paper table.q tfoot tr.sub td{background:#f2f4f8;font-weight:700;border-top:2px solid #1b2a86}
+.paper table.q tfoot tr.tot td{background:#e3f2e6;font-weight:700;color:#14532d}
+.paper .q-cond{white-space:pre-wrap;line-height:1.75;font-size:11.5px;background:#f8f9fc;border:1px solid #e3e7f0;border-radius:8px;padding:12px 14px;color:#333}
+.paper .df{display:flex;align-items:center;gap:14px;margin-top:22px;padding-top:10px;border-top:2px solid #1b2a86;font-size:10.5px;color:#5d6784}
+.paper .df img{height:30px}
+.paper .df b{color:#16192a}
+.paper .df-pg{margin-left:auto;color:#2b8a3e;font-weight:600;white-space:nowrap}
+.paper table.bd{border-collapse:collapse;font-size:11px;min-width:100%}
+.paper table.bd th,.paper table.bd td{border:1px solid #c3c8d4;padding:3px 6px;white-space:nowrap}
+.paper table.bd th{background:#1b2a86;color:#fff;font-weight:600;text-align:center;border-color:#33429a}
+.paper table.bd th.rh{padding:6px 6px 5px;vertical-align:bottom}
+.paper table.bd th.rh img{display:block;width:40px;height:50px;object-fit:cover;object-position:top;border-radius:5px;margin:0 auto 4px;background:#e6eaf3}
+.paper table.bd th.rh span{display:block;font-size:10px;opacity:.8;font-weight:500}
+.paper table.bd th.rh b{display:block;font-size:12px}
+.paper table.bd th.rh small{display:block;font-size:9.5px;font-weight:400;opacity:.8}
+.paper table.bd td.n{text-align:right;font-variant-numeric:tabular-nums}
+.paper table.bd td.g{background:#f3f5fa;font-weight:700;text-align:center;color:#1b2a86}
+.paper table.bd td.desc{white-space:normal;min-width:240px;color:#444}
+.paper table.bd tr.s td{background:#eef1f7;font-weight:700}
+.paper table.bd tr.k td{background:#1b2a86;color:#fff;font-weight:700}
+.paper table.bd tr.k td.desc,.paper table.bd tr.k td.g{color:#fff;background:#1b2a86}
+.paper table.bd td.hl{background:#fff7d6}
+.toast{position:fixed;left:50%;bottom:calc(20px + env(safe-area-inset-bottom,0px));transform:translateX(-50%);background:var(--ink);color:var(--paper);padding:9px 16px;border-radius:9px;font-size:13px;z-index:100;opacity:0;transition:opacity .2s;pointer-events:none}
+.toast.on{opacity:1}
+.empty{text-align:center;padding:26px;color:var(--muted);border:1px dashed var(--line);border-radius:var(--r)}
+.empty img{width:min(420px,100%);border-radius:10px;display:block;margin:0 auto 12px}
+
+@media (max-width:1180px){
+  .shell{grid-template-columns:minmax(0,1fr)}
+  nav.steps{position:sticky;top:calc(env(safe-area-inset-top,0px) + 64px);z-index:20;flex-direction:row;overflow-x:auto;background:var(--bg);padding-block:6px}
+  .step{flex:none}
+  .step small{display:none}
+  aside.rail{position:static;order:3;display:grid;grid-template-columns:repeat(auto-fit,minmax(260px,1fr))}
+}
+@media (max-width:820px){
+  .topbar{position:static}
+  nav.steps{top:env(safe-area-inset-top,0px)}
+  body::before{background:var(--bg)}
+  .g4,.g6{grid-template-columns:repeat(2,minmax(0,1fr))}
+  .g3{grid-template-columns:repeat(2,minmax(0,1fr))}
+  .mapwrap,.hero{grid-template-columns:minmax(0,1fr)}
+  .cats{grid-template-columns:repeat(3,minmax(0,1fr))}
+  .paper .q-grid,.paper .q-amt,.paper .cmp-top{grid-template-columns:minmax(0,1fr)}
+  .paper{padding:20px 14px}
+  .paper .dh{grid-template-columns:auto 1fr}
+  .paper .dh-no{grid-column:1/-1;flex-direction:row;justify-content:space-between}
+  .paper .dh-t h1{font-size:22px}
+  .paper .dh-logo img{height:40px}
+  .topbar .brand span{display:none}
+}
+@media (max-width:520px){
+  .g2{grid-template-columns:minmax(0,1fr)}
+  .role{grid-template-columns:minmax(0,1fr)}
+  .role .fig{flex-direction:row}
+  .role .fig img{width:70px}
+  #map{height:320px}
+}
+@media (prefers-reduced-motion:reduce){*{transition:none!important}}
+@media print{
+  @page{size:A4 portrait;margin:10mm}
+  @page land{size:A4 landscape;margin:8mm}
+  .paper.landscape{page:land}
+  .paper{box-shadow:none;max-width:none}
+  body{background:#fff}
+  .topbar,nav.steps,aside.rail,.noprint,.toast{display:none!important}
+  .shell{display:block;padding:0}
+  .panel>*:not(.printable){display:none!important}
+  .paper{border:0;padding:0;margin-bottom:0;page-break-after:always}
+  .tscroll{overflow:visible}
+  body::before{display:none}
+}
+</style>
+
+<header class="topbar">
+  <div class="logo-plate"><img src="__LOGO__" alt="S-Tec 에스텍베스트"></div>
+  <div class="brand"><b>용역인력 견적시스템</b><span>에스텍베스트 동부지사 · v2.1</span></div>
+  <div class="sp"></div>
+  <div class="tb-actions">
+    <select id="sampleSel" class="tbtn" aria-label="예시 견적 불러오기" style="appearance:auto">
+      <option value="">예시 견적 불러오기…</option>
+      <option value="song">송원산업 2026 · 보안 12명</option>
+      <option value="lotte">롯데정밀화학 2027 · 폐기물수거 + 차량</option>
+      <option value="uc">울산과학대 2026 · 미화 22명(학기중) + 차량·장비</option>
+    </select>
+    <button class="tbtn" id="btnBlank">신규 영업 견적</button>
+    <button class="tbtn" id="btnNew">갱신 견적</button>
+    <button class="tbtn" id="btnSave">저장</button>
+    <button class="tbtn pri" id="btnXlsx">엑셀 내보내기</button>
+  </div>
+</header>
+
+<div class="shell">
+  <nav class="steps" role="tablist" aria-label="견적 단계">
+    <button class="step" role="tab" data-step="1"><span class="k">1</span><span><b>사업장·기본정보</b><small>위치 · 현황 · 용역조건</small></span></button>
+    <button class="step" role="tab" data-step="2"><span class="k">2</span><span><b>인력 구성</b><small>직종 · 근무형태 · 수당</small></span></button>
+    <button class="step" role="tab" data-step="3"><span class="k">3</span><span><b>부대비용</b><small>차량 · 장비 · 기타</small></span></button>
+    <button class="step" role="tab" data-step="4"><span class="k">4</span><span><b>요율·기준</b><small>4대보험 · 관리비 · 이윤</small></span></button>
+    <button class="step" role="tab" data-step="5"><span class="k">5</span><span><b>견적서 출력</b><small>견적서 · 산출내역서</small></span></button>
+  </nav>
+
+  <main>
+    <!-- STEP 1 -->
+    <section class="panel" id="p1" data-panel="1">
+      <div class="hero">
+        <div class="tx">
+          <span class="pill g" style="align-self:flex-start;background:rgba(255,255,255,.16);color:#fff">사업장 명칭부터 입력하세요</span>
+          <h1>사업장 위치와 현황을 확인하고 바로 산출합니다</h1>
+          <p>신규 영업은 전국 사업장을 인터넷 지도에서 검색해 위치·세부현황을 확인하고, 재계약·갱신은 에스텍 사업장 151곳의 현황을 그대로 불러옵니다.</p>
+        </div>
+        <img src="__TEAM__" alt="에스텍 보안·미화·주차·시설·사무 인력">
+      </div>
+
+      <div class="card">
+        <div class="h-row"><div><h2>사업장</h2><p class="sub" id="modeSub"></p></div><div class="row"><div class="seg" role="radiogroup" aria-label="검색 대상"><button type="button" data-mode="new">신규 영업 사업장</button><button type="button" data-mode="renew">기존 에스텍 사업장</button></div><span id="siteBadge"></span></div></div>
+        <div class="row" style="margin:-4px 0 10px" id="kakaoState"></div>
+        <div class="kakao-box" id="kakaoBox" hidden>
+          <p class="hint" style="margin:0 0 8px">카카오맵과 같은 장소 검색 결과(업종·전화·도로명주소)를 쓰려면 <b>카카오 REST API 키</b>가 필요합니다. 카카오 디벨로퍼스(developers.kakao.com) → 내 애플리케이션 → 앱 추가 → <b>앱 키의 ‘REST API 키’</b>를 복사하고, 앱 설정의 <b>‘카카오맵’ 사용 설정을 ON</b>으로 켜 주세요. 키는 이 PC 브라우저에만 저장됩니다.</p>
+          <div class="row"><input class="inp" id="kk_key" placeholder="REST API 키 (32자리)" style="max-width:340px" autocomplete="off"><button type="button" class="btn pri sm" id="kk_save">저장·테스트</button><button type="button" class="btn sm ghost" id="kk_del">키 삭제</button><span class="hint" id="kk_msg"></span></div>
+        </div>
+        <div class="grid g3">
+          <label class="f site-search" style="grid-column:span 2"><span>사업장 명칭 <em>*</em></span>
+            <input class="inp" id="m_client" autocomplete="off" placeholder="예: 송원산업, 대경대학교, 현대자동차 울산공장 — 에스텍 사업장 + 전국 검색">
+            <div class="sugg" id="sugg" hidden></div>
+          </label>
+          <label class="f"><span>견적 대상 주소 (선택)</span><input class="inp" id="m_addr" placeholder="주소를 알면 입력 → 위치 조회 정확도 향상"></label>
+        </div>
+        <div class="row" style="margin-top:10px">
+          <button class="btn pri" id="btnLookup">인터넷에서 위치·현황 조회</button>
+          <button class="btn" id="btnPick">지도에서 위치 직접 지정</button>
+          <span class="hint" id="lookupMsg"></span>
+        </div>
+      </div>
+
+      <div class="card">
+        <div class="mapwrap">
+          <div>
+            <div id="map" role="region" aria-label="사업장 지도"></div>
+            <div class="mapnote" id="mapNote">● 보안 ● 미화 ● 복합 — 에스텍 운영 사업장 · 사각 라벨은 지사/본사</div>
+          </div>
+          <div class="info" id="siteInfo"></div>
+        </div>
+      </div>
+
+      <div class="card">
+        <h2>용역 조건</h2>
+        <p class="sub">견적서 표지에 들어가는 항목입니다.</p>
+        <div class="grid g4">
+          <label class="f" style="grid-column:span 2"><span>용역명</span><input class="inp" id="m_svc"></label>
+          <label class="f"><span>견적 기준연도</span><select class="inp" id="m_year"><option>2025</option><option>2026</option><option>2027</option><option>2028</option><option>2029</option><option>2030</option></select></label>
+          <label class="f"><span>작성일</span><input class="inp" type="date" id="m_date"></label>
+          <label class="f"><span>용역 시작</span><input class="inp" type="date" id="m_from"></label>
+          <label class="f"><span>용역 종료</span><input class="inp" type="date" id="m_to"></label>
+          <label class="f"><span>견적 유효기간</span><input class="inp" id="m_valid"></label>
+          <label class="f"><span>관할 지사</span><select class="inp" id="m_branch"></select></label>
+        </div>
+      </div>
+    </section>
+
+    <!-- STEP 2 -->
+    <section class="panel" id="p2" data-panel="2" hidden>
+      <div class="card">
+        <div class="h-row"><div><h2>직종 추가</h2><p class="sub">직종을 누르면 해당 직종의 기본 근무형태·수당이 채워진 인력 행이 추가됩니다.</p></div>
+          <button class="btn" id="btnFromSite" hidden>현 사업장 인원으로 초안 만들기</button></div>
+        <div class="cats" id="cats"></div>
+      </div>
+      <div id="roles" class="panel"></div>
+    </section>
+
+    <!-- STEP 3 -->
+    <section class="panel" id="p3" data-panel="3" hidden>
+      <div class="card">
+        <div class="h-row"><div><h2>부대비용 반영 방식</h2><p class="sub">차량·장비·기타 비용을 인당 단가에 녹일지, 별도 항목으로 청구할지 정합니다.</p></div></div>
+        <div class="row" style="gap:18px">
+          <label class="chk"><input type="radio" name="addonMode" value="spread" id="am_spread"> 인당 단가에 균등 배분 (경비 항목)</label>
+          <label class="chk"><input type="radio" name="addonMode" value="separate" id="am_sep"> 별도 항목으로 청구</label>
+          <label class="chk"><input type="checkbox" id="am_margin"> 별도 청구 시 일반관리비·이윤 적용</label>
+        </div>
+      </div>
+      <div class="card">
+        <div class="h-row"><div><h2>업무차량</h2><p class="sub">구매가 감가상각(60개월) + 소모품·수리·검사·세금·보험 + 유류비 → 월 청구액 만원 단위 절상</p></div>
+          <div class="row"><button class="btn" data-addveh="porter_used">+ 포터2 중고</button><button class="btn" data-addveh="porter_new">+ 포터2 신차</button><button class="btn" data-addveh="ev">+ 1톤 전기트럭</button></div></div>
+        <div id="vehList"></div>
+      </div>
+      <div class="card">
+        <div class="h-row"><div><h2>미화·보안 장비</h2><p class="sub">신규 구매는 (구매가 × (1+공구수선율)) ÷ 상각개월, 보유 장비는 구매가 × 수선율 ÷ 12개월</p></div>
+          <div class="row"><select class="inp" id="eqCat" style="width:auto"></select><button class="btn" id="btnAddEq">+ 장비 추가</button></div></div>
+        <div id="eqList"></div>
+      </div>
+      <div class="card">
+        <div class="h-row"><div><h2>기타 추가비용</h2><p class="sub">소모품·재료비, 무전기, 순찰시스템, 특수작업 등. 월/연/1회(상각) 단위로 입력합니다.</p></div>
+          <div class="row"><button class="btn" id="btnAddEtc">+ 항목 추가</button></div></div>
+        <div id="etcList"></div>
+        <div class="addsum" id="addonSum"></div>
+      </div>
+    </section>
+
+    <!-- STEP 4 -->
+    <section class="panel" id="p4" data-panel="4" hidden>
+      <div class="card">
+        <h2>최저시급 · 4대보험 요율</h2>
+        <p class="sub">견적 기준연도를 바꾸거나 ‘새 견적(다음연도 갱신)’을 누르면 최저시급과 4대보험·부담금이 해당 연도 법정요율로 바뀝니다. 고용보험은 회사 규모, 산재보험은 사업종류별 요율을 기준으로 계산하며 모든 값은 직접 고칠 수 있습니다. 보험료 산정기준 = 직접비 − 퇴직충당금 − 식대(비과세).</p>
+        <div class="ratenote" id="rateNote"></div>
+        <div id="insTable"></div>
+        <h3 class="mini">산정 기준</h3>
+        <div class="grid g4" id="setIns"></div>
+      </div>
+      <div class="card">
+        <h2>법정·부담금</h2>
+        <div class="grid g4" id="setLegal"></div>
+      </div>
+      <div class="card">
+        <h2>경비(복리후생) 기준 · 인당</h2>
+        <p class="sub">에스텍베스트 지급 기준. 교육훈련비·위험부담금은 노무비 대비 비율, 고정액을 넣으면 고정액이 우선합니다.</p>
+        <div class="grid g4" id="setExp"></div>
+      </div>
+      <div class="card">
+        <h2>일반관리비 · 기업이윤 · 단수처리</h2>
+        <div class="grid g4" id="setMargin"></div>
+      </div>
+      <div class="card">
+        <h2>공급자 정보 · 견적 조건</h2>
+        <div class="grid g3" id="setCo"></div>
+        <label class="f" style="margin-top:12px"><span>견적 조건 (견적서 하단 문구, {최저시급}·{연도} 자동 치환)</span><textarea class="inp" id="s_cond"></textarea></label>
+      </div>
+    </section>
+
+    <!-- STEP 5 -->
+    <section class="panel" id="p5" data-panel="5" hidden>
+      <div class="card noprint">
+        <div class="h-row"><div><h2>출력</h2><p class="sub">견적서·산출내역서·부대비용 명세를 확인하고 엑셀로 내보냅니다.</p></div>
+          <div class="row"><button class="btn" id="btnPrint">인쇄 / PDF</button><button class="btn pri" id="btnXlsx2">엑셀 내보내기</button></div></div>
+        <div class="doc-tabs" role="tablist"><button class="btn" data-doc="quote" aria-selected="true">견적서</button><button class="btn" data-doc="bd">산출내역서</button><button class="btn" data-doc="add">부대비용 명세</button><button class="btn" data-doc="cmp" hidden>전년 대비 비교표</button></div>
+      </div>
+      <div class="printable" id="docQuote"></div>
+      <div class="printable" id="docBd" hidden></div>
+      <div class="printable" id="docAdd" hidden></div>
+      <div class="printable" id="docCmp" hidden></div>
+    </section>
+  </main>
+
+  <aside class="rail" aria-label="견적 요약">
+    <div class="sum person-card" id="personCard"></div>
+    <div class="sum">
+      <div class="lbl">월 견적금액 · VAT 별도</div>
+      <div class="big" id="sumMonth">0<small> 원</small></div>
+      <dl id="sumDl"></dl>
+      <div class="mix" id="sumMix"></div>
+      <div class="legend" id="sumLegend"></div>
+    </div>
+    <div class="sum">
+      <div class="lbl" style="margin-bottom:8px">투입 인력</div>
+      <div class="crew" id="sumCrew"></div>
+    </div>
+    <div class="sum">
+      <div class="lbl" style="margin-bottom:8px">저장된 견적 (이 브라우저)</div>
+      <div class="saved" id="savedList"></div>
+      <div class="row" style="margin-top:8px"><button class="btn sm" id="btnJson">JSON 백업</button><label class="btn sm" for="fileJson" style="cursor:pointer">JSON 불러오기</label><input type="file" id="fileJson" accept=".json,application/json" hidden></div>
+    </div>
+  </aside>
+</div>
+<div class="toast" id="toast" role="status"></div>
+
+<script>/*__LEAFLET_JS__*/</script>
+<script>/*__EXCELJS__*/</script>
+<script>
+"use strict";
+const IMG = /*__IMG__*/{};
+const SITEDB = /*__SITES__*/{};
+const ADM = /*__ADM__*/{};
+
+/* ───────── 기준 데이터 ───────── */
+/* 연도별 법정 요율 (사업주 부담분, %). tentative = 미확정 잠정값 */
+const RATES = {
+  2025:{minWage:10030, health:3.545, ltc:12.95, pension:4.5, ui:0.9, indCom:0.06, wageClaim:0.06, asb:0.003,
+        note:"2025년 · 최저시급 10,030원 · 건강 7.09% · 장기요양 12.95% · 국민연금 9% · 고용(실업급여) 0.9%", tentative:["wageClaim","asb","indCom"]},
+  2026:{minWage:10320, health:3.595, ltc:13.14, pension:4.75, ui:0.9, indCom:0.06, wageClaim:0.09, asb:0.006,
+        note:"2026년 확정 · 최저시급 10,320원 · 건강 7.19%(사업주 3.595%) · 장기요양 건보료의 13.14% · 국민연금 9.5%(4.75%) · 고용 실업급여 0.9%+규모별 · 산재 출퇴근 0.06% · 임금채권 0.09% · 석면 0.006%", tentative:[]},
+  2027:{minWage:10700, health:3.595, ltc:13.14, pension:5.0, ui:1.0, indCom:0.06, wageClaim:0.09, asb:0.006,
+        note:"2027년 · 최저시급 10,700원(확정) · 건강 7.19% 동결(2026.9.8 확정) · 국민연금 10%(연금개혁법, 사업주 5.0%) · 고용 실업급여 1.0%(정부 개편안, 연내 법령개정 예정) · 장기요양·산재·임금채권·석면은 미고시 → 2026년 값 잠정", tentative:["ltc","ui","indCom","wageClaim","asb"]},
+  2028:{minWage:11021, health:3.595, ltc:13.14, pension:5.25, ui:1.0, indCom:0.06, wageClaim:0.09, asb:0.006,
+        note:"2028년 · 국민연금 10.5%(연금개혁법, 사업주 5.25%)만 확정 · 최저시급은 3% 인상 예상치 · 나머지는 2027년 값 잠정", tentative:["minWage","health","ltc","ui","indCom","wageClaim","asb"]}
+};
+const MINWAGE = Object.fromEntries(Object.entries(RATES).map(([y,r])=>[y,r.minWage]));
+/* 고용보험 고용안정·직업능력개발 (사업주만 부담, 상시근로자 규모별) */
+const EMP_SIZE = {u150:["150인 미만",0.25], prio:["150인 이상 우선지원대상기업",0.45], m1000:["150인 이상 1,000인 미만",0.65], o1000:["1,000인 이상 · 국가·지자체",0.85]};
+const r3 = v => Math.round(v*10000)/10000;
+function statutory(S, year){
+  const R=RATES[year]||RATES[2027];
+  return {minWage:R.minWage, health:R.health, ltc:R.ltc, pension:R.pension,
+    emp:r3(R.ui+(EMP_SIZE[S.empSize]||EMP_SIZE.m1000)[1]), indCom:R.indCom, ind:r3((S.indBase??0.8)*1+R.indCom), wageClaim:R.wageClaim, asb:R.asb};
+}
+function applyYearRates(S, year){ if(!RATES[year]) return false; Object.assign(S, statutory(S,year)); return true; }
+const RATE_LABEL = {minWage:"최저시급",health:"건강보험",ltc:"장기요양",pension:"국민연금",emp:"고용보험",indCom:"산재 출퇴근",ind:"산재보험",wageClaim:"임금채권",asb:"석면"};
+/* 직종별 직책 (첫 값 = 관리자급, 마지막 = 실무) — 기본 성별·근무형태 */
+const CATS = {
+  sec:{label:"보안(경비)", short:"보안", watch:true, shift:"s32", color:"#1b2a86",
+       ranks:{"실장":{shift:"day5_9"},"팀장":{shift:"day5_9"},"조장":{},"주임":{},"요원":{}}, def:"요원", img:(g,rk)=>rk==="실장"||rk==="팀장"||rk==="조장"?"sec2":"sec"},
+  cln:{label:"미화", short:"미화", watch:false, shift:"day5_8", color:"#2b8a3e",
+       ranks:{"소장":{},"팀장":{},"반장":{},"남미화원":{gender:"M"},"여미화원":{gender:"F"}}, def:"여미화원", img:g=>g==="M"?"clnM":"clnF"},
+  park:{label:"주차", short:"주차", watch:false, shift:"day5_9", color:"#c07a12",
+       ranks:{"소장":{},"팀장":{},"반장":{},"요원":{}}, def:"요원", img:g=>"park"},
+  fac:{label:"시설관리", short:"시설", watch:false, shift:"day5_8", color:"#6a4fb0",
+       ranks:{"소장":{},"팀장":{},"파트장":{},"주임":{},"사원":{}}, def:"사원", img:g=>"fac"},
+  spc:{label:"특수직군", short:"특수", watch:false, shift:"day5_8", color:"#b03a5b", jobs:["안내원","조리원","폐기물수거원","운전원","방역원"],
+       ranks:{"소장":{},"팀장":{},"반장":{},"요원":{}}, def:"요원", img:g=>g==="M"?"fac":"info"},
+  etc:{label:"기타직군", short:"기타", watch:false, shift:"day5_8", color:"#4b6478", jobs:["사무원","경리","현장관리","행정지원"],
+       ranks:{"소장":{},"팀장":{},"주임":{},"사원":{}}, def:"사원", img:g=>g==="M"?"offM":"offF"}
+};
+const rankList = cat => Object.keys(CATS[cat].ranks);
+const roleImg = r => CATS[r.cat].img(r.gender, r.rank);
+const roleLabel = r => r.rank + (r.detail ? ` (${r.detail})` : "");
+function migrateRole(r){
+  if(!CATS[r.cat]) r.cat="etc";
+  if(!r.rank || !CATS[r.cat].ranks[r.rank]){
+    const t=String(r.title||""), L=rankList(r.cat);
+    let rk=L.find(x=>t.includes(x));
+    if(!rk){ if(/조장|반장/.test(t)) rk=L.includes("반장")?"반장":L[1]; else if(/관리자|현장소장/.test(t)) rk=L[0]; else if(r.cat==="cln") rk=r.gender==="M"?"남미화원":"여미화원"; else rk=CATS[r.cat].def; }
+    r.rank=rk; if(r.detail==null) r.detail = t && t!==rk ? t.replace(rk,"").replace(/^[\s(·]+|[\s)]+$/g,"") : "";
+  }
+  if(r.detail==null) r.detail="";
+  r.title = roleLabel(r);
+  return r;
+}
+const SHIFTS = {
+  day5_8:{label:"주간 주5일 (8h)", base:209, ot:0, night:0, dayH:9, rest:1},
+  day5_9:{label:"주간 주5일 (9h·연장1h/일)", base:209, ot:22, night:0, dayH:10, rest:1},
+  day5_11:{label:"주간 주5일 (11h·연장3h/일)", base:209, ot:65, night:0, dayH:12, rest:1},
+  day6:{label:"주간 주6일 (토 4h)", base:209, ot:17, night:0, dayH:9, rest:1},
+  s32:{label:"3조2교대 (12h)", base:209, ot:25, night:82, dayH:12, rest:1},
+  s42:{label:"4조2교대 (12h)", base:209, ot:0, night:62, dayH:12, rest:1},
+  s52:{label:"5조2교대 (12h)", base:175, ot:0, night:46, dayH:12, rest:1},
+  alt24:{label:"격일제 (24h 맞교대)", base:209, ot:52, night:91, dayH:24, rest:6},
+  part:{label:"단시간 (시간제)", base:105, ot:0, night:0, dayH:5, rest:0},
+  custom:{label:"직접 입력", base:209, ot:0, night:0, dayH:9, rest:1}
+};
+const EQUIP_CAT = [
+  ["탑승식청소차 (S5)",4950000],["보행식청소차 (MEDIA75BT)",6500000],["보행식청소차 (K5)",3800000],["고압분사기",1750000],
+  ["왁스머신기 (BP-16\")",590000],["업소용 진공청소기",450000],["습식청소기",1200000],["송풍기(블로어)",380000],
+  ["무전기",350000],["순찰시스템(태그형)",1500000],["주차 유도봉·안전용품 세트",200000],["예초기",650000]
+];
+const VEH_PRESET = {
+  porter_used:{name:"포터2 (중고)", price:10000000, km:30, fuel:1785, eff:8.7},
+  porter_new:{name:"포터2 (신차)", price:22000000, km:30, fuel:1785, eff:8.7},
+  ev:{name:"1톤 전기트럭 (포터2 EV)", price:43000000, km:30, fuel:347, eff:3.5}
+};
+const DEFAULT_COND =
+`○ 견적 기준 : {연도}년 최저임금({최저시급}원) 및 통상시급 적용
+    단, 매년 법정최저임금(4대보험 포함) 등 관계법령이 변경될 경우 그 즉시 변경된 내용에 따라 적용합니다.
+○ 납입 조건 : 전자세금계산서 발행(당월 20일 청구, 익월 5일 납입, 현금결제)
+○ 손해배상 : 총 2억원 (당사의 귀책사유로 인한 사고 발생시 손해배상 책임보험에 의거)
+    1) 대인배상 : 1인 2천만원 한도 총 1억원(1사고당), 2) 대물배상 : 1억원한도(사고당)
+○ 상기 금액은 피복, 장비, 복리후생 등 포함한 금액입니다.
+○ 업무 수행에 필요한 근무실, 휴게실, 청소용품(소모품 포함), 집기류, 통신, 식사는 고객사 제공조건`;
+
+function defaultSettings(year){
+  const YR = RATES[year] || RATES[2026];
+  return {
+    minWage: YR.minWage,
+    health:YR.health, ltc:YR.ltc, pension:YR.pension, empSize:"m1000", emp:r3(YR.ui+0.65), indBase:0.8, indCom:YR.indCom, ind:r3(0.8+YR.indCom), wageClaim:YR.wageClaim, asb:YR.asb,
+    otGen:1.5, otWatch:1.0, nightRate:0.5,
+    specialExam:80000, disOn:true, disRate:3.1, disBase:1360000, disRatio:100,
+    gift:100000, meeting:10000, condol:4000, reliefH:12, reliefDays:1.8,
+    resTax:62500, resSites:1, edu:1.0, eduFix:0, risk:0.5, riskFix:0, leaveH:8,
+    ga:5, profit:2, profitBase:"direct", gaRound:true, priceRound:"down3", vat:10,
+    coName:"㈜에스텍베스트", coCeo:"정규상", coBizNo:"607-81-56605",
+    coAddr:"부산시 부산진구 중앙대로 920, 2층(설비건설회관)", coType:"서비스", coItem:"경비용역,시설관리,위생관리",
+    coLic:"경찰청 허가 제243호 / 위생관리 신고증 제139호", coBranch:"에스텍베스트 동부지사", coPerson:"최민영", coPersonTitle:"", coPersonTel:"",
+    cond: DEFAULT_COND
+  };
+}
+
+/* ───────── 상태 ───────── */
+let uid = 1; const nid = () => "r" + (uid++) + Math.random().toString(36).slice(2,6);
+function today(){ const d=new Date(); return `${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,"0")}-${String(d.getDate()).padStart(2,"0")}`; }
+function newState(){
+  const y = new Date().getFullYear() + 1;
+  return {
+    meta:{client:"", addr:"", svc:"보안용역 도급업무", year:y, date:today(), from:`${y}-01-01`, to:`${y}-12-31`, valid:"작성일로부터 1개월", mode:"new", branch:"동부", siteId:null, lat:null, lng:null, geoName:"", geoSrc:""},
+    roles:[], vehicles:[], equips:[], others:[],
+    addonMode:"spread", addonMargin:true,
+    set: defaultSettings(y)
+  };
+}
+function newRole(cat, opt={}){
+  const C = CATS[cat], rank = opt.rank || C.def, rd = C.ranks[rank] || {};
+  const shiftKey = opt.shift || rd.shift || C.shift, sh = SHIFTS[shiftKey], S = state ? state.set : defaultSettings(2026);
+  const r = Object.assign({
+    id:nid(), cat, rank, detail:"", gender: rd.gender || (cat==="cln"||cat==="spc" ? "F" : "M"), shift:shiftKey, count:1,
+    wage:S.minWage, base:sh.base, ot:sh.ot, night:sh.night, dayH:sh.dayH, rest:sh.rest,
+    watch:C.watch, pos:0, adj:0, duty:0, meal:0, holDays:0, leave:15, laborDay:true, retire:true,
+    pensionPct:100, special:"auto", uniform:30000, months:12, prev:0, note:"", addonEx:false
+  }, opt);
+  return migrateRole(r);
+}
+let state = null;
+
+/* ───────── 계산 엔진 ───────── */
+const RU = (v, d=10) => { const x = Math.round(v*1e6)/1e6; return Math.ceil(x/d - 1e-9)*d; };
+const RD = (v, d=1000) => Math.floor((Math.round(v*1e6)/1e6)/d + 1e-9)*d;
+const pct = v => (+v||0)/100;
+
+function vehMonthly(v){
+  const price = +v.price||0, dep = +v.dep||60;
+  const depBase = v.incTax ? price*(1+pct(v.reg)+pct(v.acq)) + (+v.etcFee||0) : price;
+  const parts = {
+    depr: depBase/dep,
+    cons: +v.cons||0,
+    repair: price*pct(v.repair)/dep,
+    insp: (+v.insp||0)/12, tax:(+v.tax||0)/12, ins:(+v.ins||0)/12,
+    fuel: (+v.km||0)*(+v.days||0)*(+v.fuel||0)/((+v.eff)||1)
+  };
+  const sum = Object.values(parts).reduce((a,b)=>a+b,0);
+  const unit = RU(sum, 10000);
+  return {parts, sum, unit, total: unit*(+v.qty||1)};
+}
+function eqMonthly(e){
+  const amt = (+e.price||0)*(+e.qty||0);
+  return e.mode === "new" ? amt*(1+pct(e.rep))/((+e.months)||60) : amt*pct(e.rep)/12;
+}
+function etcMonthly(o){
+  const a = +o.amount||0;
+  return o.cycle==="월" ? a : o.cycle==="연" ? a/12 : a/((+o.months)||12);
+}
+function addonTotals(st){
+  const veh = st.vehicles.reduce((s,v)=>s+vehMonthly(v).total,0);
+  const eq = st.equips.reduce((s,e)=>s+eqMonthly(e),0);
+  const etc = st.others.reduce((s,o)=>s+etcMonthly(o),0);
+  return {veh, eq, etc, total: veh+eq+etc};
+}
+
+function calcRole(r, S, ctx){
+  const L = {};
+  const wage = +r.wage||0, base = +r.base||0, ot = +r.ot||0, night = +r.night||0;
+  const nightAdd = night * S.nightRate;
+  L.basic = RU(base*wage);
+  L.pos = +r.pos||0; L.adj = +r.adj||0; L.duty = +r.duty||0; L.meal = +r.meal||0;
+  const ordinary = base ? (L.basic + L.pos + L.adj + L.duty)/base : 0;
+  L.ordinary = ordinary;
+  L.ot = ot ? RU(ot * (r.watch ? wage*S.otWatch : ordinary*S.otGen)) : 0;
+  L.night = nightAdd ? RU(nightAdd*ordinary) : 0;
+  L.hol = (+r.holDays||0) ? RU(wage*(+r.holDays)*8*0.5/12) : 0;
+  L.sub1 = L.basic+L.ot+L.night+L.pos+L.hol+L.duty+L.meal+L.adj;
+  L.leave = (+r.leave||0) ? RU(ordinary*(S.leaveH||8)*(+r.leave)/12) : 0;
+  L.laborDay = r.laborDay ? RU(Math.max(0,(+r.dayH||0)-(+r.rest||0))/12*ordinary) : 0;
+  L.retire = r.retire ? RU((L.sub1+L.leave+L.laborDay)/12) : 0;
+  L.direct = L.sub1+L.leave+L.laborDay+L.retire;
+  const ib = L.direct - L.retire - L.meal; L.insBase = ib;
+  L.health = RU(ib*pct(S.health));
+  L.ltc = RU(L.health*pct(S.ltc));
+  L.pension = RU(ib*pct(S.pension)*pct(r.pensionPct));
+  L.emp = RU(ib*pct(S.emp));
+  L.ind = RU(ib*pct(S.ind));
+  L.wclaim = RU(ib*pct(S.wageClaim));
+  L.asb = S.asb ? RU(ib*pct(S.asb)) : 0;
+  const sp = r.special==="on" || (r.special==="auto" && night>0);
+  L.special = sp ? RU(S.specialExam/12) : 0;
+  L.dis = S.disOn ? RU(pct(S.disRate)*S.disBase*pct(S.disRatio)) : 0;
+  L.indirect = L.health+L.ltc+L.pension+L.emp+L.ind+L.wclaim+L.asb+L.special+L.dis;
+  L.labor = L.direct + L.indirect;
+  const rx = v => v;
+  L.uniform = +r.uniform||0;
+  L.gift = S.gift ? RU(S.gift/12) : 0;
+  L.meeting = +S.meeting||0; L.condol = +S.condol||0;
+  L.relief = rx(ordinary*S.reliefH*S.reliefDays/12);
+  L.resTax = ctx.heads ? rx(S.resTax*S.resSites/12/ctx.heads) : 0;
+  L.edu = S.eduFix ? +S.eduFix : rx(L.labor*pct(S.edu));
+  L.risk = S.riskFix ? +S.riskFix : rx(L.labor*pct(S.risk));
+  L.addon = r.addonEx ? 0 : (ctx.addonPerHead || 0);
+  L.expense = L.uniform+L.gift+L.meeting+L.condol+L.relief+L.resTax+L.edu+L.risk+L.addon;
+  L.dcost = L.labor + L.expense;
+  L.ga = S.gaRound ? RU(L.dcost*pct(S.ga)) : L.dcost*pct(S.ga);
+  L.csub = L.dcost + L.ga;
+  L.profit = (S.profitBase==="sub" ? L.csub : L.dcost)*pct(S.profit);
+  L.total = L.csub + L.profit;
+  L.price = S.priceRound==="down3" ? RD(L.total,1000) : S.priceRound==="up3" ? RU(L.total,1000) : S.priceRound==="down2" ? RD(L.total,100) : Math.round(L.total);
+  L.count = +r.count||0; L.months = +r.months||12;
+  L.monthTotal = L.price*L.count;
+  L.yearTotal = L.monthTotal*L.months;
+  return L;
+}
+function calcAll(st){
+  const S = st.set;
+  const heads = st.roles.reduce((s,r)=>s+(+r.count||0),0);
+  const add = addonTotals(st);
+  const elig = st.roles.reduce((s,r)=>s+(r.addonEx?0:(+r.count||0)),0);
+  const spread = st.addonMode==="spread" && elig>0;
+  const ctx = {heads, elig, addonPerHead: spread ? add.total/elig : 0};
+  const rows = st.roles.map(r=>({r, L:calcRole(r,S,ctx)}));
+  const month = rows.reduce((s,x)=>s+x.L.monthTotal,0);
+  const yearRoles = rows.reduce((s,x)=>s+x.L.yearTotal,0);
+  let sepLine = null;
+  if(!spread && add.total>0){
+    let base = add.total, ga=0, pr=0;
+    if(st.addonMargin){ ga = RU(base*pct(S.ga)); pr = base*pct(S.profit); }
+    const tot = RD(base+ga+pr, 1000);
+    sepLine = {base, ga, pr, total:tot};
+  }
+  const monthAll = month + (sepLine?sepLine.total:0);
+  const contractMonths = Math.max(1, monthsBetween(st.meta.from, st.meta.to));
+  const yearAll = yearRoles + (sepLine?sepLine.total*contractMonths:0);
+  const vat = Math.round(monthAll*pct(S.vat));
+  const labor = rows.reduce((s,x)=>s+x.L.labor*x.L.count,0);
+  const expense = rows.reduce((s,x)=>s+(x.L.expense-x.L.addon)*x.L.count,0);
+  const addonIn = rows.reduce((s,x)=>s+x.L.addon*x.L.count,0) + (sepLine?sepLine.base:0);
+  const marg = rows.reduce((s,x)=>s+(x.L.ga+x.L.profit)*x.L.count,0) + (sepLine?sepLine.ga+sepLine.pr:0);
+  return {rows, heads, elig, add, spread, sepLine, month, monthAll, vat, yearAll, contractMonths, avg: heads? month/heads:0, mix:{labor,expense,addon:addonIn,marg}};
+}
+function monthsBetween(a,b){
+  if(!a||!b) return 12; const A=new Date(a), B=new Date(b);
+  if(isNaN(A)||isNaN(B)) return 12;
+  return Math.max(1,(B.getFullYear()-A.getFullYear())*12 + (B.getMonth()-A.getMonth()) + (B.getDate()>=A.getDate()-1?1:0));
+}
+
+/* ───────── 유틸 ───────── */
+function shiftLabel(r){ if(r.shift!=="custom") return SHIFTS[r.shift]?.label||""; return (+r.night>0?"교대":"주간 고정")+` (${r.dayH}h)`; }
+const $ = s => document.querySelector(s), $$ = s => [...document.querySelectorAll(s)];
+const won = v => (Math.round(v)||0).toLocaleString("ko-KR");
+const won2 = v => { const x = Math.round(v*100)/100; return Number.isInteger(x)? x.toLocaleString("ko-KR") : x.toLocaleString("ko-KR",{maximumFractionDigits:2}); };
+const esc = s => String(s??"").replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));
+function toast(m){ const t=$("#toast"); t.textContent=m; t.classList.add("on"); clearTimeout(toast._t); toast._t=setTimeout(()=>t.classList.remove("on"),2200); }
+const LS = { get(k,d){ try{ const v=localStorage.getItem(k); return v?JSON.parse(v):d; }catch(e){ return d; } }, set(k,v){ try{ localStorage.setItem(k,JSON.stringify(v)); return true; }catch(e){ return false; } } };
+function hav(a,b,c,d){ const R=6371, t=x=>x*Math.PI/180; const x=Math.sin(t(c-a)/2)**2+Math.cos(t(a))*Math.cos(t(c))*Math.sin(t(d-b)/2)**2; return 2*R*Math.asin(Math.sqrt(x)); }
+const inFrame = (()=>{ try{ return window.self!==window.top; }catch(e){ return true; } })();
+
+/* ───────── 렌더: STEP 1 사업장 ───────── */
+let map=null, pickMode=false, selLayer=null, tileOk=false;
+const SIDO_KO={seoul:"서울",busan:"부산",daegu:"대구",incheon:"인천",gwangju:"광주",daejeon:"대전",ulsan:"울산",sejong:"세종",gyeonggi:"경기",gangwon:"강원",chungbuk:"충북",chungnam:"충남",jeonbuk:"전북",jeonnam:"전남",gyeongbuk:"경북",gyeongnam:"경남",jeju:"제주"};
+let admSido=[], admMuni=[], lblLayer=null, dongLayer=null, baseMode="vector";
+function initMap(){
+  if(map || !window.L) return;
+  map = L.map("map",{zoomControl:true,minZoom:6,maxZoom:18,zoomSnap:.5}).setView([35.55,128.9],8);
+  map.createPane("adm").style.zIndex=250;
+  map.createPane("admLbl").style.zIndex=390; map.getPane("admLbl").style.pointerEvents="none";
+  const dec=(str,prec=1e4)=>{const out=[];let i=0,lat=0,lng=0;while(i<str.length){for(const k of [0,1]){let b,sh=0,r=0;do{b=str.charCodeAt(i++)-63;r|=(b&0x1f)<<sh;sh+=5;}while(b>=0x20);const d=(r&1)?~(r>>1):(r>>1);if(k===0)lat+=d;else lng+=d;}out.push([lat/prec,lng/prec]);}return out;};
+  const ll=o=>o._ll||(o._ll=o.p.map(s=>dec(s)));
+  const AR=L.canvas({padding:.3,pane:"adm"});
+  // 오프라인(행정경계) 지도: 육지·바다 색 구분
+  Object.entries(ADM.sido||{}).forEach(([id,o])=>admSido.push(L.polygon(ll(o),{pane:"adm",renderer:AR,interactive:false,color:"#8f97a8",weight:1.3,fillColor:"#f4f1e8",fillOpacity:1}).addTo(map)));
+  Object.values(ADM.muni||{}).forEach(list=>list.forEach(m=>admMuni.push(L.polygon(ll(m),{pane:"adm",renderer:AR,interactive:false,color:"#b9bdc8",weight:.7,fill:false}).addTo(map))));
+  lblLayer=L.layerGroup().addTo(map); dongLayer=L.layerGroup().addTo(map);
+  const lbl=(lat,lng,t,cls)=>L.marker([lat,lng],{pane:"admLbl",interactive:false,icon:L.divIcon({className:"admlbl "+cls,html:esc(t),iconSize:null})});
+  const drawLabels=()=>{
+    lblLayer.clearLayers(); dongLayer.clearLayers();
+    if(baseMode!=="vector") return;
+    const z=map.getZoom(), bb=map.getBounds().pad(.2);
+    if(z<9.5) Object.entries(ADM.sido||{}).forEach(([id,o])=>lblLayer.addLayer(lbl(o.o[1],o.o[0],SIDO_KO[id]||id,"s")));
+    else Object.values(ADM.muni||{}).forEach(list=>list.forEach(m=>{ if(bb.contains([m.o[1],m.o[0]])) lblLayer.addLayer(lbl(m.o[1],m.o[0],m.n,"m")); }));
+    if(z>=12) Object.values(ADM.muni||{}).forEach(list=>list.forEach(m=>{ if(!bb.intersects(L.latLngBounds([m.b[1],m.b[0]],[m.b[3],m.b[2]]))) return;
+      (ADM.dong&&ADM.dong[m.c]||[]).forEach(d=>{ L.polygon(ll(d),{pane:"adm",renderer:AR,interactive:false,color:"#c9ccd4",weight:.6,dashArray:"3 3",fill:false}).addTo(dongLayer);
+        if(z>=13 && bb.contains([d.o[1],d.o[0]])) lblLayer.addLayer(lbl(d.o[1],d.o[0],d.n,"d")); }); }));
+  };
+  map.on("zoomend moveend",drawLabels); drawLabels();
+  // 온라인 배경지도 (HTML 파일 실행 시) — 타일이 뜨면 경계 채움을 걷어내 실제 지도가 보이게 함
+  const ESRI=n=>`https://server.arcgisonline.com/ArcGIS/rest/services/${n}/MapServer/tile/{z}/{y}/{x}`;
+  const street=L.tileLayer(ESRI("World_Street_Map"),{maxZoom:19,maxNativeZoom:19,attribution:"Tiles &copy; Esri"});
+  const topo=L.tileLayer(ESRI("World_Topo_Map"),{maxZoom:19,maxNativeZoom:19,attribution:"Tiles &copy; Esri"});
+  const sat=L.layerGroup([L.tileLayer(ESRI("World_Imagery"),{maxZoom:19,maxNativeZoom:18,attribution:"&copy; Esri, Maxar"}),
+    L.tileLayer(ESRI("Reference/World_Boundaries_and_Places"),{maxZoom:19,maxNativeZoom:18})]);
+  const offline=L.layerGroup();
+  const onTile=()=>{ if(tileOk) return; tileOk=true; setBase("tiles"); $("#mapNote").textContent="● 보안 ● 미화 ● 복합 — 에스텍 운영 사업장 · 사각 라벨은 지사/본사 · 오른쪽 위 [지도 종류]에서 일반·지형·위성 지도 변경"; };
+  [street,topo].forEach(t=>t.on("tileload",onTile)); sat.eachLayer(t=>t.on("tileload",onTile));
+  street.addTo(map);
+  L.control.layers({"일반 지도":street,"지형 지도":topo,"위성 지도":sat,"행정경계(오프라인)":offline},null,{position:"topright"}).addTo(map);
+  map.on("baselayerchange",e=>{ if(e.layer===offline) setBase("vector"); else if(tileOk) setBase("tiles"); });
+  setTimeout(()=>{ if(!tileOk) $("#mapNote").textContent="이 화면에서는 인터넷 지도 타일을 불러올 수 없어 행정경계 지도(시·군·구, 읍·면·동 경계와 지명)로 표시합니다. PC용 HTML 파일로 실행하면 일반 지도가 보입니다."; },4500);
+  SITEDB.sites.forEach(s=>{
+    const k = s.work.includes("/") ? "mix" : s.work.startsWith("보안")?"sec": s.work.startsWith("미화")?"cln":"etc";
+    L.marker([s.lat,s.lng],{icon:L.divIcon({className:"",html:`<div class="mk ${k}"></div>`,iconSize:[10,10]}),title:s.name})
+      .on("click",()=>{ state.meta.mode="renew"; renderMode(); selectSite(s.id,true); }).addTo(map)
+      .bindTooltip(`${esc(s.name)} · ${esc(s.work)} ${s.total}명`,{direction:"top"});
+  });
+  [...SITEDB.branches, {...SITEDB.hq, key:"본사", name:"본사"}].forEach(b=>{
+    L.marker([b.lat,b.lng],{icon:L.divIcon({className:"",html:`<div class="brmk">${esc(b.key==="본사"?"에스텍 본사":b.name)}</div>`,iconSize:null,iconAnchor:[30,10]}),zIndexOffset:500}).addTo(map);
+  });
+  map.on("click",e=>{ if(!pickMode) return; pickMode=false; $("#btnPick").classList.remove("pri");
+    setLoc(e.latlng.lat,e.latlng.lng,"지도에서 직접 지정"); });
+  function setBase(mode){
+    baseMode=mode;
+    admSido.forEach(p=>p.setStyle(mode==="vector"?{fillOpacity:1,opacity:1,weight:1.3}:{fillOpacity:0,opacity:.45,weight:1}));
+    admMuni.forEach(p=>p.setStyle({opacity:mode==="vector"?1:0}));
+    $("#map").classList.toggle("tiles",mode!=="vector");
+    drawLabels();
+  }
+  if(state.meta.lat) showSel();
+}
+function setLoc(lat,lng,src,name){
+  state.meta.lat=+lat; state.meta.lng=+lng; state.meta.geoSrc=src||""; if(name!==undefined) state.meta.geoName=name;
+  autoBranch(); showSel(); renderSiteInfo(); persistDraft();
+}
+function autoBranch(){
+  const m=state.meta; if(m.lat==null) return;
+  if(m.siteId){ const s=SITEDB.sites.find(x=>x.id===m.siteId); if(s){ m.branch=s.br; $("#m_branch").value=s.br; return; } }
+  let best=null; SITEDB.branches.forEach(b=>{ const d=hav(m.lat,m.lng,b.lat,b.lng); if(!best||d<best.d) best={k:b.key,d}; });
+  if(best){ m.branch=best.k; $("#m_branch").value=best.k; }
+}
+function showSel(){
+  if(!map) return; const m=state.meta; if(selLayer){ map.removeLayer(selLayer); selLayer=null; }
+  if(m.lat==null) return;
+  selLayer = L.marker([m.lat,m.lng],{icon:L.divIcon({className:"",html:`<div class="pin ${m.siteId?"int":""}"></div>`,iconSize:[30,30],iconAnchor:[15,30]}),zIndexOffset:1000}).addTo(map);
+  map.setView([m.lat,m.lng], Math.max(map.getZoom(),12));
+}
+function selectSite(id, fromMap){
+  const s = SITEDB.sites.find(x=>x.id===id); if(!s) return;
+  state.meta.siteId=s.id; state.meta.client=s.name; state.meta.addr=s.addr; state.meta.geoInfo=null;
+  $("#m_client").value=s.name; $("#m_addr").value=s.addr;
+  const w=s.work; state.meta.svc = (w.includes("보안")&&w.includes("미화"))?"보안·미화용역 도급업무": w.startsWith("미화")?"미화(위생관리)용역 도급업무": w.startsWith("주차")?"주차관리용역 도급업무":"보안용역 도급업무";
+  $("#m_svc").value=state.meta.svc;
+  setLoc(s.lat,s.lng,"에스텍 사업장 DB", s.name);
+  $("#sugg").hidden=true;
+}
+function siteBadge(){
+  const m=state.meta, el=$("#siteBadge");
+  if(m.siteId) el.innerHTML=`<span class="pill g">기존 에스텍 사업장</span>`;
+  else if(m.client) el.innerHTML=`<span class="pill w">신규 사업장</span>`;
+  else el.innerHTML="";
+}
+function renderSiteInfo(){
+  siteBadge();
+  const m=state.meta, box=$("#siteInfo"); const s = m.siteId ? SITEDB.sites.find(x=>x.id===m.siteId) : null;
+  let h="";
+  if(!m.client && m.lat==null){
+    box.innerHTML=`<div class="blk"><h3>사업장 현황</h3><p class="hint" style="margin:0">사업장 명칭을 입력하면 위치·인원·근무형태와 인근 에스텍 사업장, 관할 지사까지 거리를 보여줍니다.</p></div>`+linksBlk();
+    $("#btnFromSite").hidden=true; return;
+  }
+  if(s){
+    h+=`<div class="blk"><h3>${esc(s.name)} <span class="pill g">운영중</span></h3><dl class="kv">
+      <dt>주소</dt><dd>${esc(s.addr)}</dd><dt>구분</dt><dd>${esc(s.type)} · ${esc(s.br)}지사</dd>
+      <dt>용역</dt><dd>${esc(s.work)} · ${esc(s.shift)}</dd><dt>계약개시</dt><dd>${esc(s.since)}</dd>
+      <dt>인원</dt><dd><b>${s.total}명</b> (남 ${s.m} · 여 ${s.f} / 보안 ${s.sec} · 미화 ${s.cln}${s.etc?` · 기타 ${s.etc}`:""})</dd></dl></div>`;
+  } else if(m.geoInfo && m.geoInfo.name===m.client){
+    h+=geoDetailBlk(m.geoInfo)+`<div class="online-res" id="geoRes"></div>`;
+  } else if(m.client){
+    h+=`<div class="blk"><h3>${esc(m.client)} <span class="pill w">신규</span></h3><dl class="kv">
+      <dt>위치</dt><dd>${m.lat!=null?`${m.lat.toFixed(5)}, ${m.lng.toFixed(5)}`:"미지정 — 인터넷 조회 또는 지도에서 지정"}</dd>
+      ${m.geoName?`<dt>조회 결과</dt><dd>${esc(m.geoName)}</dd>`:""}${m.geoSrc?`<dt>출처</dt><dd>${esc(m.geoSrc)}</dd>`:""}</dl>
+      <div class="online-res" id="geoRes"></div><div id="wikiBox" style="margin-top:8px"></div></div>`;
+  }
+  if(m.lat!=null){
+    const brs=[...SITEDB.branches.map(b=>({n:b.name,k:b.key,d:hav(m.lat,m.lng,b.lat,b.lng)})), {n:"에스텍 본사",k:"본사",d:hav(m.lat,m.lng,SITEDB.hq.lat,SITEDB.hq.lng)}].sort((a,b)=>a.d-b.d);
+    const near=SITEDB.sites.filter(x=>x.id!==m.siteId).map(x=>({...x,d:hav(m.lat,m.lng,x.lat,x.lng)})).sort((a,b)=>a.d-b.d);
+    const n10=near.filter(x=>x.d<=10);
+    h+=`<div class="blk"><h3>관할·접근성</h3><dl class="kv">${brs.slice(0,3).map(b=>`<dt>${esc(b.n)}</dt><dd>직선 ${b.d.toFixed(1)} km${b.k===m.branch?' <span class="pill">관할</span>':""}</dd>`).join("")}</dl></div>
+      <div class="blk"><h3>인근 에스텍 사업장 <span class="pill">${n10.length}곳 · 10km 이내</span></h3><ul class="near">${near.slice(0,5).map(x=>`<li><span>${esc(x.name)} <small class="hint">${esc(x.work)} ${x.total}명</small></span><span class="num">${x.d.toFixed(1)}km</span></li>`).join("")}</ul>
+      <p class="hint" style="margin:6px 0 0">대체근무·순회점검·차량 공동운영 검토 시 참고</p></div>`;
+  }
+  box.innerHTML=h+linksBlk();
+  $("#btnFromSite").hidden=!s;
+  if(lastGeo && !m.siteId) paintGeo(lastGeo);
+  if(lastWiki && !m.siteId) paintWiki(lastWiki);
+}
+function linksBlk(){
+  const m=state.meta, q=encodeURIComponent(m.client||""), qa=encodeURIComponent(m.addr||m.client||"");
+  if(!m.client) return "";
+  const ll = m.lat!=null ? `${m.lat},${m.lng}` : "";
+  return `<div class="blk"><h3>인터넷에서 확인</h3><div class="linkrow">
+    <a href="https://map.naver.com/p/search/${q}" target="_blank" rel="noopener">네이버 지도</a>
+    <a href="https://map.kakao.com/?q=${q}" target="_blank" rel="noopener">카카오맵</a>
+    ${ll?`<a href="https://map.kakao.com/link/roadview/${ll}" target="_blank" rel="noopener">카카오 로드뷰</a>`:""}
+    <a href="https://www.google.com/maps/search/${qa}" target="_blank" rel="noopener">구글 지도</a>
+    <a href="https://search.naver.com/search.naver?query=${q}" target="_blank" rel="noopener">네이버 검색</a>
+    <a href="https://search.naver.com/search.naver?where=news&query=${q}" target="_blank" rel="noopener">관련 뉴스</a>
+    <a href="https://www.saramin.co.kr/zf_user/search/company?searchword=${q}" target="_blank" rel="noopener">사람인 기업정보</a>
+    <a href="https://dart.fss.or.kr/" target="_blank" rel="noopener">DART 전자공시</a>
+    ${ll?`<a href="https://map.kakao.com/link/to/${q},${ll}" target="_blank" rel="noopener">길찾기</a>`:""}
+  </div></div>`;
+}
+let lastGeo=null, lastWiki=null;
+async function lookupOnline(){
+  const m=state.meta, msg=$("#lookupMsg");
+  if(!m.client && !m.addr){ msg.textContent="사업장 명칭이나 주소를 먼저 입력하세요."; return; }
+  msg.textContent="조회 중…"; lastGeo=null; lastWiki=null;
+  if(kakaoKey()){ try{ const res=await kakaoSearch((m.client||m.addr).trim(),kakaoKey(),10); if(res.length){ sgOnline=res; sgSource="kakao"; sgState="done"; msg.textContent=`카카오맵 검색 ${res.length}건 — 목록에서 선택하세요.`; paintSugg([]); $("#m_client").focus(); return; } }catch(e){ msg.textContent=(e&&e.kakao)||"카카오 검색 실패 · OSM으로 검색합니다"; } }
+  const q=(m.addr||m.client).trim();
+  const ctl=new AbortController(); const tm=setTimeout(()=>ctl.abort(),9000);
+  let geo=[], ok=true;
+  try{
+    const tries=[q]; if(m.addr && m.client) tries.push(m.client);
+    for(const t of tries){
+      const r=await fetch(`https://nominatim.openstreetmap.org/search?format=jsonv2&countrycodes=kr&accept-language=ko&limit=5&addressdetails=1&q=${encodeURIComponent(t)}`,{signal:ctl.signal});
+      const j=await r.json(); if(j.length){ geo=j; break; }
+    }
+  }catch(e){ ok=false; }
+  clearTimeout(tm);
+  if(!ok){ msg.textContent= inFrame ? "이 화면에서는 외부 조회가 차단됩니다. 내려받은 HTML 파일로 실행하거나 아래 링크로 확인 후 지도에서 위치를 지정하세요." : "온라인 조회에 실패했습니다. 인터넷 연결을 확인하거나 아래 링크로 확인하세요."; renderSiteInfo(); return; }
+  lastGeo=geo;
+  try{
+    const r=await fetch(`https://ko.wikipedia.org/w/api.php?action=query&list=search&srsearch=${encodeURIComponent(m.client||q)}&srlimit=1&format=json&origin=*`);
+    const j=await r.json(); const t=j?.query?.search?.[0]?.title;
+    if(t){ const r2=await fetch(`https://ko.wikipedia.org/api/rest_v1/page/summary/${encodeURIComponent(t)}`); lastWiki=await r2.json(); }
+  }catch(e){}
+  msg.textContent = geo.length ? `위치 후보 ${geo.length}건 — 맞는 항목을 선택하세요.` : "지도 DB에서 찾지 못했습니다. 주소를 입력하거나 지도에서 직접 지정하세요.";
+  renderSiteInfo();
+}
+function paintGeo(g){
+  const box=$("#geoRes"); if(!box) return;
+  box.innerHTML = g.map((x,i)=>`<button data-geo="${i}"><b>${esc(x.name||x.display_name.split(",")[0])}</b><br><small class="hint">${esc(x.display_name)}</small>${x.type?` <span class="pill">${esc(x.type)}</span>`:""}</button>`).join("");
+  box.querySelectorAll("[data-geo]").forEach(b=>b.onclick=()=>{ const x=g[+b.dataset.geo];
+    selectOnline({src:"nominatim", osm:x.osm_type&&x.osm_id?`${x.osm_type[0].toUpperCase()}${x.osm_id}`:"", name:x.name||x.display_name.split(",")[0], typeKo:osmKo(x.category,x.type),
+      addr:x.display_name.split(",").map(s=>s.trim()).filter(s=>s!=="대한민국"&&!/^\d{5}$/.test(s)).reverse().join(" "), region:"", lat:+x.lat, lng:+x.lon}); });
+}
+function paintWiki(w){
+  const box=$("#wikiBox"); if(!box||!w||!w.extract) return;
+  box.innerHTML=`<div class="wiki">${w.thumbnail?`<img src="${esc(w.thumbnail.source)}" alt="">`:""}<div><b>${esc(w.title)}</b> <span class="pill">위키백과</span><br>${esc(w.extract.slice(0,260))}${w.extract.length>260?"…":""} <a href="${esc(w.content_urls?.desktop?.page||"#")}" target="_blank" rel="noopener">더보기</a></div></div>`;
+}
+/* ── 사업장 검색: 에스텍 사업장(전 지사) + 전국 인터넷 검색 ── */
+const OSM_TYPE={factory:"공장",industrial:"산업시설",works:"공장",warehouse:"창고",university:"대학교",college:"대학",school:"학교",kindergarten:"유치원",hospital:"병원",clinic:"의원",
+  apartments:"아파트",residential:"주거",office:"사무소",company:"회사",government:"관공서",townhall:"관공서",public:"공공시설",commercial:"상업시설",retail:"상가",mall:"쇼핑몰",
+  supermarket:"마트",department_store:"백화점",hotel:"호텔",golf_course:"골프장",parking:"주차장",station:"역",bus_station:"터미널",library:"도서관",stadium:"경기장",sports_centre:"체육시설",
+  bank:"은행",police:"경찰",fire_station:"소방서",church:"교회",place_of_worship:"종교시설",yes:"건물",building:"건물",research_institute:"연구소",power:"발전소",plant:"플랜트",
+  logistics:"물류",port:"항만",harbour:"항만",airport:"공항",aerodrome:"공항",city:"시",town:"읍",village:"리",suburb:"동",quarter:"동",road:"도로",street:"도로"};
+const osmKo=(k,v)=>OSM_TYPE[v]||OSM_TYPE[k]||v||k||"";
+let sgTimer=null, sgSeq=0, sgOnline=[], sgState="idle";
+function krAddr(p){ return [p.state,p.city,p.county,p.district,p.locality,p.street,p.housenumber].filter((x,i,arr)=>x&&arr.indexOf(x)===i).join(" "); }
+function kakaoKey(){ try{ return localStorage.getItem("stec_kakao_key")||""; }catch(e){ return ""; } }
+function renderKakao(){
+  const k=kakaoKey(), st=$("#kakaoState"); if(!st) return;
+  st.innerHTML = k ? `<span class="pill g">카카오맵 검색 연결됨</span> <button type="button" class="btn sm ghost" id="kkEdit">키 변경</button>`
+                   : `<span class="pill w">카카오맵 미연결 · OSM 지도로 검색</span> <button type="button" class="btn sm" id="kkEdit">카카오맵 연결</button>`;
+  $("#kkEdit").onclick=()=>{ const box=$("#kakaoBox"); box.hidden=!box.hidden; if(!box.hidden){ $("#kk_key").value=kakaoKey(); $("#kk_key").focus(); } };
+}
+function siteMode(){ return state.meta.mode==="renew"?"renew":"new"; }
+function renderMode(){
+  const md=siteMode();
+  $$(".seg [data-mode]").forEach(b=>b.setAttribute("aria-checked",b.dataset.mode===md));
+  $("#modeSub").textContent = md==="new"
+    ? "신규 영업 대상 사업장을 인터넷 지도에서 전국 검색합니다. 결과를 누르면 위치와 세부현황이 표시됩니다. (이미 에스텍이 운영 중인 곳은 표시해 드립니다)"
+    : "기존 에스텍 사업장(전 지사 151곳)에서 찾습니다. 재계약·갱신 견적에 사용하세요.";
+  $("#m_client").placeholder = md==="new" ? "예: 현대자동차 울산공장, ○○대학교, ○○아파트 — 전국 검색" : "예: 송원산업, 대경대학교 — 에스텍 사업장 검색";
+}
+function ownMatch(name){ const k=String(name||"").replace(/\s|\(주\)|㈜|주식회사/g,""); if(k.length<2) return null; return SITEDB.sites.find(s=>{ const n=s.name.replace(/\s|\(주\)|㈜|주식회사/g,""); return n.includes(k)||k.includes(n); })||null; }
+function suggest(){
+  const v=$("#m_client").value.trim(), box=$("#sugg");
+  if(!v){ box.hidden=true; return; }
+  const k=v.replace(/\s/g,"").toLowerCase();
+  const hit=SITEDB.sites.filter(s=>(s.name+s.addr+s.br+s.type).replace(/\s/g,"").toLowerCase().includes(k));
+  sgOnline=[]; sgState=v.length>=2?"loading":"short";
+  paintSugg(hit);
+  clearTimeout(sgTimer);
+  if(v.length>=2) sgTimer=setTimeout(()=>onlineSuggest(v,hit),380);
+}
+function paintSugg(hit){
+  const box=$("#sugg"), md=siteMode();
+  const brOrder={"동부":0,"서부":1,"남부":2,"중부":3};
+  hit=[...hit].sort((a,b)=>(brOrder[a.br]??9)-(brOrder[b.br]??9));
+  let own=`<div class="sg-h">에스텍 사업장 <b>${hit.length}</b>곳 <small>전 지사 · 기존 운영</small></div>`;
+  own+= hit.length ? hit.slice(0,40).map(s=>`<button type="button" data-sid="${s.id}"><span><span class="sg-br">${esc(s.br)}</span>${esc(s.name)}</span><small>${esc(s.type)} · ${esc(s.work)} ${s.total}명</small></button>`).join("") : `<div class="sg-none">일치하는 에스텍 사업장이 없습니다</div>`;
+  let net=`<div class="sg-h">${md==="new"?"신규 영업 대상 · ":""}전국 사업장 검색 <small>${sgSource==="kakao"?"카카오맵 기준":"OpenStreetMap 기준"+(sgErr?` · ${esc(sgErr)}`:"")}</small></div>`;
+  if(md==="renew" && !$("#m_client").value.trim()) net="";
+  else if(sgState==="loading") net+=`<div class="sg-none">검색 중…</div>`;
+  else if(sgState==="short") net+=`<div class="sg-none">두 글자 이상 입력하면 전국을 검색합니다</div>`;
+  else if(sgState==="blocked") net+=`<div class="sg-none">${inFrame?"이 화면(Claude 앱)에서는 외부 검색이 차단됩니다. PC용 HTML 파일에서 실행하면 전국 검색이 됩니다.":"인터넷 검색에 실패했습니다. 연결을 확인하세요."}</div>`;
+  else if(!sgOnline.length) net+=`<div class="sg-none">검색 결과가 없습니다 · Enter로 상세 검색</div>`;
+  else net+=sgOnline.map((f,i)=>{ const o=ownMatch(f.name); return `<button type="button" data-oid="${i}"><span>${esc(f.name)} <span class="pill">${esc(f.typeKo)}</span>${o?`<span class="sg-own">● 에스텍 운영중</span>`:""}</span><small>${esc(f.addr)}</small></button>`; }).join("");
+  let h;
+  if(md==="new"){
+    h=net + (hit.length?`<div class="sg-h">참고 · 이미 에스텍이 운영 중인 사업장 <b>${hit.length}</b>곳 <small><button type="button" class="linkbtn" data-tomode="renew">기존 사업장 검색으로 전환</button></small></div>`:"");
+  } else {
+    h=own + (sgState!=="short"?net:"");
+  }
+  box.innerHTML=h; box.hidden=false;
+  box.querySelectorAll("[data-sid]").forEach(b=>b.onmousedown=e=>{ e.preventDefault(); selectSite(+b.dataset.sid); });
+  box.querySelectorAll("[data-oid]").forEach(b=>b.onmousedown=e=>{ e.preventDefault(); selectOnline(sgOnline[+b.dataset.oid]); });
+  box.querySelectorAll("[data-tomode]").forEach(b=>b.onmousedown=e=>{ e.preventDefault(); state.meta.mode=b.dataset.tomode; renderMode(); suggest(); });
+}
+async function kakaoSearch(q,key,size=15){
+  const r=await fetch(`https://dapi.kakao.com/v2/local/search/keyword.json?query=${encodeURIComponent(q)}&size=${size}`,{headers:{Authorization:`KakaoAK ${key}`}});
+  if(r.status===401) throw {kakao:"키가 올바르지 않습니다 (401)"};
+  if(r.status===403) throw {kakao:"카카오 디벨로퍼스 앱 설정에서 ‘카카오맵’ 사용을 켜 주세요 (403)"};
+  if(!r.ok) throw {kakao:`카카오 검색 오류 (${r.status})`};
+  const j=await r.json();
+  return (j.documents||[]).map(d=>({src:"kakao", kid:d.id, name:d.place_name, typeKo:(d.category_name||"").split(" > ").pop()||d.category_group_name||"",
+    category:d.category_name||"", group:d.category_group_name||"", addr:d.road_address_name||d.address_name, jibun:d.address_name, road:d.road_address_name,
+    phone:d.phone||"", url:d.place_url||"", region:(d.address_name||"").split(" ").slice(0,3).join(" "), lat:+d.y, lng:+d.x}));
+}
+let sgSource="osm", sgErr="";
+async function onlineSuggest(q,hit){
+  const seq=++sgSeq, key=kakaoKey();
+  if(key){
+    try{ const res=await kakaoSearch(q,key); if(seq!==sgSeq) return; sgOnline=res; sgSource="kakao"; sgState="done"; sgErr=""; if(!$("#sugg").hidden) paintSugg(hit); return; }
+    catch(e){ if(seq!==sgSeq) return; sgErr=e&&e.kakao?e.kakao:"카카오 검색에 연결할 수 없습니다"; }
+  }
+  sgSource="osm";
+  try{
+    const ctl=new AbortController(); const tm=setTimeout(()=>ctl.abort(),7000);
+    const r=await fetch(`https://photon.komoot.io/api/?q=${encodeURIComponent(q)}&limit=12&bbox=124.5,33.0,131.9,38.7`,{signal:ctl.signal}); clearTimeout(tm);
+    const j=await r.json(); if(seq!==sgSeq) return;
+    const seen=new Set();
+    sgOnline=(j.features||[]).map(f=>{ const p=f.properties||{}, c=f.geometry&&f.geometry.coordinates||[];
+      return {src:"photon", osm:p.osm_type&&p.osm_id?`${p.osm_type}${p.osm_id}`:"", name:p.name||p.street||q, typeKo:osmKo(p.osm_key,p.osm_value), osmKey:p.osm_key, osmVal:p.osm_value,
+        addr:krAddr(p), region:[p.state,p.city||p.county,p.district].filter(Boolean).join(" "), postcode:p.postcode||"", lat:+c[1], lng:+c[0]}; })
+      .filter(f=>f.lat&&f.lng&&!seen.has(f.osm||f.name+f.addr)&&seen.add(f.osm||f.name+f.addr));
+    sgState="done";
+  }catch(e){ if(seq!==sgSeq) return; sgState="blocked"; sgOnline=[]; }
+  if(!$("#sugg").hidden) paintSugg(hit);
+}
+async function selectOnline(f){
+  const m=state.meta;
+  m.siteId=null; m.client=f.name; m.addr=f.addr||m.addr;
+  $("#m_client").value=f.name; $("#m_addr").value=m.addr; $("#sugg").hidden=true;
+  m.geoInfo={src:f.src==="kakao"?"카카오맵":f.src==="nominatim"?"OpenStreetMap(Nominatim)":"OpenStreetMap(Photon)", name:f.name, type:f.typeKo, addr:f.addr, region:f.region||"", postcode:f.postcode||"", osm:f.osm||"", lat:f.lat, lng:f.lng, tags:null, wiki:null, loading:true,
+    category:f.category||"", road:f.road||"", jibun:f.jibun||"", phone:f.phone||"", kakaoUrl:f.url||"", kid:f.kid||""};
+  setLoc(f.lat,f.lng,m.geoInfo.src,f.name);
+  recalc();
+  await loadOnlineDetail(m.geoInfo);
+}
+async function loadOnlineDetail(g){
+  const tags={};
+  try{
+    if(g.osm){
+      const r=await fetch(`https://nominatim.openstreetmap.org/lookup?osm_ids=${g.osm}&format=jsonv2&addressdetails=1&extratags=1&namedetails=1&accept-language=ko`);
+      const j=(await r.json())[0];
+      if(j){ Object.assign(tags,j.extratags||{}); const nd=j.namedetails||{}; if(nd["name:en"]) tags.nameEn=nd["name:en"]; if(nd.official_name) tags.official=nd.official_name;
+        const ad=j.address||{}; const road=[ad.province||ad.state,ad.city||ad.county,ad.borough||ad.city_district,ad.suburb||ad.town||ad.village,ad.road,ad.house_number].filter(Boolean).join(" ");
+        if(road) g.addrFull=road; if(ad.postcode) g.postcode=ad.postcode; if(!g.region) g.region=[ad.province||ad.state,ad.city||ad.county,ad.borough].filter(Boolean).join(" "); }
+    }
+  }catch(e){}
+  g.tags=tags;
+  try{
+    let title=null;
+    if(tags.wikipedia && /^ko:/.test(tags.wikipedia)) title=tags.wikipedia.slice(3);
+    if(!title){ const r=await fetch(`https://ko.wikipedia.org/w/api.php?action=query&list=search&srsearch=${encodeURIComponent(g.name)}&srlimit=1&format=json&origin=*`); const j=await r.json(); title=j?.query?.search?.[0]?.title; }
+    if(title){ const r2=await fetch(`https://ko.wikipedia.org/api/rest_v1/page/summary/${encodeURIComponent(title)}`); const w=await r2.json();
+      if(w&&w.extract) g.wiki={title:w.title, extract:w.extract, url:w.content_urls?.desktop?.page||"", thumb:w.thumbnail?.source||""}; }
+  }catch(e){}
+  g.loading=false;
+  if(state.meta.geoInfo===g){ renderSiteInfo(); persistDraft(); }
+}
+function geoDetailBlk(g){
+  const T=g.tags||{}, row=(k,v)=>v?`<dt>${k}</dt><dd>${v}</dd>`:"";
+  const phone=g.phone||T.phone||T["contact:phone"], web=T.website||T["contact:website"]||T.url;
+  const own=ownMatch(g.name), ownNear=own&&g.lat?hav(g.lat,g.lng,own.lat,own.lng):null;
+  return `<div class="blk detail"><h3>${esc(g.name)} <span class="pill w">신규 영업 · 세부현황</span>${g.type?` <span class="pill">${esc(g.type)}</span>`:""}</h3>
+    <dl class="kv">
+      ${row("업종 분류",esc(g.category||""))}
+      ${g.road?row("도로명 주소",esc(g.road))+row("지번 주소",esc(g.jibun||"")):row("주소",esc(g.addrFull||g.addr||""))}${row("우편번호",esc(g.postcode||""))}${row("행정구역",esc(g.region||""))}
+      ${row("정식명칭",esc(T.official||""))}${row("영문명",esc(T.nameEn||T["name:en"]||""))}${row("운영·소유",esc(T.operator||T.owner||T.brand||""))}
+      ${row("전화",esc(phone||""))}${row("홈페이지",web?`<a href="${esc(web)}" target="_blank" rel="noopener">${esc(web.replace(/^https?:\/\//,"").slice(0,40))}</a>`:"")}
+      ${row("운영시간",esc(T.opening_hours||""))}${row("건물 층수",esc(T["building:levels"]||""))}${row("시설 구분",esc([T.industrial,T.product,T.amenity,T.landuse].filter(Boolean).join(", ")))}
+      ${row("좌표",`${(+g.lat).toFixed(5)}, ${(+g.lng).toFixed(5)}`)}${row("출처",esc(g.src||""))}
+      ${g.kakaoUrl?row("장소 상세",`<a href="${esc(g.kakaoUrl)}" target="_blank" rel="noopener">카카오맵 장소 페이지</a> · <a href="https://map.naver.com/p/search/${encodeURIComponent(g.name)}" target="_blank" rel="noopener">네이버 지도</a>`):""}
+    </dl>
+    ${own?`<p class="hint" style="margin:6px 0 0;color:var(--warn)">● 이름이 비슷한 에스텍 운영 사업장: <b>${esc(own.name)}</b> (${esc(own.br)}지사 · ${esc(own.work)} ${own.total}명${ownNear!=null?` · ${ownNear.toFixed(1)}km`:""}) — 기존 사업장이면 ‘기존 에스텍 사업장’ 검색으로 선택하세요.</p>`:""}
+    ${g.loading?'<p class="hint" style="margin:6px 0 0">세부정보 불러오는 중…</p>':""}
+    ${g.wiki?`<div class="wiki" style="margin-top:8px">${g.wiki.thumb?`<img src="${esc(g.wiki.thumb)}" alt="">`:""}<div><b>${esc(g.wiki.title)}</b> <span class="pill">위키백과</span><br>${esc(g.wiki.extract.slice(0,300))}${g.wiki.extract.length>300?"…":""} ${g.wiki.url?`<a href="${esc(g.wiki.url)}" target="_blank" rel="noopener">더보기</a>`:""}</div></div>`:""}
+    <p class="hint" style="margin:8px 0 0">${g.src==="카카오맵"?"카카오맵 장소 정보 기준입니다.":"인터넷 지도(OpenStreetMap) 공개 정보 기준입니다."} 규모·인원은 아래 링크(사람인·DART)로 확인하세요.</p></div>`;
+}
+
+/* ───────── 렌더: STEP 2 인력 ───────── */
+function renderCats(){
+  $("#cats").innerHTML=Object.entries(CATS).map(([k,c])=>`<button class="cat" data-cat="${k}"><img src="${IMG[c.img(k==="cln"||k==="spc"?"F":"M","")]}" alt=""><b>${c.label}</b><small>${rankList(k).join(" · ")}</small></button>`).join("");
+  $$("#cats .cat").forEach(b=>b.onclick=()=>{ const r=newRole(b.dataset.cat); r.wage=state.set.minWage; state.roles.push(r); renderRoles(); recalc(); toast(`${CATS[r.cat].label} ${r.rank} 행을 추가했습니다 · 직책을 바꿔 관리자급을 추가하세요`); });
+}
+const F = (id,lbl,val,opt={}) => `<label class="f"><span>${lbl}</span><input class="inp ${opt.num!==false?"n":""}" data-f="${id}" value="${esc(val)}" ${opt.num!==false?'inputmode="decimal"':""}></label>`;
+function roleCard(r){
+  const C=CATS[r.cat];
+  return `<div class="role" data-rid="${r.id}">
+   <div class="fig"><img src="${IMG[roleImg(r)]}" alt="${C.label} ${esc(r.rank)}"><div style="text-align:center"><div class="price num" data-out="price">0</div><div class="hc" data-out="hc"></div></div></div>
+   <div>
+    <div class="top"><span class="ttl">${esc(C.label)} · ${esc(r.rank)}${r.detail?` <small class="hint">${esc(r.detail)}</small>`:""}</span>
+      <span class="pill" style="background:color-mix(in srgb, ${C.color} 15%, transparent);color:${C.color}">${r.watch?"감시단속":"일반근로"}</span>
+      <button class="btn sm" data-act="dup">복제</button><button class="btn sm ghost" data-act="del">삭제</button></div>
+    <div class="grid g6">
+      <label class="f"><span>직종</span><select class="inp" data-f="cat">${Object.entries(CATS).map(([k,c])=>`<option value="${k}" ${k===r.cat?"selected":""}>${c.label}</option>`).join("")}</select></label>
+      <label class="f"><span>직책</span><select class="inp" data-f="rank">${rankList(r.cat).map(k=>`<option ${k===r.rank?"selected":""}>${k}</option>`).join("")}</select></label>
+      <label class="f"><span>${C.jobs?"직무·근무지":"근무지·구분"}</span><input class="inp" data-f="detail" value="${esc(r.detail)}" placeholder="${C.jobs?C.jobs.slice(0,2).join(", ")+" 등":"예: 본관, 울산공장"}" ${C.jobs?`list="dl_${r.cat}"`:""}></label>
+      <label class="f"><span>성별(그림)</span><select class="inp" data-f="gender"><option value="M" ${r.gender==="M"?"selected":""}>남</option><option value="F" ${r.gender==="F"?"selected":""}>여</option></select></label>
+      <label class="f" style="grid-column:span 2"><span>근무형태</span><select class="inp" data-f="shift">${Object.entries(SHIFTS).map(([k,s])=>`<option value="${k}" ${k===r.shift?"selected":""}>${s.label}</option>`).join("")}</select></label>
+      ${F("count","인원(명)",r.count)}
+      ${F("wage","시급(원)",r.wage)}
+      ${F("base","기본시간(주휴포함)",r.base)}
+      ${F("ot","연장근로(h/월)",r.ot)}
+      ${F("night","야간근로(h/월)",r.night)}
+      ${F("pos","직책수당",r.pos)}
+    </div>
+    ${C.jobs?`<datalist id="dl_${r.cat}">${C.jobs.map(x=>`<option value="${esc(x)}">`).join("")}</datalist>`:""}
+    <div class="calcline" data-out="line"></div>
+    <details class="more"><summary>세부 조건 (조정수당·연차·식대·국민연금·피복·전년단가 등)</summary>
+      <div class="grid g6">
+        ${F("adj","조정수당",r.adj)}
+        ${F("duty","직무수당",r.duty)}
+        ${F("meal","식대(비과세)",r.meal)}
+        ${F("holDays","공휴일근무(일/년)",r.holDays)}
+        ${F("leave","연차적치(일)",r.leave)}
+        ${F("dayH","일 근무시간(구속)",r.dayH)}
+        ${F("rest","일 휴게시간",r.rest)}
+        ${F("pensionPct","국민연금 적용(%)",r.pensionPct)}
+        ${F("uniform","피복장구비(월)",r.uniform)}
+        ${F("months","연간 근무개월",r.months)}
+        ${F("prev","전년 단가(인당)",r.prev)}
+        <label class="f"><span>특수건강검진</span><select class="inp" data-f="special"><option value="auto" ${r.special==="auto"?"selected":""}>야간 시 자동</option><option value="on" ${r.special==="on"?"selected":""}>적용</option><option value="off" ${r.special==="off"?"selected":""}>미적용</option></select></label>
+        <label class="f" style="grid-column:span 2"><span>비고</span><input class="inp" data-f="note" value="${esc(r.note)}"></label>
+      </div>
+      <div class="row" style="margin-top:10px;gap:18px">
+        <label class="chk"><input type="checkbox" data-f="watch" ${r.watch?"checked":""}> 감시단속 승인(연장 가산 미적용)</label>
+        <label class="chk"><input type="checkbox" data-f="laborDay" ${r.laborDay?"checked":""}> 근로자의날 유급</label>
+        <label class="chk"><input type="checkbox" data-f="retire" ${r.retire?"checked":""}> 퇴직충당금 반영</label>
+        <label class="chk"><input type="checkbox" data-f="addonEx" ${r.addonEx?"checked":""}> 부대비용 배분 제외</label>
+      </div>
+    </details>
+   </div></div>`;
+}
+function renderRoles(){
+  const box=$("#roles");
+  if(!state.roles.length){
+    box.innerHTML=`<div class="empty"><img src="${IMG.team}" alt=""><b>아직 인력이 없습니다</b><br>위 직종 카드를 눌러 추가하거나, 상단 ‘예시 견적 불러오기’로 실제 견적 예시를 열어보세요.</div>`;
+    return;
+  }
+  box.innerHTML=state.roles.map(roleCard).join("");
+  box.querySelectorAll(".role").forEach(card=>{
+    const r=state.roles.find(x=>x.id===card.dataset.rid);
+    card.querySelectorAll("[data-f]").forEach(el=>{
+      const f=el.dataset.f;
+      const ev = el.tagName==="SELECT"||el.type==="checkbox" ? "change" : "input";
+      el.addEventListener(ev,()=>{
+        if(el.type==="checkbox") r[f]=el.checked;
+        else if(["detail","note","gender","cat","shift","special","rank"].includes(f)) r[f]=el.value;
+        else r[f]= el.value==="" ? 0 : +String(el.value).replace(/,/g,"");
+        if(f==="shift"){ const s=SHIFTS[r.shift]; if(r.shift!=="custom") Object.assign(r,{base:s.base,ot:s.ot,night:s.night,dayH:s.dayH,rest:s.rest}); renderRoles(); }
+        if(f==="cat"){ const C=CATS[r.cat]; r.watch=C.watch; if(!C.ranks[r.rank]) r.rank=C.def; const rd=C.ranks[r.rank]; if(rd.gender) r.gender=rd.gender; renderRoles(); }
+        if(f==="rank"){ const rd=CATS[r.cat].ranks[r.rank]||{}; if(rd.gender) r.gender=rd.gender;
+          if(rd.shift && rd.shift!==r.shift){ r.shift=rd.shift; const s=SHIFTS[r.shift]; Object.assign(r,{base:s.base,ot:s.ot,night:s.night,dayH:s.dayH,rest:s.rest}); toast(`${r.rank} 기본 근무형태(${s.label})로 바꿨습니다`); }
+          renderRoles(); }
+        if(f==="detail"||f==="rank") r.title=roleLabel(r);
+        if(f==="detail"){ const tt=card.querySelector(".ttl"); if(tt) tt.innerHTML=`${esc(CATS[r.cat].label)} · ${esc(r.rank)}${r.detail?` <small class="hint">${esc(r.detail)}</small>`:""}`; }
+        if(f==="gender"||f==="watch") renderRoles();
+        recalc();
+      });
+    });
+    card.querySelector('[data-act="del"]').onclick=()=>{ state.roles=state.roles.filter(x=>x!==r); renderRoles(); recalc(); };
+    card.querySelector('[data-act="dup"]').onclick=()=>{ const c={...r,id:nid()}; state.roles.splice(state.roles.indexOf(r)+1,0,c); renderRoles(); recalc(); };
+  });
+}
+function draftFromSite(){
+  const s=SITEDB.sites.find(x=>x.id===state.meta.siteId); if(!s) return;
+  const shiftMap = {"격일제":"alt24","3조2교대":"s32","4조2교대":"s42","주5일":"day5_8","주간":"day5_8","주6일":"day6"};
+  const sh = Object.keys(shiftMap).find(k=>s.shift.includes(k));
+  const w={wage:state.set.minWage}, roles=[];
+  if(s.sec){ roles.push(newRole("sec",{...w,rank:"팀장",count:1})); if(s.sec>1) roles.push(newRole("sec",{...w,rank:"요원",shift: sh?shiftMap[sh]:"s32",count:s.sec-1})); }
+  if(s.cln){ const fm=Math.min(s.f,s.cln), mm=s.cln-fm; if(fm) roles.push(newRole("cln",{...w,rank:"여미화원",count:fm})); if(mm) roles.push(newRole("cln",{...w,rank:"남미화원",count:mm})); }
+  if(s.etc) roles.push(newRole("fac",{...w,rank:"사원",count:s.etc}));
+  state.roles=roles; renderRoles(); recalc(); toast(`${s.name} 현원 ${s.total}명 기준 초안을 만들었습니다. 직책수당·근무형태를 확인하세요`);
+}
+
+/* ───────── 렌더: STEP 3 부대비용 ───────── */
+function newVeh(k){ const p=VEH_PRESET[k]; return {id:nid(), name:p.name, qty:1, price:p.price, reg:3, acq:4, etcFee:30000, incTax:false, dep:60, cons:73541.67, repair:30, insp:60000, tax:150000, ins:1000000, km:p.km, days:22, fuel:p.fuel, eff:p.eff}; }
+function renderAddons(){
+  const vl=$("#vehList");
+  vl.innerHTML = state.vehicles.length ? state.vehicles.map(v=>{ const c=vehMonthly(v); return `<div class="card" style="padding:12px;margin-top:8px" data-vid="${v.id}">
+    <div class="h-row" style="margin-bottom:8px"><b>${esc(v.name)}</b><span class="row"><span class="pill g">월 ${won(c.unit)}원 × ${v.qty}대 = ${won(c.total)}원</span><button class="btn sm ghost" data-vdel>삭제</button></span></div>
+    <div class="grid g6">
+      <label class="f"><span>차종</span><input class="inp" data-v="name" value="${esc(v.name)}"></label>
+      ${[["qty","대수"],["price","구매가(원)"],["dep","감가(개월)"],["cons","소모품(월)"],["repair","수리비(구매가 %)"],["insp","검사비(연)"],["tax","자동차세 등(연)"],["ins","보험료(연)"],["km","운행거리(km/일)"],["days","운행일수(월)"],["fuel","연료단가(원/ℓ·kWh)"],["eff","연비(km/ℓ·kWh)"]].map(([k,l])=>`<label class="f"><span>${l}</span><input class="inp n" data-v="${k}" value="${v[k]}" inputmode="decimal"></label>`).join("")}
+    </div>
+    <div class="calcline">감가 <b>${won(c.parts.depr)}</b> 소모품 <b>${won(c.parts.cons)}</b> 수리 <b>${won(c.parts.repair)}</b> 검사·세금·보험 <b>${won(c.parts.insp+c.parts.tax+c.parts.ins)}</b> 유류 <b>${won(c.parts.fuel)}</b> 합계 <b>${won(c.sum)}</b> → 만원 절상 <b>${won(c.unit)}</b>
+    <label class="chk" style="margin-left:auto"><input type="checkbox" data-v="incTax" ${v.incTax?"checked":""}> 등록세·취득세 감가 포함</label></div></div>`; }).join("") : `<p class="hint">업무차량이 없으면 비워두세요. (폐기물수거·순찰·캠퍼스 미화 등)</p>`;
+  vl.querySelectorAll("[data-vid]").forEach(card=>{
+    const v=state.vehicles.find(x=>x.id===card.dataset.vid);
+    card.querySelectorAll("[data-v]").forEach(el=>el.addEventListener(el.type==="checkbox"?"change":"change",()=>{ const k=el.dataset.v; v[k]= el.type==="checkbox"?el.checked : k==="name"?el.value : +el.value||0; renderAddons(); recalc(); }));
+    card.querySelector("[data-vdel]").onclick=()=>{ state.vehicles=state.vehicles.filter(x=>x!==v); renderAddons(); recalc(); };
+  });
+  const el=$("#eqList");
+  el.innerHTML = state.equips.length ? `<div class="tscroll"><table class="t"><thead><tr><th>장비</th><th>구분</th><th class="n">수량</th><th class="n">단가</th><th class="n">수선율(%)</th><th class="n">상각(개월)</th><th class="n">월 비용</th><th></th></tr></thead><tbody>${state.equips.map(e=>`<tr data-eid="${e.id}">
+    <td><input class="inp" data-e="name" value="${esc(e.name)}" style="min-width:170px"></td>
+    <td><select class="inp" data-e="mode"><option value="new" ${e.mode==="new"?"selected":""}>신규구매</option><option value="own" ${e.mode==="own"?"selected":""}>보유(수선비)</option></select></td>
+    <td><input class="inp n" data-e="qty" value="${e.qty}" style="width:60px"></td><td><input class="inp n" data-e="price" value="${e.price}" style="width:110px"></td>
+    <td><input class="inp n" data-e="rep" value="${e.rep}" style="width:64px"></td><td><input class="inp n" data-e="months" value="${e.months}" style="width:64px" ${e.mode==="own"?"disabled":""}></td>
+    <td class="n num"><b>${won(eqMonthly(e))}</b></td><td><button class="btn sm ghost" data-edel>삭제</button></td></tr>`).join("")}</tbody></table></div>` : `<p class="hint">미화장비·순찰장비 등 투입 장비를 추가하세요.</p>`;
+  el.querySelectorAll("[data-eid]").forEach(tr=>{
+    const e=state.equips.find(x=>x.id===tr.dataset.eid);
+    tr.querySelectorAll("[data-e]").forEach(i=>i.addEventListener("change",()=>{ const k=i.dataset.e; e[k]= (k==="name"||k==="mode")? i.value : +i.value||0; renderAddons(); recalc(); }));
+    tr.querySelector("[data-edel]").onclick=()=>{ state.equips=state.equips.filter(x=>x!==e); renderAddons(); recalc(); };
+  });
+  const ol=$("#etcList");
+  ol.innerHTML = state.others.length ? `<div class="tscroll"><table class="t"><thead><tr><th>항목</th><th class="n">금액</th><th>주기</th><th class="n">상각(개월)</th><th class="n">월 환산</th><th>비고</th><th></th></tr></thead><tbody>${state.others.map(o=>`<tr data-oid="${o.id}">
+    <td><input class="inp" data-o="name" value="${esc(o.name)}" style="min-width:150px"></td><td><input class="inp n" data-o="amount" value="${o.amount}" style="width:120px"></td>
+    <td><select class="inp" data-o="cycle">${["월","연","1회"].map(c=>`<option ${o.cycle===c?"selected":""}>${c}</option>`).join("")}</select></td>
+    <td><input class="inp n" data-o="months" value="${o.months}" style="width:64px" ${o.cycle!=="1회"?"disabled":""}></td>
+    <td class="n num"><b>${won(etcMonthly(o))}</b></td><td><input class="inp" data-o="note" value="${esc(o.note||"")}" style="min-width:140px"></td><td><button class="btn sm ghost" data-odel>삭제</button></td></tr>`).join("")}</tbody></table></div>` : `<p class="hint">예: 청소 소모품비(월), 재료비, 무전기 구입(1회·24개월), 왁스작업(연)</p>`;
+  ol.querySelectorAll("[data-oid]").forEach(tr=>{
+    const o=state.others.find(x=>x.id===tr.dataset.oid);
+    tr.querySelectorAll("[data-o]").forEach(i=>i.addEventListener("change",()=>{ const k=i.dataset.o; o[k]= ["name","cycle","note"].includes(k)? i.value : +i.value||0; renderAddons(); recalc(); }));
+    tr.querySelector("[data-odel]").onclick=()=>{ state.others=state.others.filter(x=>x!==o); renderAddons(); recalc(); };
+  });
+  const A=addonTotals(state), elig=state.roles.reduce((s,r)=>s+(r.addonEx?0:(+r.count||0)),0);
+  $("#addonSum").innerHTML=`<span>차량 ${won(A.veh)}</span><span>장비 ${won(A.eq)}</span><span>기타 ${won(A.etc)}</span><span>부대비용 월계 <b>${won(A.total)}원</b>${state.addonMode==="spread"&&elig?` · 배분대상 ${elig}명, 인당 ${won(A.total/elig)}원`:""}</span>`;
+  $("#am_spread").checked=state.addonMode==="spread"; $("#am_sep").checked=state.addonMode==="separate"; $("#am_margin").checked=!!state.addonMargin;
+}
+
+/* ───────── 렌더: STEP 4 설정 ───────── */
+const SETF = {
+  setIns:[["otGen","연장 가산배율(일반)"],["otWatch","연장 배율(감시단속)"],["nightRate","야간 가산율"],["leaveH","연차 1일 시간"]],
+  setLegal:[["specialExam","특수건강검진(연/인)"],["disRate","장애인 의무고용률(%)"],["disBase","부담기초액(원)"],["disRatio","부담금 반영률(%)"]],
+  setExp:[["gift","명절선물대(연/인)"],["meeting","직원회의비(월)"],["condol","경조비(월)"],["reliefH","대치근무 기준시간"],["reliefDays","대치근무 일수(연)"],["resTax","주민세 사업소분(연)"],["resSites","주민세 개소 수"],["edu","교육훈련비(노무비 %)"],["eduFix","교육훈련비 고정액"],["risk","위험부담금(노무비 %)"],["riskFix","위험부담금 고정액"]],
+  setMargin:[["ga","일반관리비(%)"],["profit","기업이윤(%)"],["vat","부가세(%)"]],
+  setCo:[["coName","상호"],["coCeo","대표이사"],["coBizNo","사업자등록번호"],["coAddr","주소"],["coType","업태"],["coItem","종목"],["coLic","허가·신고"],["coBranch","담당 지사"],["coPerson","견적 담당자"],["coPersonTitle","담당자 직책"],["coPersonTel","담당자 연락처"]]
+};
+function renderSettings(){
+  const S=state.set;
+  for(const [box,list] of Object.entries(SETF)){
+    let h=list.map(([k,l])=>`<label class="f" ${k==="coAddr"?'style="grid-column:span 2"':""}><span>${l}</span><input class="inp ${box==="setCo"?"":"n"}" data-s="${k}" value="${esc(S[k])}"></label>`).join("");
+    if(box==="setLegal") h+=`<label class="chk" style="align-self:end"><input type="checkbox" data-s="disOn" ${S.disOn?"checked":""}> 장애인고용부담금 반영</label>`;
+    if(box==="setMargin") h+=`<label class="f"><span>이윤 산정기준</span><select class="inp" data-s="profitBase"><option value="direct" ${S.profitBase==="direct"?"selected":""}>직접원가 × 이윤율</option><option value="sub" ${S.profitBase==="sub"?"selected":""}>원가소계(관리비 포함) × 이윤율</option></select></label>
+      <label class="f"><span>견적금액 단수처리</span><select class="inp" data-s="priceRound"><option value="down3" ${S.priceRound==="down3"?"selected":""}>천원 미만 절삭</option><option value="up3" ${S.priceRound==="up3"?"selected":""}>천원 미만 절상</option><option value="down2" ${S.priceRound==="down2"?"selected":""}>백원 미만 절삭</option><option value="none" ${S.priceRound==="none"?"selected":""}>원 단위</option></select></label>
+      <label class="chk" style="align-self:end"><input type="checkbox" data-s="gaRound" ${S.gaRound?"checked":""}> 일반관리비 10원 절상</label>`;
+    $("#"+box).innerHTML=h;
+  }
+  renderInsTable();
+  $("#s_cond").value=S.cond;
+  $$("[data-s]").forEach(el=>{ if(el.closest("#insTable")) return; el.addEventListener("change",()=>{ const k=el.dataset.s;
+    S[k] = el.type==="checkbox"?el.checked : (el.tagName==="SELECT"||SETF.setCo.some(x=>x[0]===k)) ? el.value : +String(el.value).replace(/,/g,"")||0;
+    if(k==="minWage"){ state.roles.forEach(r=>{ if(r.wage<S.minWage) r.wage=S.minWage; }); renderRoles(); }
+    recalc(); }); });
+  $("#s_cond").oninput=()=>{ S.cond=$("#s_cond").value; recalc(); };
+}
+
+const INS_ROWS=[["minWage","최저시급","원","최저임금위원회 고시"],["health","건강보험","%","보수월액 × 7.19% 중 사업주 1/2"],["ltc","노인장기요양","% (건보료 대비)","건강보험료 × 요율"],["pension","국민연금","%","기준소득월액 × 요율 중 사업주 1/2"],["emp","고용보험","%","실업급여(사업주분) + 고용안정·직업능력개발(규모별)"],["ind","산재보험","%","사업종류별 요율 + 출퇴근재해 (전액 사업주)"],["wageClaim","임금채권부담금","%","보수총액 × 요율"],["asb","석면피해구제분담금","%","보수총액 × 요율"]];
+function renderInsTable(rebindOnly){
+  const S=state.set, Y=+state.meta.year, R=RATES[Y], st=R?statutory(S,Y):null, box=$("#insTable"); if(!box) return;
+  const tent=k=> R && (R.tentative.includes(k) || (k==="emp"&&R.tentative.includes("ui")) || (k==="ind"&&R.tentative.includes("indCom")));
+  const fmt=(k,v)=>k==="minWage"?won(v):(+v).toString();
+  box.innerHTML=`<div class="grid g3" style="margin-bottom:10px">
+     <label class="f"><span>고용보험 · 회사 상시근로자 규모</span><select class="inp" data-s="empSize">${Object.entries(EMP_SIZE).map(([k,[l,v]])=>`<option value="${k}" ${S.empSize===k?"selected":""}>${l} (+${v}%)</option>`).join("")}</select></label>
+     <label class="f"><span>산재보험 · 사업종류별 요율(%)</span><input class="inp n" data-s="indBase" value="${S.indBase??0.8}"></label>
+     <div class="hint" style="align-self:end">경비·미화·주차·시설관리는 ‘시설관리 및 사업지원 서비스업’ 0.8%(2026 고시). 개별실적요율을 받는 경우 직접 수정하세요.</div></div>
+    <div class="tscroll"><table class="t instbl"><thead><tr><th>항목</th><th class="n">${Y}년 법정(사업주)</th><th class="n">적용 요율</th><th>상태</th><th>산정 근거</th></tr></thead><tbody>
+    ${INS_ROWS.map(([k,l,u,d])=>{ const lv=st?st[k]:null, same=lv!=null&&Math.abs((+S[k])-lv)<1e-9;
+      return `<tr><td><b>${l}</b></td><td class="n num">${lv!=null?fmt(k,lv)+(k==="minWage"?"원":"%"):"-"}</td>
+      <td class="n"><input class="inp n" data-s="${k}" value="${S[k]}"></td>
+      <td class="st">${lv==null?'<span class="pill w">직접입력</span>':same?(tent(k)?'<span class="pill w">잠정(미고시)</span>':'<span class="pill g">법정</span>'):`<span class="pill w">수정됨</span> <button class="btn sm" data-reset="${k}">법정값</button>`}</td>
+      <td class="hint">${d}</td></tr>`; }).join("")}
+    </tbody></table></div>
+    <div class="row" style="margin-top:10px"><button class="btn pri sm" id="btnAllRate" ${R?"":"disabled"}>${Y}년 법정요율 일괄 적용</button><span class="hint">모든 요율은 입력칸에서 직접 고칠 수 있고, 고친 항목은 ‘수정됨’으로 표시됩니다.</span></div>`;
+  if(rebindOnly!==true || true){
+    box.querySelectorAll("[data-s]").forEach(el=>el.addEventListener("change",()=>{ const k=el.dataset.s;
+      S[k]= el.tagName==="SELECT"? el.value : +String(el.value).replace(/,/g,"")||0;
+      if(k==="empSize"||k==="indBase"){ const s2=statutory(S,Y); if(k==="empSize") S.emp=s2.emp; else S.ind=s2.ind; }
+      if(k==="minWage"){ state.roles.forEach(r=>{ if(r.wage<S.minWage) r.wage=S.minWage; }); renderRoles(); }
+      renderInsTable(); recalc(); }));
+    box.querySelectorAll("[data-reset]").forEach(b=>b.onclick=()=>{ const k=b.dataset.reset; S[k]=statutory(S,Y)[k]; if(k==="minWage") state.roles.forEach(r=>{ if(r.wage<S.minWage) r.wage=S.minWage; }); renderInsTable(); renderRoles(); recalc(); });
+    const all=$("#btnAllRate"); if(all) all.onclick=()=>{ applyYearRates(S,Y); state.roles.forEach(r=>{ if(r.wage<S.minWage) r.wage=S.minWage; }); renderInsTable(); renderRoles(); recalc(); toast(`${Y}년 법정요율을 일괄 적용했습니다`); };
+  }
+}
+function rateNote(){
+  const el=$("#rateNote"); if(!el) return; const Y=+state.meta.year, R=RATES[Y], S=state.set;
+  if(!R){ el.innerHTML=`<span class="pill w">${Y}년 법정 요율 데이터 없음</span> 입력한 요율로 계산합니다.`; return; }
+  const st=statutory(S,Y), diff=INS_ROWS.map(x=>x[0]).filter(k=>Math.abs((+S[k])-st[k])>1e-9);
+  el.innerHTML=`<span class="pill ${R.tentative.length?"w":"g"}">${Y}년 기준</span> ${esc(R.note)}${diff.length?`<br><span class="pill w">법정과 다름</span> ${diff.map(k=>RATE_LABEL[k]).join("·")} — 원본 견적 요율 유지 또는 직접 수정한 값입니다.`:""}`;
+}
+
+/* ───────── 문서 ───────── */
+function crewGroups(rows){
+  const g={}; rows.forEach(({r,L})=>{ const im=roleImg(r), key=r.cat+"|"+im; g[key]=g[key]||{cat:r.cat,img:im,n:0}; g[key].n+=L.count; });
+  return Object.values(g);
+}
+function crewByCat(rows){
+  const g={};
+  rows.forEach(({r,L})=>{ const c=g[r.cat]||(g[r.cat]={cat:r.cat,n:0,sum:0,ranks:{},imgs:[]});
+    c.n+=L.count; c.sum+=L.monthTotal; c.ranks[r.rank]=(c.ranks[r.rank]||0)+L.count;
+    const im=roleImg(r); if(!c.imgs.includes(im)) c.imgs.push(im); });
+  return Object.keys(CATS).filter(k=>g[k]).map(k=>{ const c=g[k]; c.rankText=rankList(k).filter(x=>c.ranks[x]).map(x=>`${x} ${c.ranks[x]}`).join(" · "); c.imgs=c.imgs.slice(0,2); return c; });
+}
+function condText(){ const S=state.set; return S.cond.replace(/\{연도\}/g,state.meta.year).replace(/\{최저시급\}/g,won(S.minWage)); }
+function quoteRows(R){
+  return R.rows.map(({r,L})=>{
+    const inc = r.prev ? ((L.price-r.prev)/r.prev*100) : null;
+    return {catKey:r.cat, cat:CATS[r.cat].short, img:roleImg(r), rank:r.rank, detail:r.detail||"", title:roleLabel(r), shift:shiftLabel(r), n:L.count, prev:r.prev||0, price:L.price, months:L.months, sum:L.monthTotal, inc, note:r.note||""};
+  });
+}
+function krWon(n){
+  n=Math.round(n); if(!n) return "영원";
+  const d=["","일","이","삼","사","오","육","칠","팔","구"], u=["","십","백","천"], big=["","만","억","조"];
+  let s="", i=0;
+  while(n>0){ const part=n%10000; if(part){ let p=""; String(part).padStart(4,"0").split("").forEach((c,k)=>{ const v=+c; if(v) p+=d[v]+u[3-k]; }); s=p+big[i]+s; } n=Math.floor(n/10000); i++; }
+  return s+"원";
+}
+const fmtD=d=>d?d.replace(/-/g,". ").replace(/\. 0/g,". "):"";
+function docNo(){ const m=state.meta; return `${(m.date||"").slice(2).replace(/-/g,"")}-${String(m.year).slice(2)}${(state.roles.length+"").padStart(2,"0")}`; }
+function docHead(title, en, sub){
+  return `<div class="dh"><div class="dh-logo"><img src="${IMG.logo}" alt="S-Tec 에스텍베스트"></div>
+    <div class="dh-t"><h1>${title}</h1><span>${en}</span></div>
+    <div class="dh-no"><span>No. ${esc(docNo())}</span><span>${fmtD(state.meta.date)}</span></div></div>
+    <div class="dh-rule"><i></i><b></b></div>${sub?`<div class="dh-sub">${sub}</div>`:""}`;
+}
+function personLine(S){ return [S.coPerson, S.coPersonTitle].filter(Boolean).join(" ")+(S.coPersonTel?` · ${S.coPersonTel}`:""); }
+function docFoot(){
+  const S=state.set;
+  return `<div class="df"><img src="${IMG.logo}" alt=""><div><b>${esc(S.coName)}</b> · ${esc(S.coBranch)}<br><span>${esc(S.coAddr)} · ${esc(S.coLic)}</span></div>
+    ${S.coPerson?`<div class="df-person"><img src="${IMG.person}" alt="견적 담당자"><div><small>견적 담당</small><b>${esc([S.coPerson,S.coPersonTitle].filter(Boolean).join(" "))}</b><span>${esc(S.coPersonTel||S.coBranch)}</span></div></div>`:`<span class="df-pg">사람과 안전을 생각하는 에스텍</span>`}</div>`;
+}
+function renderDocs(R){
+  const m=state.meta, S=state.set, Y=m.year;
+  const qr=quoteRows(R); const prevSum=qr.reduce((s,x)=>s+x.prev*x.n,0);
+  const crew=crewByCat(R.rows);
+  const prevCol=prevSum>0;
+  $("#docQuote").innerHTML=`<div class="paper portrait">
+    ${docHead("견 적 서","QUOTATION")}
+    <div class="q-grid">
+      <section class="q-to">
+        <div class="q-client">${esc(m.client||"(사업장 명칭)")}<small>貴中</small></div>
+        <dl class="q-dl">
+          <dt>용 역 명</dt><dd>${esc(m.svc)}</dd>
+          <dt>용역기간</dt><dd>${fmtD(m.from)} ~ ${fmtD(m.to)} (${R.contractMonths}개월)</dd>
+          <dt>유효기간</dt><dd>${esc(m.valid)}</dd>
+          ${m.addr?`<dt>사 업 장</dt><dd>${esc(m.addr)}</dd>`:""}
+        </dl>
+        <p class="q-lead">귀사의 무궁한 발전을 기원하며, 아래와 같이 견적합니다.</p>
+      </section>
+      <section class="q-sup"><table class="sup"><tbody>
+        <tr><th>등록번호</th><td colspan="3">${esc(S.coBizNo)}</td></tr>
+        <tr><th>상 호</th><td>${esc(S.coName)}</td><th>대 표</th><td class="seal">${esc(S.coCeo)} <span class="stamp">인</span></td></tr>
+        <tr><th>주 소</th><td colspan="3">${esc(S.coAddr)}</td></tr>
+        <tr><th>업 태</th><td>${esc(S.coType)}</td><th>종 목</th><td>${esc(S.coItem)}</td></tr>
+        <tr><th>허가·신고</th><td colspan="3">${esc(S.coLic)}</td></tr>
+        <tr><th>담 당</th><td colspan="3">${esc(S.coBranch)}${S.coPerson?` · ${esc(personLine(S))}`:""}</td></tr></tbody></table></section>
+    </div>
+    <div class="q-amt">
+      <div class="q-amt-main"><span>견적금액 · 월 (VAT 별도)</span><b>₩ ${won(R.monthAll)}</b><small>일금 ${krWon(R.monthAll)}정</small></div>
+      <dl class="q-amt-side"><dt>부가세 포함 월</dt><dd>${won(R.monthAll+R.vat)}원</dd><dt>투입 인원</dt><dd>${R.heads}명 · 평균 ${won(R.avg)}원</dd><dt>계약기간 ${R.contractMonths}개월 총액</dt><dd>${won(R.yearAll)}원</dd></dl>
+    </div>
+    <h3 class="q-h">투입 인력 구성</h3>
+    <div class="q-crew">${crew.map(c=>`<figure style="--cc:${CATS[c.cat].color}">
+      <div class="imgs">${c.imgs.map(k=>`<img src="${IMG[k]}" alt="">`).join("")}</div>
+      <figcaption><span class="cn">${CATS[c.cat].label}</span><b>${c.n}<small>명</small></b><span class="rk">${esc(c.rankText)}</span><em>월 ${won(c.sum)}원</em></figcaption></figure>`).join("")}
+      ${R.sepLine?`<figure class="addon"><div class="imgs addon-ic">＋</div><figcaption><span class="cn">부대비용</span><b style="font-size:13px">별도 청구</b><span class="rk">차량·장비·기타</span><em>월 ${won(R.sepLine.total)}원</em></figcaption></figure>`:""}</div>
+    <h3 class="q-h">견적 내역 <span>(단위 : 명, 원 / VAT 별도)</span></h3>
+    <table class="q"><thead><tr><th>No</th><th>직종</th><th>직책</th><th>근무지·직무</th><th>운영형태</th><th>인원</th>${prevCol?`<th>${Y-1}년 단가</th>`:""}<th>${Y}년 단가</th><th>월 합계</th><th>비고</th></tr></thead><tbody>
+      ${qr.map((x,i)=>`<tr><td class="c">${i+1}</td><td class="qcat"><img src="${IMG[x.img]}" alt=""><span style="color:${CATS[x.catKey].color}">${esc(x.cat)}</span></td><td class="c"><b>${esc(x.rank)}</b></td><td>${esc(x.detail)}</td><td>${esc(x.shift)}</td><td class="n">${x.n}</td>${prevCol?`<td class="n">${x.prev?won(x.prev):"-"}</td>`:""}<td class="n">${won(x.price)}</td><td class="n"><b>${won(x.sum)}</b></td><td class="rm">${x.inc!=null?`<span class="up">${x.inc>=0?"▲":"▼"} ${Math.abs(x.inc).toFixed(1)}%</span>`:""}${x.months!==12?` ${x.months}개월`:""} ${esc(x.note)}</td></tr>`).join("")}
+      ${R.sepLine?`<tr><td class="c">${qr.length+1}</td><td class="qcat"><span>부대비용</span></td><td colspan="3">업무차량·장비·기타 (별도 청구${state.addonMargin?", 관리비·이윤 포함":""})</td><td class="n">-</td>${prevCol?"<td></td>":""}<td class="n">-</td><td class="n"><b>${won(R.sepLine.total)}</b></td><td></td></tr>`:""}
+    </tbody><tfoot>
+      <tr class="sub"><td colspan="5">월 합계</td><td class="n">${R.heads}</td>${prevCol?`<td class="n">${won(prevSum)}</td>`:""}<td class="n">평균 ${won(R.avg)}</td><td class="n">${won(R.monthAll)}</td><td class="rm">${prevCol?(()=>{ const pr=qr.filter(x=>x.prev>0), p=pr.reduce((s,x)=>s+x.prev*x.n,0), c=pr.reduce((s,x)=>s+x.price*x.n,0), v=(c/p-1)*100; return `<span class="up">평균 ${v>=0?"인상 ▲":"인하 ▼"} ${Math.abs(v).toFixed(1)}%</span>`; })():""}</td></tr>
+      <tr><td colspan="5">부가가치세 (${S.vat}%)</td><td></td>${prevCol?"<td></td>":""}<td></td><td class="n">${won(R.vat)}</td><td></td></tr>
+      <tr class="tot"><td colspan="5">월 총계 (VAT 포함)</td><td></td>${prevCol?"<td></td>":""}<td></td><td class="n">${won(R.monthAll+R.vat)}</td><td></td></tr>
+      <tr><td colspan="5">계약기간 총액 (VAT 별도 · ${R.contractMonths}개월)</td><td></td>${prevCol?"<td></td>":""}<td></td><td class="n">${won(R.yearAll)}</td><td></td></tr>
+    </tfoot></table>
+    <h3 class="q-h">견적 조건</h3>
+    <div class="q-cond">${esc(condText())}</div>
+    ${docFoot()}
+  </div>`;
+
+  // 산출내역서
+  const cols=R.rows;
+  const line=(label,key,desc,cls="",fmt=won2,grp="<td class='g'></td>")=>{
+    const vals=cols.map(({L})=>typeof key==="function"?key(L):L[key]);
+    const sum=cols.reduce((s,{L},i)=>s+(vals[i]||0)*L.count,0);
+    return `<tr class="${cls}">${grp}<td>${label}</td>${vals.map(v=>`<td class="n">${v?fmt(v):"-"}</td>`).join("")}<td class="n">${sum?won(sum):"-"}</td><td class="n">${R.heads&&sum?won(sum/R.heads):"-"}</td><td class="n">${sum?won(cols.reduce((s,{L},i)=>s+(vals[i]||0)*L.count*L.months,0)):"-"}</td><td class="desc">${desc}</td></tr>`;
+  };
+  const g=(t)=>`<td class="g">${t}</td>`;
+  const hrs=(label,f,desc)=>`<tr><td class="g"></td><td>${label}</td>${cols.map(({r,L})=>`<td class="n">${f(r,L)}</td>`).join("")}<td></td><td></td><td></td><td class="desc">${desc}</td></tr>`;
+  $("#docBd").innerHTML=`<div class="paper landscape">${docHead("산 출 내 역 서","COST BREAKDOWN",`<b>${Y}년 ${esc(m.client||"")}</b> ${esc(m.svc)} · 용역기간 ${fmtD(m.from)} ~ ${fmtD(m.to)} · 단위 : 원 / VAT 별도`)}
+    <div class="tscroll"><table class="bd"><thead><tr><th colspan="2">구 분</th>${cols.map(({r})=>`<th class="rh"><img src="${IMG[roleImg(r)]}" alt=""><span>${esc(CATS[r.cat].short)}</span><b>${esc(r.rank)}</b>${r.detail?`<small>${esc(r.detail)}</small>`:""}</th>`).join("")}<th>월간총액</th><th>평균단가</th><th>계약기간 계</th><th>산출 내역</th></tr></thead><tbody>
+      ${hrs("근무형태",(r)=>esc(shiftLabel(r).replace(/\s*\(.*\)/,"")),"")}
+      ${hrs("인원",(r,L)=>L.count,"")}
+      ${hrs("시급",(r)=>won2(r.wage),`${Y}년 최저임금 ${won(S.minWage)}원 기준`)}
+      ${hrs("통상시급",(r,L)=>won2(L.ordinary),"(기본급+직책+조정+직무수당) ÷ 기본시간")}
+      ${hrs("기본/연장/야간(h)",(r)=>`${r.base} / ${r.ot} / ${r.night}`,`야간가산시간 = 야간근로 × ${S.nightRate*100}%`)}
+      ${line("기본급여","basic","시급 × 기본시간(주휴 포함)","",won2,g("직접인건비"))}
+      ${line("연장근로수당","ot",`감시단속: 시급×${S.otWatch} / 일반: 통상시급×${S.otGen} × 연장시간`)}
+      ${line("야간가산수당","night","야간근로시간 × 50% × 통상시급")}
+      ${line("직책수당","pos","직책자 월정액")}
+      ${line("공휴일근무수당","hol","시급 × 공휴일수 × 8h × 50% ÷ 12개월")}
+      ${line("직무수당","duty","직무별 수당")}
+      ${line("식대","meal","비과세 식대 (보험 산정 제외)")}
+      ${line("조정수당","adj","임금보전")}
+      ${line("소 계","sub1","","s")}
+      ${line("연차수당(적치)","leave",`통상시급 × ${S.leaveH||8}h × 적치일수 ÷ 12개월`)}
+      ${line("근로자의날","laborDay","(일 근무시간 − 휴게) ÷ 12개월 × 통상시급")}
+      ${line("퇴직충당금","retire","(직접인건비 소계 + 연차 + 근로자의날) ÷ 12개월")}
+      ${line("직접비 계 ①","direct","","s")}
+      ${line("건강보험료","health",`[직접비 − 퇴직충당금 − 식대] × ${S.health}%`,"",won2,g("간접인건비"))}
+      ${line("노인장기요양보험","ltc",`건강보험료 × ${S.ltc}%`)}
+      ${line("국민연금","pension",`[직접비 − 퇴직충당금 − 식대] × ${S.pension}% × 적용률`)}
+      ${line("고용보험료","emp",`[직접비 − 퇴직충당금 − 식대] × ${S.emp}%`)}
+      ${line("산재보험료","ind",`[직접비 − 퇴직충당금 − 식대] × ${S.ind}%`)}
+      ${line("임금채권부담금","wclaim",`[직접비 − 퇴직충당금 − 식대] × ${S.wageClaim}%`)}
+      ${S.asb?line("석면피해구제분담금","asb",`× ${S.asb}%`):""}
+      ${line("특수건강검진","special",`연 ${won(S.specialExam)}원 ÷ 12개월 (야간근무자)`)}
+      ${line("장애인고용부담금","dis",`${S.disRate}% × ${won(S.disBase)}원${S.disRatio!=100?` × ${S.disRatio}%`:""}`)}
+      ${line("간접비 계 ②","indirect","","s")}
+      ${line("노무비 계 (1)","labor","직접비 ① + 간접비 ②","s")}
+      ${line("피복장구비","uniform","에스텍베스트 지급기준","",won2,g("경비"))}
+      ${line("직원선물대","gift",`명절선물 연 ${won(S.gift)}원 ÷ 12개월`)}
+      ${line("직원회의비","meeting","근무자 회의비")}
+      ${line("경조비","condol","에스텍베스트 지급기준")}
+      ${line("대치근무비","relief",`통상시급 × ${S.reliefH}h × 연 ${S.reliefDays}일 ÷ 12개월`)}
+      ${line("주민세(사업소분)","resTax",`${won(S.resTax)}원 × ${S.resSites}개소 ÷ 12개월 ÷ 총인원`)}
+      ${line("교육훈련비","edu",S.eduFix?`인당 고정 ${won(S.eduFix)}원`:`신임·직무교육 등 (노무비 × ${S.edu}%)`)}
+      ${line("위험부담금","risk",S.riskFix?`인당 고정 ${won(S.riskFix)}원`:`영업배상책임보험 (노무비 × ${S.risk}%)`)}
+      ${R.spread?line("부대비용 배분","addon",`차량·장비·기타 월 ${won(R.add.total)}원 ÷ 배분대상 ${R.elig}명`,"",won2):""}
+      ${line("경비 계 (2)","expense","","s")}
+      ${line("1. 직접원가","dcost","노무비 (1) + 경비 (2)","s",won2,"<td class='g'></td>")}
+      ${line("2. 일반관리비","ga",`직접원가 × ${S.ga}%`,"",won2,"<td class='g'></td>")}
+      ${line("3. 원가소계","csub","1 + 2","",won2,"<td class='g'></td>")}
+      ${line("4. 기업이윤","profit",`${S.profitBase==="sub"?"원가소계":"직접원가"} × ${S.profit}%`,"",won2,"<td class='g'></td>")}
+      ${line("5. 원가총계","total","3 + 4","s",won2,"<td class='g'></td>")}
+      ${line("6. 견적금액(인당)","price",{down3:"천원 미만 절삭",up3:"천원 미만 절상",down2:"백원 미만 절삭",none:"원 단위"}[S.priceRound],"k",won,"<td class='g'></td>")}
+    </tbody></table></div>
+    ${docFoot()}</div>`;
+
+  // 부대비용 명세
+  const A=R.add;
+  $("#docAdd").innerHTML=`<div class="paper portrait">${docHead("부대비용 명세","ADDITIONAL COSTS",`<b>${esc(m.client||"")}</b> · 단위 : 원 / VAT 별도 · 반영방식 : ${R.spread?"인당 단가 균등 배분":"별도 청구"+(state.addonMargin?" (관리비·이윤 포함)":"")}`)}
+    <div class="tscroll"><table class="bd" style="width:100%"><thead><tr><th>구분</th><th>항목</th><th>산출 근거</th><th>월 금액</th></tr></thead><tbody>
+    ${state.vehicles.map(v=>{const c=vehMonthly(v);return `<tr><td class="g">업무차량</td><td>${esc(v.name)} × ${v.qty}대</td><td class="desc">구매가 ${won(v.price)} ÷ ${v.dep}개월 = ${won(c.parts.depr)} / 소모품 ${won(c.parts.cons)} / 수리 ${won(c.parts.repair)} (구매가 ${v.repair}%÷${v.dep}) / 검사 ${won(c.parts.insp)} · 세금 ${won(c.parts.tax)} · 보험 ${won(c.parts.ins)} / 유류 ${v.km}km×${v.days}일×${won(v.fuel)}÷${v.eff} = ${won(c.parts.fuel)} → 만원 절상 ${won(c.unit)}</td><td class="n">${won(c.total)}</td></tr>`;}).join("")}
+    ${state.equips.map(e=>`<tr><td class="g">장비</td><td>${esc(e.name)} × ${e.qty}</td><td class="desc">${e.mode==="new"?`신규구매 ${won(e.price*e.qty)} × (1+${e.rep}%) ÷ ${e.months}개월`:`보유장비 수선비 ${won(e.price*e.qty)} × ${e.rep}% ÷ 12개월`}</td><td class="n">${won(eqMonthly(e))}</td></tr>`).join("")}
+    ${state.others.map(o=>`<tr><td class="g">기타</td><td>${esc(o.name)}</td><td class="desc">${won(o.amount)}원 / ${o.cycle}${o.cycle==="1회"?` ÷ ${o.months}개월`:o.cycle==="연"?" ÷ 12개월":""} ${esc(o.note||"")}</td><td class="n">${won(etcMonthly(o))}</td></tr>`).join("")}
+    <tr class="s"><td colspan="3">부대비용 월계</td><td class="n">${won(A.total)}</td></tr>
+    ${R.sepLine?`<tr><td colspan="3">일반관리비 + 이윤</td><td class="n">${won(R.sepLine.ga+R.sepLine.pr)}</td></tr><tr class="k"><td colspan="3">별도 청구액 (천원 미만 절삭)</td><td class="n">${won(R.sepLine.total)}</td></tr>`:R.elig?`<tr><td colspan="3">인당 배분액 (경비 항목에 포함, ${R.elig}명)</td><td class="n">${won(A.total/R.elig)}</td></tr>`:""}
+    </tbody></table></div>
+    ${!A.total?'<p class="hint" style="color:#555">반영된 부대비용이 없습니다.</p>':""}
+    ${docFoot()}</div>`;
+}
+
+/* ───────── 요약 레일 & 재계산 ───────── */
+let lastR=null;
+function renderPerson(){
+  const S=state.set, el=$("#personCard"); if(!el) return;
+  el.innerHTML=`<img src="${IMG.person}" alt="견적 담당자"><div class="pc-tx"><span class="lbl">견적 담당</span><b>${esc(S.coPerson||"담당자 미지정")}${S.coPersonTitle?` <small>${esc(S.coPersonTitle)}</small>`:""}</b><span>${esc(S.coBranch)}</span>${S.coPersonTel?`<span class="num">${esc(S.coPersonTel)}</span>`:""}<button type="button" class="btn sm ghost" id="pcEdit">담당자 정보 수정</button></div>`;
+  $("#pcEdit").onclick=()=>{ go(4); setTimeout(()=>{ const x=document.querySelector('[data-s="coPerson"]'); if(x){ x.scrollIntoView({block:"center"}); x.focus(); } },250); };
+}
+function recalc(){
+  const R=calcAll(state); lastR=R;
+  $("#sumMonth").innerHTML=`${won(R.monthAll)}<small> 원</small>`;
+  $("#sumDl").innerHTML=`<dt>총 인원</dt><dd>${R.heads}명</dd><dt>인당 평균단가</dt><dd>${won(R.avg)}</dd>
+    ${R.sepLine?`<dt>부대비용(별도)</dt><dd>${won(R.sepLine.total)}</dd>`:R.add.total?`<dt>부대비용(배분)</dt><dd>${won(R.add.total)}</dd>`:""}
+    <dt>부가세</dt><dd>${won(R.vat)}</dd><dt class="tot">월 총계(VAT 포함)</dt><dd class="tot">${won(R.monthAll+R.vat)}</dd>
+    <dt>계약기간 ${R.contractMonths}개월</dt><dd>${won(R.yearAll)}</dd>`;
+  const t=R.mix.labor+R.mix.expense+R.mix.addon+R.mix.marg||1;
+  const parts=[["노무비",R.mix.labor,"#1b2a86"],["경비",R.mix.expense,"#5f78d8"],["부대비용",R.mix.addon,"#2b8a3e"],["관리비·이윤",R.mix.marg,"#c07a12"]];
+  $("#sumMix").innerHTML=parts.map(([n,v,c])=>`<i style="width:${v/t*100}%;background:${c}" title="${n}"></i>`).join("");
+  $("#sumLegend").innerHTML=parts.filter(p=>p[1]>0).map(([n,v,c])=>`<span style="--c:${c}">${n} ${(v/t*100).toFixed(1)}%</span>`).join("");
+  $("#sumCrew").innerHTML = R.rows.length ? crewGroups(R.rows).map(g=>`<div><img src="${IMG[g.img]}" alt=""><b>${g.n}명</b>${CATS[g.cat].short}</div>`).join("") : `<span class="hint">인력 구성 전</span>`;
+  R.rows.forEach(({r,L})=>{ const c=document.querySelector(`.role[data-rid="${r.id}"]`); if(!c) return;
+    c.querySelector('[data-out="price"]').textContent=won(L.price);
+    c.querySelector('[data-out="hc"]').textContent=`인당 · ${L.count}명 ${won(L.monthTotal)}`;
+    c.querySelector('[data-out="line"]').innerHTML=`통상시급 <b>${won2(L.ordinary)}</b> 급여소계 <b>${won(L.sub1)}</b> 직접비 <b>${won(L.direct)}</b> 4대보험 등 <b>${won(L.indirect)}</b> 경비 <b>${won(L.expense)}</b> 관리비 <b>${won(L.ga)}</b> 이윤 <b>${won(L.profit)}</b>${r.prev?` · 전년 대비 <b>${((L.price-r.prev)/r.prev*100).toFixed(1)}%</b>`:""}`;
+  });
+  if(!$("#p5").hidden){ renderDocs(R); renderCompare(); }
+  updateNewBtn(); rateNote(); renderPerson();
+  $$(".step").forEach(b=>{ const k=+b.dataset.step; b.classList.toggle("done", (k===1&&!!state.meta.client)||(k===2&&state.roles.length>0)||(k===3&&R.add.total>0)); });
+  persistDraft();
+}
+let draftT=null;
+function persistDraft(){ clearTimeout(draftT); draftT=setTimeout(()=>LS.set("stec_quote_draft",state),400); }
+
+/* ───────── 단계 전환 ───────── */
+function go(n){
+  $$(".step").forEach(b=>b.setAttribute("aria-selected", b.dataset.step==n));
+  $$("[data-panel]").forEach(p=>p.hidden = p.dataset.panel!=n);
+  if(n==1){ initMap(); setTimeout(()=>map&&map.invalidateSize(),50); }
+  if(n==3) renderAddons();
+  if(n==5){ renderDocs(lastR||calcAll(state)); renderCompare(); if(!state.compare && !$("#docCmp").hidden) document.querySelector('[data-doc="quote"]').click(); }
+  try{ localStorage.setItem("stec_step",n); }catch(e){}
+  window.scrollTo({top:0,behavior:"smooth"});
+}
+
+/* ───────── 메타 바인딩 ───────── */
+function bindMeta(){
+  const m=state.meta;
+  $("#m_branch").innerHTML=SITEDB.branches.map(b=>`<option value="${b.key}">${b.name}</option>`).join("");
+  [["client","m_client"],["addr","m_addr"],["svc","m_svc"],["year","m_year"],["date","m_date"],["from","m_from"],["to","m_to"],["valid","m_valid"],["branch","m_branch"]].forEach(([k,id])=>{ $("#"+id).value=m[k]??""; });
+}
+function onMeta(){
+  $("#m_client").addEventListener("input",e=>{ const m=state.meta; m.client=e.target.value; if(m.siteId){ const s=SITEDB.sites.find(x=>x.id===m.siteId); if(!s||s.name!==m.client){ m.siteId=null; } } if(m.geoInfo&&m.geoInfo.name!==m.client) m.geoInfo=null; suggest(); renderSiteInfo(); recalc(); });
+  $("#m_client").addEventListener("blur",()=>setTimeout(()=>$("#sugg").hidden=true,150));
+  $("#m_client").addEventListener("keydown",e=>{ if(e.key==="Enter"){ e.preventDefault(); const box=$("#sugg"); const f=box.querySelector("[data-sid]"), o=box.querySelector("[data-oid]");
+    if(siteMode()==="new"){ if(!box.hidden && o) selectOnline(sgOnline[+o.dataset.oid]); else { box.hidden=true; lookupOnline(); } }
+    else if(!box.hidden && f) selectSite(+f.dataset.sid); else if(!box.hidden && o) selectOnline(sgOnline[+o.dataset.oid]); else { box.hidden=true; lookupOnline(); } }
+    if(e.key==="Escape") $("#sugg").hidden=true; });
+  $("#m_client").addEventListener("focus",()=>{ if($("#m_client").value.trim()) suggest(); });
+  [["addr","m_addr"],["svc","m_svc"],["date","m_date"],["from","m_from"],["to","m_to"],["valid","m_valid"],["branch","m_branch"]].forEach(([k,id])=>$("#"+id).addEventListener("change",e=>{ state.meta[k]=e.target.value; recalc(); }));
+  $("#m_year").addEventListener("change",e=>{ const m=state.meta; m.year=+e.target.value; if(applyYearRates(state.set,m.year)){ const w=state.set.minWage; state.roles.forEach(r=>{ if(r.wage<w) r.wage=w; }); renderRoles(); renderSettings(); toast(`${m.year}년 최저시급·4대보험 요율을 적용했습니다`);} recalc(); });
+}
+
+/* ───────── 예시 견적 ───────── */
+function loadSample(k){
+  const st=newState();
+  if(k==="song"){
+    Object.assign(st.meta,{client:"송원산업 울산", svc:"보안용역 도급업무", year:2026, date:today(), from:"2026-01-01", to:"2026-12-31", siteId:null});
+    Object.assign(st.set,defaultSettings(2026),{wageClaim:0.064, ltc:13.14, emp:1.75, ind:1.0, asb:0, resSites:2});
+    const R=(o)=>Object.assign(newRole(o.cat||"sec"),o);
+    st.roles=[
+      R({rank:"팀장",detail:"울산·주간",shift:"custom",count:1,wage:13479.9,base:209,ot:30,night:0,dayH:9,rest:1,pos:400000,adj:830000,leave:25}),
+      R({rank:"요원",detail:"울산·3조2교대",shift:"s32",count:1,wage:10320,ot:25,night:82,dayH:12,rest:1,adj:50000,leave:17}),
+      R({rank:"요원",detail:"울산·3조2교대",shift:"s32",count:5,wage:10320,ot:25,night:82,dayH:12,rest:1,adj:50000,leave:23.8}),
+      R({rank:"요원",detail:"안내원·울산",cat:"spc",gender:"F",shift:"custom",watch:true,count:1,wage:10319.87,base:209,ot:26,night:0,dayH:9,rest:1,adj:300000,holDays:15,leave:18}),
+      R({rank:"팀장",detail:"매암·주간",shift:"custom",count:1,wage:11053.52,base:209,ot:66,night:0,dayH:12,rest:0.5,pos:100000,adj:50000,leave:17}),
+      R({rank:"요원",detail:"매암·3조2교대",shift:"s32",count:1,wage:10320,ot:25,night:82,dayH:12,rest:1,adj:50000,leave:16}),
+      R({rank:"요원",detail:"매암·3조2교대",shift:"s32",count:2,wage:10320,ot:25,night:82,dayH:12,rest:1,adj:50000,leave:26})
+    ];
+    const s=SITEDB.sites.find(x=>x.name==="송원산업 울산"); if(s){ st.meta.siteId=s.id; st.meta.addr=s.addr; st.meta.lat=s.lat; st.meta.lng=s.lng; st.meta.branch=s.br; }
+  }
+  if(k==="lotte"){
+    Object.assign(st.meta,{client:"롯데정밀화학", svc:"사내 폐기물수거 도급업무", year:2027, date:today(), from:"2027-01-01", to:"2027-12-31"});
+    Object.assign(st.set,defaultSettings(2027),{health:3.545, emp:1.55, ind:1.036, wageClaim:0, asb:0, pension:5.0, disBase:2236300, disRatio:60, gift:80000, condol:439, meeting:0, reliefDays:0, resTax:0, eduFix:3000, riskFix:1096, ga:1, profit:0.5});
+    st.roles=[
+      Object.assign(newRole("spc"),{rank:"반장",detail:"폐기물수거 관리",gender:"M",count:1,wage:10700,pos:100000,leave:16,laborDay:false,pensionPct:0,special:"on",uniform:14145,note:"만 60세 이상"}),
+      Object.assign(newRole("spc"),{rank:"요원",detail:"폐기물수거원",gender:"M",count:2,wage:10700,leave:16,laborDay:false,pensionPct:0,special:"on",uniform:14145,note:"만 60세 이상"})
+    ];
+    st.vehicles=[newVeh("porter_used")];
+    const s=SITEDB.sites.find(x=>x.name==="롯데정밀화학"); if(s){ st.meta.siteId=s.id; st.meta.addr=s.addr; st.meta.lat=s.lat; st.meta.lng=s.lng; st.meta.branch=s.br; }
+  }
+  if(k==="uc"){
+    Object.assign(st.meta,{client:"울산과학대학교", svc:"미화(위생관리)용역 도급업무", year:2026, date:today(), from:"2026-01-01", to:"2026-12-31"});
+    Object.assign(st.set,defaultSettings(2026),{emp:1.55, ind:0.973, wageClaim:0.03, asb:0.004, disOn:false, gift:0, meeting:0, condol:3000, reliefDays:1.2, resTax:0, edu:0, risk:0, ga:3, profit:2, gaRound:false, priceRound:"none", leaveH:7, specialExam:0});
+    const W=12101.04, w=11843.79;
+    const R=o=>Object.assign(newRole("cln"),{laborDay:false,leave:15,meal:100000,uniform:30000},o);
+    st.roles=[
+      Object.assign(newRole("cln"),{rank:"소장",detail:"",gender:"M",count:2,wage:W,base:183,ot:0,night:0,pos:400000,duty:400000,meal:100000,adj:40000,leave:21,laborDay:false,uniform:30000,prev:4203683,months:12}),
+      R({rank:"남미화원",detail:"",gender:"M",count:1,wage:w,base:183,pos:100000,duty:100000,adj:40000,leave:16,prev:3305029}),
+      R({rank:"여미화원",detail:"본관",gender:"F",count:2,wage:w,base:191,adj:40000,leave:20,prev:3191123}),
+      R({rank:"여미화원",detail:"일용·시간제",gender:"F",shift:"part",count:1,wage:w,base:109,adj:58450,leave:8,retire:true,addonEx:true,prev:1744434,note:"단기직 퇴직금 반영"}),
+      R({rank:"여미화원",detail:"",gender:"F",count:11,wage:w,base:183,adj:40000,leave:20,prev:3075821}),
+      R({rank:"여미화원",detail:"일용·시간제",gender:"F",shift:"part",count:5,wage:w,base:105,adj:58450,leave:8,addonEx:true,prev:1690809,note:"단기직 퇴직금 반영"})
+    ];
+    st.vehicles=[Object.assign(newVeh("porter_used"),{price:14400000,repair:30,km:0,fuel:1380})];
+    st.equips=[
+      {id:nid(),name:"탑승식청소차 (S5)",mode:"new",qty:3,price:4950000,rep:5,months:60},
+      {id:nid(),name:"보행식청소차 (MEDIA75BT)",mode:"new",qty:1,price:6500000,rep:5,months:60},
+      {id:nid(),name:"왁스머신기 (BP-16\")",mode:"new",qty:4,price:590000,rep:5,months:60}
+    ];
+    st.others=[{id:nid(),name:"재료비(청소 소모품)",amount:1890000,cycle:"월",months:12,note:"에스텍베스트 지급 기준"}];
+    const s=SITEDB.sites.find(x=>x.name==="울산과학대학교"); if(s){ st.meta.siteId=s.id; st.meta.addr=s.addr; st.meta.lat=s.lat; st.meta.lng=s.lng; st.meta.branch=s.br; }
+  }
+  st.set.cond=DEFAULT_COND; st.meta.mode="renew";
+  applyState(st);
+  toast(`${st.meta.year}년 예시 견적을 불러왔습니다 · ‘새 견적’을 누르면 ${st.meta.year+1}년 갱신 견적이 산출됩니다`);
+}
+
+/* ───────── 다음연도 갱신 견적 ───────── */
+function shiftYear(d){ if(!d) return d; const [y,mm,dd]=d.split("-"); return `${+y+1}-${mm}-${dd}`; }
+function rollover(){
+  const R0=calcAll(state), old=state.set, Y0=+state.meta.year, Y=Y0+1;
+  const n=JSON.parse(JSON.stringify(state));
+  n.meta.year=Y; n.meta.date=today(); n.meta.mode="renew"; n.meta.from=shiftYear(state.meta.from); n.meta.to=shiftYear(state.meta.to);
+  const known=applyYearRates(n.set,Y);
+  if(!known){ n.set.minWage=Math.round(old.minWage*1.03); }
+  const ratio=n.set.minWage/old.minWage;
+  n.compare={year:Y0, set:Object.fromEntries(CMP_RATES.map(([k])=>[k,+old[k]])), month:R0.month, monthAll:R0.monthAll, yearAll:R0.yearAll, heads:R0.heads, avg:R0.avg, vat:R0.vat, addon:R0.add.total, sep:R0.sepLine?R0.sepLine.total:0, months:R0.contractMonths};
+  n.roles.forEach((r,i)=>{
+    const o=state.roles[i], L0=R0.rows[i].L;
+    r.prevL=snapL(L0); r.prevInfo={wage:+o.wage, base:+o.base, ot:+o.ot, night:+o.night, count:L0.count, shift:shiftLabel(o)};
+    r.prev=R0.rows[i].L.price;
+    r.wage = (+r.wage<=old.minWage+0.01) ? n.set.minWage : Math.round(r.wage*ratio*100)/100;
+    r.id=nid();
+  });
+  n.vehicles.forEach(v=>v.id=nid()); n.equips.forEach(e=>e.id=nid()); n.others.forEach(o=>o.id=nid());
+  applyState(n);
+  const R1=calcAll(state);
+  const inc=R0.monthAll?((R1.monthAll-R0.monthAll)/R0.monthAll*100):0;
+  toast(`${Y}년 갱신 견적을 만들었습니다 · 월 ${won(R0.monthAll)} → ${won(R1.monthAll)}원 (${inc>=0?"+":""}${inc.toFixed(1)}%) · 출력 단계·엑셀에 전년 대비 비교표가 추가됩니다`);
+  go(2);
+}
+function updateNewBtn(){
+  const b=$("#btnNew"); if(!b) return;
+  b.textContent = state.roles.length ? `갱신 견적 (${+state.meta.year+1}년)` : "갱신 견적"; b.disabled=!state.roles.length;
+  b.title = state.roles.length ? `현재 ${state.meta.year}년 견적의 인력·부대비용을 그대로 두고 ${+state.meta.year+1}년 최저시급·4대보험 요율로 다시 산출합니다. 현재 단가는 전년 단가로 들어갑니다.` : "";
+}
+
+/* ───────── 저장/불러오기 ───────── */
+function savedList(){ return LS.get("stec_quotes",[]); }
+function renderSaved(){
+  const L=savedList(), box=$("#savedList");
+  box.innerHTML = L.length ? L.map((q,i)=>`<div class="it"><span title="${esc(q.name)}">${esc(q.name)}<br><small class="hint">${esc(q.at)}</small></span><button class="btn sm" data-load="${i}">열기</button><button class="btn sm ghost" data-del="${i}">삭제</button></div>`).join("") : `<span class="hint">저장된 견적이 없습니다. 상단 ‘저장’을 누르면 이 브라우저에 보관됩니다.</span>`;
+  box.querySelectorAll("[data-load]").forEach(b=>b.onclick=()=>{ applyState(JSON.parse(JSON.stringify(savedList()[+b.dataset.load].state))); toast("견적을 불러왔습니다"); });
+  box.querySelectorAll("[data-del]").forEach(b=>b.onclick=()=>{ const L=savedList(); L.splice(+b.dataset.del,1); LS.set("stec_quotes",L); renderSaved(); });
+}
+function saveQuote(){
+  const L=savedList(); const name=`${state.meta.client||"이름없음"} · ${state.meta.year}`;
+  const at=new Date().toLocaleString("ko-KR");
+  const i=L.findIndex(q=>q.name===name);
+  const item={name,at,state:JSON.parse(JSON.stringify(state))};
+  if(i>=0) L[i]=item; else L.unshift(item);
+  if(LS.set("stec_quotes",L.slice(0,40))){ renderSaved(); toast("저장했습니다"); } else toast("이 환경에서는 브라우저 저장이 막혀 있습니다. JSON 백업을 이용하세요");
+}
+async function offerFile(filename, data, mime){
+  try{
+    if(window.claude && claude.use){ const d=await claude.use("downloads"); if(d){ await d.save({filename,data}); return; } }
+  }catch(e){ if(e && e.code==="declined") return; }
+  const blob = data instanceof Blob ? data : new Blob([data],{type:mime});
+  const a=document.createElement("a"); a.href=URL.createObjectURL(blob); a.download=filename; document.body.appendChild(a); a.click(); setTimeout(()=>{URL.revokeObjectURL(a.href); a.remove();},500);
+}
+
+/* ───────── 전년 대비 비교 ───────── */
+const CMP_KEYS=[["기본급여","basic","","직접인건비"],["연장근로수당","ot"],["야간가산수당","night"],["직책수당","pos"],["공휴일근무수당","hol"],["직무수당","duty"],["식대","meal"],["조정수당","adj"],["소  계","sub1","s"],
+  ["연차수당(적치)","leave"],["근로자의날","laborDay"],["퇴직충당금","retire"],["직접비 계 ①","direct","s"],
+  ["건강보험료","health","","간접인건비"],["노인장기요양보험","ltc"],["국민연금","pension"],["고용보험료","emp"],["산재보험료","ind"],["임금채권부담금","wclaim"],["석면피해구제분담금","asb"],["특수건강검진","special"],["장애인고용부담금","dis"],["간접비 계 ②","indirect","s"],["노무비 계 (1)","labor","s"],
+  ["피복장구비","uniform","","경비"],["직원선물대","gift"],["직원회의비","meeting"],["경조비","condol"],["대치근무비","relief"],["주민세(사업소분)","resTax"],["교육훈련비","edu"],["위험부담금","risk"],["부대비용 배분","addon"],["경비 계 (2)","expense","s"],
+  ["1. 직접원가","dcost","s","원가"],["2. 일반관리비","ga"],["3. 원가소계","csub"],["4. 기업이윤","profit"],["5. 원가총계","total","s"],["6. 견적금액(인당)","price","k"]];
+const CMP_RATES=[["minWage","최저시급","원"],["health","건강보험","%"],["ltc","장기요양(건보 대비)","%"],["pension","국민연금","%"],["emp","고용보험","%"],["ind","산재보험","%"],["wageClaim","임금채권부담금","%"],["asb","석면피해구제","%"],["ga","일반관리비","%"],["profit","기업이윤","%"]];
+function snapL(L){ const o={}; CMP_KEYS.forEach(([,k])=>o[k]=Math.round((L[k]||0)*100)/100); o.ordinary=Math.round(L.ordinary*100)/100; o.count=L.count; o.monthTotal=L.monthTotal; return o; }
+function compareData(){
+  const C=state.compare; if(!C) return null;
+  const R=calcAll(state), Y=+state.meta.year, S=state.set;
+  const roles=R.rows.map(({r,L})=>({r,L,P:r.prevL||null,PI:r.prevInfo||null}));
+  const items=CMP_KEYS.map(([lbl,k,typ,grp])=>{
+    const prev=roles.reduce((s,x)=>s+(x.P?(x.P[k]||0)*x.P.count:0),0);
+    const cur=roles.reduce((s,x)=>s+(x.L[k]||0)*x.L.count,0);
+    return {lbl,k,typ,grp,prev:Math.round(prev),cur:Math.round(cur),per:roles.map(x=>({p:x.P?x.P[k]||0:null,c:x.L[k]||0}))};
+  }).filter(it=>it.prev||it.cur);
+  const tot=[["투입 인원(명)",C.heads,R.heads,"n"],["인당 평균단가",C.avg,R.avg],["부대비용 (월, 차량·장비·기타)",C.addon,R.add.total]].filter(x=>x[1]||x[2]);
+  const rates=CMP_RATES.map(([k,l,u])=>({k,l,u,p:C.set[k],c:S[k]}));
+  const it=k=>items.find(x=>x.k===k)||{prev:0,cur:0};
+  const vr0=C.monthAll?C.vat/C.monthAll:0.1, vr1=R.monthAll?R.vat/R.monthAll:pct(S.vat);
+  const mk=(k)=>[it(k).prev,it(k).cur];
+  const contract=[
+    ["노무비",...mk("labor"),"","직접인건비 + 4대보험 등 간접인건비"],
+    ["경비",...mk("expense"),"","복리후생·교육훈련·위험부담 등"+(R.spread||C.addon?" (부대비용 배분 포함)":"")],
+    ["일반관리비",...mk("ga"),"",`직접원가 × ${C.set.ga}% → ${S.ga}%`],
+    ["기업이윤",...mk("profit"),"",`${C.set.profit}% → ${S.profit}%`],
+    ["단수정리",it("price").prev-it("total").prev,it("price").cur-it("total").cur,"","천원 미만 절삭"],
+    ["부대비용 (별도 청구)",C.sep||0,R.sepLine?R.sepLine.total:0,"",""],
+    ["월 도급비 합계 (VAT 별도)",C.monthAll,R.monthAll,"t",""],
+    ["부가가치세",C.vat,R.vat,"",""],
+    ["월 도급비 총계 (VAT 포함)",C.monthAll+C.vat,R.monthAll+R.vat,"t2",""],
+    [`연간 도급비 총액 (VAT 별도)`,C.yearAll,R.yearAll,"y",`${C.months||12}개월 → ${R.contractMonths}개월`],
+    [`연간 도급비 총액 (VAT 포함)`,Math.round(C.yearAll*(1+vr0)),Math.round(R.yearAll*(1+vr1)),"y",""]
+  ].filter(x=>x[1]||x[2]).map(([l,p,c,t,d])=>({l,p:Math.round(p),c:Math.round(c),t,d}));
+  return {C,R,Y,Y0:C.year,roles,items,tot,rates,contract};
+}
+const pctTxt=(p,c)=>(!p||Math.abs(c-p)<0.005)?"-":`${c>=p?"▲":"▼"} ${Math.abs((c-p)/p*100).toFixed(1)}%`;
+const difTxt=d=>!d?"-":`${d>0?"▲":"▼"} ${won(Math.abs(d))}`;
+function renderCompare(){
+  const box=$("#docCmp"), tab=document.querySelector('[data-doc="cmp"]'), D=compareData();
+  if(tab) tab.hidden=!D;
+  if(!box) return;
+  if(!D){ box.innerHTML=""; return; }
+  const cls=(p,c)=>c>p?"inc":c<p?"dec":"";
+  box.innerHTML=`<div class="paper landscape">${docHead("전년 대비 비교표","YEAR-OVER-YEAR",`<b>${esc(state.meta.client||"")}</b> · ${D.Y0}년 견적 → ${D.Y}년 견적 · 단위 : 원 / VAT 별도 · ▲ 증가 ▼ 감소`)}
+   <h3 class="q-h">도급비 총합계 비교 <span>${D.Y0}년 ${won(D.C.monthAll)}원 → ${D.Y}년 ${won(D.R.monthAll)}원 (월, VAT 별도)</span></h3>
+   <div class="tscroll"><table class="cmp wide ctot"><thead><tr><th>구분</th><th>${D.Y0}년</th><th>${D.Y}년</th><th>증감액</th><th>증감률</th><th>${D.Y0}년 구성비</th><th>${D.Y}년 구성비</th><th>비고</th></tr></thead><tbody>
+     ${D.contract.map(x=>`<tr class="${x.t==="t"||x.t==="t2"?"s":x.t==="y"?"k":""}"><td>${x.l}</td><td class="n">${won(x.p)}</td><td class="n"><b>${won(x.c)}</b></td><td class="n ${x.t==="y"?"":cls(x.p,x.c)}">${difTxt(x.c-x.p)}</td><td class="n ${x.t==="y"?"":cls(x.p,x.c)}">${pctTxt(x.p,x.c)}</td><td class="n">${x.t?"":D.C.monthAll?(x.p/D.C.monthAll*100).toFixed(1)+"%":"-"}</td><td class="n">${x.t?"":D.R.monthAll?(x.c/D.R.monthAll*100).toFixed(1)+"%":"-"}</td><td class="per">${esc(x.d)}</td></tr>`).join("")}
+   </tbody></table></div>
+   <div class="cmp-top">
+    <div style="min-width:0"><h3 class="q-h">인원·단가 비교</h3><div class="tscroll"><table class="cmp"><thead><tr><th>구분</th><th>${D.Y0}년</th><th>${D.Y}년</th><th>증감액</th><th>증감률</th></tr></thead><tbody>
+      ${D.tot.map(([l,p,c,t])=>`<tr><td>${l}</td><td class="n">${t==="n"?p:won(p)}</td><td class="n"><b>${t==="n"?c:won(c)}</b></td><td class="n ${cls(p,c)}">${t==="n"?(c-p||"-"):difTxt(c-p)}</td><td class="n ${cls(p,c)}">${pctTxt(p,c)}</td></tr>`).join("")}</tbody></table></div></div>
+    <div style="min-width:0"><h3 class="q-h">기준 요율 비교</h3><div class="tscroll"><table class="cmp"><thead><tr><th>항목</th><th>${D.Y0}년</th><th>${D.Y}년</th><th>변동</th></tr></thead><tbody>
+      ${D.rates.map(x=>`<tr><td>${x.l}</td><td class="n">${x.u==="원"?won(x.p):x.p+"%"}</td><td class="n"><b>${x.u==="원"?won(x.c):x.c+"%"}</b></td><td class="n ${cls(x.p,x.c)}">${x.p===x.c?"-":x.u==="원"?`${difTxt(x.c-x.p)} (${pctTxt(x.p,x.c)})`:`${x.c>x.p?"▲":"▼"} ${Math.abs(Math.round((x.c-x.p)*10000)/10000)}%p`}</td></tr>`).join("")}</tbody></table></div></div>
+   </div>
+   <h3 class="q-h">직책별 인당 단가 비교</h3>
+   <div class="tscroll"><table class="cmp wide"><thead><tr><th>직종</th><th>직책</th><th>근무지·직무</th><th>인원</th><th>${D.Y0}년 시급</th><th>${D.Y}년 시급</th><th>${D.Y0}년 단가</th><th>${D.Y}년 단가</th><th>증감액</th><th>증감률</th></tr></thead><tbody>
+     ${D.roles.map(x=>`<tr><td class="qcat"><img src="${IMG[roleImg(x.r)]}" alt=""><span style="color:${CATS[x.r.cat].color}">${CATS[x.r.cat].short}</span></td><td><b>${esc(x.r.rank)}</b></td><td>${esc(x.r.detail)}</td><td class="n">${x.P?`${x.P.count} → `:""}${x.L.count}</td><td class="n">${x.PI?won2(x.PI.wage):"신규"}</td><td class="n">${won2(x.r.wage)}</td><td class="n">${x.P?won(x.P.price):"-"}</td><td class="n"><b>${won(x.L.price)}</b></td><td class="n ${x.P?cls(x.P.price,x.L.price):""}">${x.P?difTxt(x.L.price-x.P.price):"신규"}</td><td class="n ${x.P?cls(x.P.price,x.L.price):""}">${x.P?pctTxt(x.P.price,x.L.price):"-"}</td></tr>`).join("")}
+   </tbody></table></div>
+   <h3 class="q-h">항목별 산출내역 비교 <span>월간 총액(인당 금액 × 인원) 기준</span></h3>
+   <div class="tscroll"><table class="cmp wide items"><thead><tr><th colspan="2">구 분</th><th>${D.Y0}년</th><th>${D.Y}년</th><th>증감액</th><th>증감률</th>${D.roles.map(x=>`<th class="rh2">${esc(CATS[x.r.cat].short)} ${esc(x.r.rank)}${x.r.detail?`<br><small>${esc(x.r.detail)}</small>`:""}<br><small>인당 ${D.Y0}→${D.Y}</small></th>`).join("")}</tr></thead><tbody>
+     ${D.items.map(it=>`<tr class="${it.typ==="s"?"s":it.typ==="k"?"k":""}"><td class="g">${it.grp||""}</td><td>${it.lbl}</td><td class="n">${won(it.prev)}</td><td class="n"><b>${won(it.cur)}</b></td><td class="n ${cls(it.prev,it.cur)}">${difTxt(it.cur-it.prev)}</td><td class="n ${cls(it.prev,it.cur)}">${pctTxt(it.prev,it.cur)}</td>${it.per.map(p=>`<td class="n per">${p.p==null?"신규":won(p.p)} → ${won(p.c)}</td>`).join("")}</tr>`).join("")}
+   </tbody></table></div>
+   ${docFoot()}</div>`;
+}
+async function addCompareSheet(wb, logoId, logoSm){
+  const D=compareData(); if(!D) return;
+  const S=state.set, nR=D.roles.length, lastC=Math.max(10,6+nR*3);
+  const ws=wb.addWorksheet("전년대비 비교표",{views:[{showGridLines:false}],properties:{tabColor:{argb:XC.green}},pageSetup:{paperSize:9,orientation:"landscape",fitToPage:true,fitToWidth:1,fitToHeight:0,margins:{left:.3,right:.3,top:.4,bottom:.4,header:.2,footer:.2}}});
+  ws.columns=[{width:12},{width:20},{width:14},{width:14},{width:14},{width:10},...Array.from({length:lastC-6},()=>({width:12}))];
+  xHeader(ws,wb,logoId,`${D.Y0}년 → ${D.Y}년 산출내역 비교표`,`${state.meta.client||""} · ${state.meta.svc} · 단위: 원, VAT 별도 · ▲ 증가 / ▼ 감소 · 원본: 견적서·산출내역서(${D.Y0}) / (${D.Y}) 시트`,lastC,logoSm);
+  const UP="[Red]▲#,##0;[Blue]▼#,##0;\"-\"", UPP="[Red]▲0.0%;[Blue]▼0.0%;\"-\"", UPR="[Red]▲0.000\"%p\";[Blue]▼0.000\"%p\";\"-\"";
+  const head=(r,arr,from=1)=>{ const rw=ws.getRow(r); rw.height=20; arr.forEach((t,i)=>{ const c=rw.getCell(from+i); c.value=t; c.font=xFont({bold:true,size:9,color:{argb:XC.white}}); c.fill=xFill(XC.navy); c.alignment={horizontal:"center",vertical:"middle",wrapText:true}; c.border=xBorder("FF41509F"); }); };
+  const cell=(r,c,v,o={})=>{ const x=ws.getRow(r).getCell(c); x.value=v; x.font=xFont({size:9,bold:!!o.b,color:o.color}); x.border=xBorder(); if(o.fmt) x.numFmt=o.fmt; if(o.fill) x.fill=xFill(o.fill); x.alignment={vertical:"middle",horizontal:o.h||(typeof v==="number"||(v&&v.formula)?"right":"left"),wrapText:!!o.wrap}; return x; };
+  const sec=(r,t)=>{ const c=ws.getRow(r).getCell(1); c.value=t; c.font=xFont({size:11,bold:true,color:{argb:XC.navy}}); ws.getRow(r).height=20; };
+  let r=7;
+  // 0. 도급비 총합계
+  sec(r,`■ 도급비 총합계 비교  (${D.Y0}년 월 ${won(D.C.monthAll)}원 → ${D.Y}년 월 ${won(D.R.monthAll)}원, VAT 별도)`); r++;
+  head(r,["구분","",`${D.Y0}년`,`${D.Y}년`,"증감액","증감률",`${D.Y0}년 구성비`,`${D.Y}년 구성비`,"비고",""]); ws.mergeCells(r,1,r,2); ws.mergeCells(r,9,r,10); r++;
+  const tRow={}; const cStart=r;
+  D.contract.forEach(x=>{ const tot=x.t==="t"||x.t==="t2", yr=x.t==="y", fill=yr?XC.navy:tot?"FFDCE5FB":null, fc=yr?{argb:XC.white}:undefined;
+    ws.mergeCells(r,1,r,2); cell(r,1,x.l,{b:true,fill,color:fc}); ws.getRow(r).getCell(2).border=xBorder();
+    cell(r,3,x.p,{fmt:"#,##0",fill,color:fc,b:tot||yr}); cell(r,4,x.c,{fmt:"#,##0",b:true,fill:fill||XC.greenSoft,color:fc});
+    cell(r,5,{formula:`D${r}-C${r}`,result:x.c-x.p},{fmt:yr?"▲#,##0;▼#,##0;\"-\"":UP,fill,color:fc,b:tot||yr}); cell(r,6,{formula:`IF(C${r}=0,"",(D${r}-C${r})/C${r})`,result:x.p?(x.c-x.p)/x.p:""},{fmt:yr?"▲0.0%;▼0.0%;\"-\"":UPP,fill,color:fc,b:tot||yr});
+    if(x.l.startsWith("월 도급비 합계")) tRow.m=r;
+    cell(r,7,null,{fill,color:fc}); cell(r,8,null,{fill,color:fc});
+    ws.mergeCells(r,9,r,10); cell(r,9,x.d,{fill,color:fc,wrap:true}); ws.getRow(r).getCell(10).border=xBorder();
+    if(tot||yr){ for(let c=1;c<=10;c++){ const b=ws.getRow(r).getCell(c).border||{}; ws.getRow(r).getCell(c).border={...b,top:{style:"medium",color:{argb:XC.navy}},bottom:{style:"medium",color:{argb:XC.navy}}}; } }
+    ws.getRow(r).height=tot||yr?21:(x.d&&x.d.length>14?27:18); [7,8].forEach(c=>ws.getRow(r).getCell(c).alignment={horizontal:"right",vertical:"middle"}); ws.getRow(r).getCell(9).alignment={wrapText:true,vertical:"middle"}; r++; });
+  for(let rr=cStart; rr<r; rr++){ const lbl=ws.getRow(rr).getCell(1).value; if(tRow.m && rr<tRow.m){
+    ws.getRow(rr).getCell(7).value={formula:`IF($C$${tRow.m}=0,"",C${rr}/$C$${tRow.m})`,result:D.C.monthAll?ws.getRow(rr).getCell(3).value/D.C.monthAll:""}; ws.getRow(rr).getCell(7).numFmt="0.0%";
+    ws.getRow(rr).getCell(8).value={formula:`IF($D$${tRow.m}=0,"",D${rr}/$D$${tRow.m})`,result:D.R.monthAll?ws.getRow(rr).getCell(4).value/D.R.monthAll:""}; ws.getRow(rr).getCell(8).numFmt="0.0%"; } }
+  r++;
+  // 1. 총괄
+  sec(r,"■ 인원·단가 비교"); r++;
+  head(r,["구분","",`${D.Y0}년`,`${D.Y}년`,"증감액","증감률"]); ws.mergeCells(r,1,r,2); r++;
+  D.tot.forEach(([l,p,c,t])=>{ ws.mergeCells(r,1,r,2); cell(r,1,l,{b:true}); ws.getRow(r).getCell(2).border=xBorder();
+    cell(r,3,Math.round(p),{fmt:"#,##0"}); cell(r,4,Math.round(c),{fmt:"#,##0",b:true,fill:XC.greenSoft});
+    cell(r,5,{formula:`D${r}-C${r}`,result:Math.round(c)-Math.round(p)},{fmt:UP}); cell(r,6,{formula:`IF(C${r}=0,"",(D${r}-C${r})/C${r})`,result:p?(c-p)/p:""},{fmt:UPP}); r++; });
+  r++;
+  // 2. 요율
+  sec(r,"■ 기준 요율 비교 (사업주 부담)"); r++;
+  head(r,["항목","",`${D.Y0}년`,`${D.Y}년`,"변동",""]); ws.mergeCells(r,1,r,2); ws.mergeCells(r,5,r,6); r++;
+  D.rates.forEach(x=>{ ws.mergeCells(r,1,r,2); cell(r,1,x.l,{b:true}); ws.getRow(r).getCell(2).border=xBorder();
+    const won_=x.u==="원"; cell(r,3,won_?x.p:x.p/100,{fmt:won_?"#,##0":"0.000%"}); cell(r,4,won_?x.c:x.c/100,{fmt:won_?"#,##0":"0.000%",b:true,fill:XC.greenSoft});
+    ws.mergeCells(r,5,r,6); cell(r,5,won_?{formula:`D${r}-C${r}`,result:x.c-x.p}:{formula:`(D${r}-C${r})*100`,result:Math.round((x.c-x.p)*10000)/10000},{fmt:won_?UP:UPR}); ws.getRow(r).getCell(6).border=xBorder(); r++; });
+  r++;
+  // 3. 직책별 단가
+  sec(r,"■ 직책별 인당 단가 비교"); r++;
+  head(r,["직종","직책 · 근무지","인원",`${D.Y0}년 시급`,`${D.Y}년 시급`,"시급 증감률",`${D.Y0}년 단가`,`${D.Y}년 단가`,"증감액","증감률"]); r++;
+  D.roles.forEach(x=>{ const col={argb:"FF"+CATS[x.r.cat].color.slice(1).toUpperCase()};
+    cell(r,1,CATS[x.r.cat].short,{b:true,color:col,h:"center"}); cell(r,2,x.r.rank+(x.r.detail?` (${x.r.detail})`:""));
+    cell(r,3,x.P?`${x.P.count} → ${x.L.count}`:`신규 ${x.L.count}`,{h:"center"});
+    cell(r,4,x.PI?x.PI.wage:null,{fmt:"#,##0.##"}); cell(r,5,+x.r.wage,{fmt:"#,##0.##"}); cell(r,6,x.PI?{formula:`IF(D${r}=0,"",(E${r}-D${r})/D${r})`,result:(x.r.wage-x.PI.wage)/x.PI.wage}:"신규",{fmt:UPP,h:"right"});
+    cell(r,7,x.P?x.P.price:null,{fmt:"#,##0"}); cell(r,8,x.L.price,{fmt:"#,##0",b:true,fill:XC.greenSoft});
+    cell(r,9,x.P?{formula:`H${r}-G${r}`,result:x.L.price-x.P.price}:"신규",{fmt:UP,h:"right"}); cell(r,10,x.P?{formula:`IF(G${r}=0,"",(H${r}-G${r})/G${r})`,result:(x.L.price-x.P.price)/x.P.price}:"-",{fmt:UPP,h:"right"}); r++; });
+  r++;
+  // 4. 항목별
+  sec(r,"■ 항목별 산출내역 비교 (월간 총액 = 인당 금액 × 인원)"); r++;
+  const h1=r, h2=r+1;
+  head(h1,["구분","항목",`${D.Y0}년 월간총액`,`${D.Y}년 월간총액`,"증감액","증감률"]); head(h2,["","","","","",""]);
+  for(let c=1;c<=6;c++) ws.mergeCells(h1,c,h2,c);
+  D.roles.forEach((x,i)=>{ const c0=7+i*3; ws.mergeCells(h1,c0,h1,c0+2);
+    head(h1,[`${CATS[x.r.cat].short} ${x.r.rank}${x.r.detail?` · ${x.r.detail}`:""} (${x.L.count}명)`],c0); head(h2,[`${D.Y0}년 인당`,`${D.Y}년 인당`,"증감"],c0); });
+  ws.getRow(h1).height=30; r=h2+1;
+  let cg="";
+  D.items.forEach(it=>{ const s=it.typ==="s", k=it.typ==="k", fill=k?XC.navy:s?XC.soft:null, fc=k?{argb:XC.white}:undefined; const fg=!!it.grp&&it.grp!==cg; if(it.grp) cg=it.grp;
+    cell(r,1,it.grp||"",{b:true,h:"center",color:k?fc:{argb:XC.navy},fill}); cell(r,2,it.lbl,{b:s||k,fill,color:fc});
+    cell(r,3,it.prev,{fmt:"#,##0",fill,color:fc,b:s||k}); cell(r,4,it.cur,{fmt:"#,##0",b:true,fill:fill||XC.greenSoft,color:fc});
+    cell(r,5,{formula:`D${r}-C${r}`,result:it.cur-it.prev},{fmt:k?"▲#,##0;▼#,##0;\"-\"":UP,fill,color:fc,b:s||k}); cell(r,6,{formula:`IF(C${r}=0,"",(D${r}-C${r})/C${r})`,result:it.prev?(it.cur-it.prev)/it.prev:""},{fmt:k?"▲0.0%;▼0.0%;\"-\"":UPP,fill,color:fc,b:s||k});
+    it.per.forEach((p,i)=>{ const c0=7+i*3, L1=ws.getColumn(c0).letter, L2=ws.getColumn(c0+1).letter;
+      cell(r,c0,p.p==null?"신규":Math.round(p.p*100)/100,{fmt:"#,##0",fill,color:fc,h:"right"}); cell(r,c0+1,Math.round(p.c*100)/100,{fmt:"#,##0",fill,color:fc,b:s||k});
+      cell(r,c0+2,p.p==null?"":{formula:`${L2}${r}-${L1}${r}`,result:Math.round((p.c-p.p)*100)/100},{fmt:k?"▲#,##0;▼#,##0;\"-\"":UP,fill,color:fc}); });
+    styleBdRow(ws.getRow(r),1,lastC,it.typ,cg,it.k,fg,[4]); ws.getRow(r).height=s||k?19:17;
+    if(s||k||it.k==="labor"||it.k==="total") for(let c=2;c<=lastC;c++){ const f=ws.getRow(r).getCell(c).font||{}; ws.getRow(r).getCell(c).font={...f,bold:true,size:9.5}; }
+    r++; });
+  ws.views=[{showGridLines:false,state:"frozen",xSplit:2,ySplit:0}];
+  r++; ws.mergeCells(r,1,r,lastC); const n=ws.getRow(r).getCell(1);
+  n.value=`※ ${D.Y0}년 값은 ‘새 견적(${D.Y}년 갱신)’을 만들 때 저장한 전년 견적 기준입니다. 갱신 후 새로 추가한 직책은 ‘신규’로 표시됩니다. 증감액·증감률은 엑셀 수식으로 계산되어 숫자를 고치면 다시 계산됩니다.`;
+  n.font=xFont({size:8.5,color:{argb:XC.muted}}); n.alignment={wrapText:true}; ws.getRow(r).height=26;
+  ws.headerFooter.oddFooter=`&L&8${S.coName} 전년대비 비교표&R&8&P / &N`;
+}
+
+/* ───────── 엑셀 (ExcelJS · 로고/인력 그림 포함) ───────── */
+const XC={navy:"FF1B2A86",green:"FF2B8A3E",greenSoft:"FFE3F2E6",soft:"FFF2F4F8",line:"FF9AA1AD",white:"FFFFFFFF",muted:"FF5D6784"};
+const xFont=(o={})=>({name:"맑은 고딕",size:10,...o});
+const xFill=c=>({type:"pattern",pattern:"solid",fgColor:{argb:c}});
+const xBorder=(c=XC.line)=>({top:{style:"thin",color:{argb:c}},left:{style:"thin",color:{argb:c}},bottom:{style:"thin",color:{argb:c}},right:{style:"thin",color:{argb:c}}});
+const imgCache={};
+async function imgPng(key, w){
+  const ck=key+"@"+w; if(imgCache[ck]) return imgCache[ck];
+  const im=new Image(); im.src=IMG[key]; await im.decode();
+  const c=document.createElement("canvas"); const s=w/im.naturalWidth; c.width=w; c.height=Math.round(im.naturalHeight*s);
+  const x=c.getContext("2d"); x.fillStyle="#fff"; x.fillRect(0,0,c.width,c.height); x.drawImage(im,0,0,c.width,c.height);
+  return imgCache[ck]={base64:c.toDataURL("image/png"), w:c.width, h:c.height};
+}
+const XGP={"직접인건비":["FFF5F8FF","FFD9E3FA","FF3B5BC4"],"간접인건비":["FFF3FAF5","FFCDEBD6","FF2B8A3E"],"경비":["FFFFF9EE","FFF8E2B8","FFC07A12"],"원가":["FFF6F7FA","FFDDE1EA","FF4B5470"]};
+const XMED=c=>({style:"medium",color:{argb:c}});
+/* 산출 항목 행 서식: 구간 색 + '계' 행 굵은 선 (산출내역서·비교표 공통) */
+function styleBdRow(rw, from, to, typ, grp, key, firstOfGrp, keepCols){
+  const pal=XGP[grp], grand=(key==="labor"||key==="total");
+  for(let c=from;c<=to;c++){ const cc=rw.getCell(c); const bd=xBorder();
+    if(!(keepCols&&keepCols.includes(c)&&typ!=="s"&&!grand&&typ!=="k")){
+      if(pal) cc.fill=xFill(c===from?pal[1]:typ==="s"?pal[1]:pal[0]);
+      if(grand) cc.fill=xFill(key==="labor"?"FFBCCBF2":"FFC9CFDC"); }
+    if(typ==="s"&&c>from){ bd.top=XMED(pal?pal[2]:XC.navy); bd.bottom=XMED(pal?pal[2]:XC.navy); }
+    if(grand&&c>from){ bd.top=XMED(XC.navy); bd.bottom={style:"double",color:{argb:XC.navy}}; }
+    if(firstOfGrp) bd.top=XMED(pal?pal[2]:XC.navy);
+    if(typ==="k"){ cc.fill=xFill(XC.navy); bd.top=XMED(XC.navy); bd.bottom=XMED(XC.navy); }
+    cc.border=bd;
+    if(c===from && pal && typ!=="k"){ cc.font=xFont({size:9,bold:true,color:{argb:pal[2]}}); }
+  }
+}
+function xHeader(ws, wb, logoId, title, en, lastCol, logoW, tsize){
+  const big=tsize&&tsize>22; ws.getRow(1).height=big?28:22; ws.getRow(2).height=big?28:22; ws.getRow(3).height=14;
+  ws.addImage(logoId,{tl:{col:0.15,row:0.25},ext:{width:logoW.w,height:logoW.h}});
+  const wide=lastCol>=7, t1=wide?4:2, t2=wide?lastCol-2:lastCol-1, n1=wide?lastCol-1:lastCol;
+  ws.mergeCells(1,t1,2,t2); const t=ws.getRow(1).getCell(t1); t.value=title; t.font=xFont({size:tsize||(wide?20:16),bold:true,color:{argb:XC.navy}}); t.alignment={horizontal:"center",vertical:"middle",shrinkToFit:true};
+  ws.mergeCells(3,t1,3,t2); const e=ws.getRow(3).getCell(t1); e.value=en; e.font=xFont({size:8,color:{argb:XC.muted}}); e.alignment={horizontal:"center",shrinkToFit:true};
+  if(n1<lastCol){ ws.mergeCells(1,n1,1,lastCol); ws.mergeCells(2,n1,2,lastCol); }
+  const no=ws.getRow(1).getCell(n1); no.value=`No. ${docNo()}`; no.font=xFont({size:9,color:{argb:XC.muted}}); no.alignment={horizontal:"right",vertical:"bottom"};
+  const dt=ws.getRow(2).getCell(n1); dt.value=`작성일 ${fmtD(state.meta.date)}`; dt.font=xFont({size:9,color:{argb:XC.muted}}); dt.alignment={horizontal:"right",vertical:"top"};
+  for(let c=1;c<=lastCol;c++){ ws.getRow(4).getCell(c).fill=xFill(XC.navy); ws.getRow(5).getCell(c).fill=xFill(XC.green); }
+  ws.getRow(4).height=5; ws.getRow(5).height=2.5;
+}
+/* ───────── 엑셀: 표지 · 당해년(전년) 데이터셋 ───────── */
+async function imgJpg(key, w, q=0.86){
+  const ck=key+"@j"+w; if(imgCache[ck]) return imgCache[ck];
+  const im=new Image(); im.src=IMG[key]; await im.decode();
+  const c=document.createElement("canvas"); const s=w/im.naturalWidth; c.width=w; c.height=Math.round(im.naturalHeight*s);
+  const x=c.getContext("2d"); x.fillStyle="#fff"; x.fillRect(0,0,c.width,c.height); x.drawImage(im,0,0,c.width,c.height);
+  return imgCache[ck]={base64:c.toDataURL("image/jpeg",q), w:c.width, h:c.height};
+}
+function shiftYearBy(d,n){ if(!d) return d; const [y,mm,dd]=d.split("-"); return `${+y+n}-${mm}-${dd}`; }
+function prevDataset(){
+  const C=state.compare; if(!C) return null;
+  const rows=state.roles.filter(r=>r.prevL).map(r=>{ const P=r.prevL, I=r.prevInfo||{}, months=+r.months||12;
+    const role={...r, wage:I.wage??r.wage, base:I.base??r.base, ot:I.ot??r.ot, night:I.night??r.night, prev:0, count:P.count};
+    const L={...P, count:P.count, months, monthTotal:P.price*P.count, yearTotal:P.price*P.count*months};
+    return {r:role, L, shiftTxt:I.shift}; });
+  if(!rows.length) return null;
+  const heads=rows.reduce((s,x)=>s+x.L.count,0), month=rows.reduce((s,x)=>s+x.L.monthTotal,0);
+  const R={rows, heads, month, monthAll:C.monthAll, vat:C.vat, yearAll:C.yearAll, avg:C.avg, contractMonths:C.months||12,
+    sepLine:C.sep?{total:C.sep,base:C.sep,ga:0,pr:0}:null, add:{total:C.addon||0}, spread:!C.sep, elig:heads};
+  const Y=C.year, m={...state.meta, year:Y, from:shiftYearBy(state.meta.from,-1), to:shiftYearBy(state.meta.to,-1)};
+  const S={...state.set, ...C.set};
+  const qr=rows.map(({r,L,shiftTxt})=>({catKey:r.cat, cat:CATS[r.cat].short, img:roleImg(r), rank:r.rank, detail:r.detail||"", title:roleLabel(r), shift:shiftTxt||shiftLabel(r), n:L.count, prev:0, price:L.price, months:L.months, sum:L.monthTotal, inc:null, note:r.note||""}));
+  const cond=S.cond.replace(/\{연도\}/g,Y).replace(/\{최저시급\}/g,won(S.minWage));
+  return {R,Y,m,S,qr,crew:crewByCat(rows),cond};
+}
+async function buildCover(wb, R, crew, m, S, logoId, logo, prev){
+  const ws=wb.addWorksheet("표지",{views:[{showGridLines:false}],properties:{tabColor:{argb:XC.navy}},
+    pageSetup:{paperSize:9,orientation:"portrait",fitToPage:true,fitToWidth:1,fitToHeight:1,margins:{left:.35,right:.35,top:.35,bottom:.35,header:0,footer:0},horizontalCentered:true}});
+  const NC=10, CW=9.6, CPX=72; ws.columns=Array.from({length:NC},()=>({width:CW}));
+  const W=NC*CPX;
+  const band=(r,h,color)=>{ ws.getRow(r).height=h; for(let c=1;c<=NC;c++) ws.getRow(r).getCell(c).fill=xFill(color); };
+  const text=(r,v,font,h,align="center")=>{ ws.mergeCells(r,1,r,NC); const c=ws.getRow(r).getCell(1); c.value=v; c.font=font; c.alignment={horizontal:align,vertical:"middle",wrapText:true}; if(h) ws.getRow(r).height=h; return c; };
+  // 상단 띠
+  band(1,10,XC.navy); band(2,3,XC.green);
+  ws.getRow(3).height=46;
+  ws.addImage(logoId,{tl:{col:0.25,row:2.25},ext:{width:120,height:Math.round(120*logo.h/logo.w)}});
+  ws.mergeCells(3,6,3,NC); const tg=ws.getRow(3).getCell(6); tg.value=`${S.coBranch}`; tg.font=xFont({size:10,color:{argb:XC.muted}}); tg.alignment={horizontal:"right",vertical:"middle"};
+  ws.getRow(4).height=18;
+  text(5,`${m.client||"(사업장 명칭)"}  ${m.svc||""}`,xFont({size:15,bold:true,color:{argb:XC.navy}}),28);
+  text(6,"見   積   書",xFont({size:44,bold:true,color:{argb:"FF16192A"}}),64);
+  text(7,`${m.year}년 용역 도급 견적서   ·   Q U O T A T I O N`,xFont({size:10,color:{argb:XC.muted}}),18);
+  ws.getRow(8).height=10; for(let c=3;c<=8;c++) ws.getRow(8).getCell(c).border={bottom:{style:"medium",color:{argb:XC.green}}};
+  ws.getRow(9).height=14;
+  // 메인 그림 (에스텍 팀)
+  const team=await imgJpg("team",1100); const tid=wb.addImage({base64:team.base64,extension:"jpeg"});
+  const tw=W-36, th=Math.round(tw*team.h/team.w); const heroRows=Math.ceil(th*0.75/20)+1;
+  for(let r=10;r<10+heroRows;r++) ws.getRow(r).height=20;
+  ws.addImage(tid,{tl:{col:18/CPX,row:9.1},ext:{width:tw,height:th}});
+  let r=10+heroRows;
+  // 투입 인력 그림 띠
+  ws.getRow(r).height=10; r++;
+  const cap=ws.getRow(r); text(r,"투입 인력 구성",xFont({size:10.5,bold:true,color:{argb:XC.navy}}),18); r++;
+  const figs=[]; crew.forEach(c=>c.imgs.forEach(k=>figs.push({k,c})));
+  const fh=86, fw=Math.round(fh*300/412), gap=26, fTot=crew.length*(fw+gap)+figs.length*0-gap;
+  let x0=(W-(figs.length*fw+(crew.length-1)*gap+(figs.length-crew.length)*4))/2; let lastCat=null;
+  for(let rr=r; rr<r+4; rr++) ws.getRow(rr).height=17;
+  for(const f of figs){
+    if(lastCat && lastCat!==f.c) x0+=gap; else if(lastCat) x0+=4;
+    const p=await imgPng(f.k,180); const id=wb.addImage({base64:p.base64,extension:"png"});
+    ws.addImage(id,{tl:{col:x0/CPX,row:r-1+0.1},ext:{width:fw,height:fh}});
+    x0+=fw; lastCat=f.c;
+  }
+  r+=4;
+  ws.mergeCells(r,1,r,NC); const cpc=ws.getRow(r).getCell(1); ws.getRow(r).height=18;
+  cpc.value={richText:crew.flatMap((cc,i)=>[...(i?[{text:"     ",font:xFont({size:9})}]:[]),{text:`${CATS[cc.cat].label} `,font:xFont({size:9.5,bold:true,color:{argb:"FF"+CATS[cc.cat].color.slice(1).toUpperCase()}})},{text:`${cc.n}명`,font:xFont({size:9.5,bold:true})},{text:cc.rankText?` (${cc.rankText})`:"",font:xFont({size:8.5,color:{argb:XC.muted}})}])};
+  cpc.alignment={horizontal:"center",vertical:"middle"};
+  r+=2;
+  // 견적 요약 표
+  const info=[["수   신",`${m.client||""} 貴中`],["용 역 명",m.svc||""],["용역기간",`${fmtD(m.from)} ~ ${fmtD(m.to)} (${R.contractMonths}개월)`],
+    ["견적금액",`월 ${won(R.monthAll)}원 (VAT 별도)  ·  ${R.heads}명`],
+    ...(prev?[["전년 대비",`${prev.Y}년 월 ${won(prev.R.monthAll)}원 → ${m.year}년 월 ${won(R.monthAll)}원 (${R.monthAll>=prev.R.monthAll?"▲":"▼"} ${Math.abs((R.monthAll/prev.R.monthAll-1)*100).toFixed(1)}%)`]]:[]),
+    ["견적기준",`${m.year}년 최저임금 ${won(S.minWage)}원 · 4대보험 법정요율`]];
+  info.forEach(([k,v],i)=>{ const rw=ws.getRow(r); rw.height=22;
+    ws.mergeCells(r,2,r,3); const a=rw.getCell(2); a.value=k; a.font=xFont({size:10,bold:true,color:{argb:XC.white}}); a.fill=xFill(i===3?XC.green:XC.navy); a.alignment={horizontal:"center",vertical:"middle"};
+    ws.mergeCells(r,4,r,9); const b=rw.getCell(4); b.value=v; b.font=xFont({size:i===3?12:10.5,bold:i===3,color:{argb:i===3?"FF14532D":"FF16192A"}}); b.fill=xFill(i===3?XC.greenSoft:"FFF5F7FC"); b.alignment={horizontal:"left",vertical:"middle",indent:1,shrinkToFit:true};
+    for(let c=2;c<=9;c++) rw.getCell(c).border={top:{style:"thin",color:{argb:"FFFFFFFF"}},bottom:{style:"thin",color:{argb:"FFFFFFFF"}}};
+    r++; });
+  r++;
+  const d=(m.date||"").split("-");
+  if(S.coPerson && xPerson){
+    for(let rr=r; rr<r+5; rr++) ws.getRow(rr).height=19;
+    const ph=118, pw=Math.round(ph*xPerson.w/xPerson.h);
+    ws.addImage(xPerson.id,{tl:{col:3-(pw+14)/72,row:r-1+0.15},ext:{width:pw,height:ph}});
+    const tx=(rr,v,f)=>{ ws.mergeCells(rr,4,rr,9); const c=ws.getRow(rr).getCell(4); c.value=v; c.font=f; c.alignment={vertical:"middle",indent:2}; };
+    tx(r+1,"견적 담당",xFont({size:9.5,color:{argb:XC.muted}}));
+    tx(r+2,[S.coPerson,S.coPersonTitle].filter(Boolean).join("  "),xFont({size:16,bold:true,color:{argb:XC.navy}}));
+    tx(r+3,`${S.coBranch}${S.coPersonTel?`  ·  ${S.coPersonTel}`:""}`,xFont({size:10,color:{argb:"FF16192A"}}));
+    for(let rr=r+1; rr<=r+3; rr++) ws.getRow(rr).getCell(4).border={left:{style:"medium",color:{argb:XC.green}}};
+    r+=6;
+  }
+  text(r,`${d[0]||""}년  ${+d[1]||""}월`,xFont({size:16,bold:true,color:{argb:"FF16192A"}}),30); r+=2;
+  // 하단 로고·회사
+  ws.getRow(r).height=40;
+  const lw=170, lh=Math.round(lw*logo.h/logo.w);
+  ws.addImage(logoId,{tl:{col:(W/2-lw-10)/CPX,row:r-1+0.1},ext:{width:lw,height:lh}});
+  ws.mergeCells(r,6,r,NC); const co=ws.getRow(r).getCell(6); co.value={richText:[{text:`${S.coName}\n`,font:xFont({size:14,bold:true,color:{argb:XC.navy}})},{text:S.coBranch,font:xFont({size:9.5,color:{argb:XC.muted}})}]}; co.alignment={vertical:"middle",wrapText:true};
+  r++; ws.getRow(r).height=Math.max(8,lh*0.75-30); r++;
+  text(r,`${S.coAddr}  ·  ${S.coLic}`,xFont({size:8.5,color:{argb:XC.muted}}),16); r++;
+  band(r,3,XC.green); band(r+1,10,XC.navy);
+  ws.pageSetup.printArea=`A1:J${r+1}`;
+}
+
+async function buildQuoteSheet(wb, sheetName, R, qr, crew, Y, m, S, prevCol, logoId, logoBig, logoSm, condTxt, tab, enLabel, bdLink){
+  /* ── 견적서 ── */
+  const ws=wb.addWorksheet(sheetName,{views:[{showGridLines:false}],properties:{tabColor:{argb:tab}},pageSetup:{paperSize:9,orientation:"portrait",fitToPage:true,fitToWidth:1,fitToHeight:0,margins:{left:.4,right:.4,top:.5,bottom:.5,header:.2,footer:.2},horizontalCentered:true}});
+  ws.columns=[{width:5},{width:11},{width:9},{width:16},{width:18},{width:7},{width:13},{width:13},{width:15},{width:15}];
+  xHeader(ws,wb,logoId,"견   적   서",enLabel,10,logoBig,30);
+  let row=7;
+  ws.mergeCells(`A${row}:E${row}`); const cl=ws.getCell(`A${row}`); cl.value={richText:[{text:(m.client||"(사업장 명칭)")+"  ",font:xFont({size:15,bold:true})},{text:"貴中",font:xFont({size:11,color:{argb:XC.muted}})}]}; cl.border={bottom:{style:"medium",color:{argb:"FF111111"}}}; ws.getRow(row).height=26;
+  const leftInfo=[["용 역 명",m.svc],["용역기간",`${fmtD(m.from)} ~ ${fmtD(m.to)} (${R.contractMonths}개월)`],["유효기간",m.valid],["사 업 장",m.addr||""],["","귀사의 무궁한 발전을 기원하며, 아래와 같이 견적합니다."]];
+  const sup=[["등록번호",S.coBizNo,"",""],["상 호",S.coName,"대 표",S.coCeo+"  (인)"],["주 소",S.coAddr,"",""],["업 태",S.coType,"종 목",S.coItem],["허가·신고",S.coLic,"",""],["담 당",S.coBranch+(S.coPerson?` · ${personLine(S)}`:""),"",""]];
+  sup.forEach((s,i)=>{ const r=row+i; const rw=ws.getRow(r); rw.height=19;
+    const a=ws.getCell(`F${r}`); a.value=s[0]; a.font=xFont({bold:true,size:9}); a.fill=xFill("FFEEF1F7"); a.alignment={horizontal:"center",vertical:"middle"}; a.border=xBorder("FF333333");
+    if(s[2]){ ws.mergeCells(`G${r}:G${r}`); const b=ws.getCell(`G${r}`); b.value=s[1]; b.font=xFont({size:9}); b.border=xBorder("FF333333"); b.alignment={vertical:"middle",shrinkToFit:true};
+      const c=ws.getCell(`H${r}`); c.value=s[2]; c.font=xFont({bold:true,size:9}); c.fill=xFill("FFEEF1F7"); c.alignment={horizontal:"center",vertical:"middle"}; c.border=xBorder("FF333333");
+      ws.mergeCells(`I${r}:J${r}`); const d=ws.getCell(`I${r}`); d.value=s[3]; d.font=xFont({size:9}); d.border=xBorder("FF333333"); d.alignment={vertical:"middle",wrapText:true}; ws.getCell(`J${r}`).border=xBorder("FF333333"); }
+    else { ws.mergeCells(`G${r}:J${r}`); const b=ws.getCell(`G${r}`); b.value=s[1]; b.font=xFont({size:9}); b.alignment={vertical:"middle",wrapText:true}; ["G","H","I","J"].forEach(cc=>ws.getCell(`${cc}${r}`).border=xBorder("FF333333")); }
+  });
+  leftInfo.forEach((x,i)=>{ const r=row+1+i; if(!x[1]) return;
+    if(x[0]){ const a=ws.getCell(`A${r}`); ws.mergeCells(`A${r}:B${r}`); a.value=x[0]; a.font=xFont({size:9,color:{argb:XC.muted}}); }
+    ws.mergeCells(`${x[0]?"C":"A"}${r}:E${r}`); const b=ws.getCell(`${x[0]?"C":"A"}${r}`); b.value=x[1]; b.font=xFont({size:x[0]?10:9,color:{argb:x[0]?"FF111111":XC.muted}}); b.alignment={vertical:"middle",shrinkToFit:true}; });
+  row+=7;
+  // 금액 박스
+  ws.mergeCells(`A${row}:F${row+1}`); const am=ws.getCell(`A${row}`);
+  am.value={richText:[{text:"견적금액 · 월 (VAT 별도)\n",font:xFont({size:9,color:{argb:"FFDDE3FF"}})},{text:`₩ ${won(R.monthAll)}`,font:xFont({size:18,bold:true,color:{argb:XC.white}})},{text:`   일금 ${krWon(R.monthAll)}정`,font:xFont({size:9,color:{argb:"FFDDE3FF"}})}]};
+  am.fill=xFill(XC.navy); am.alignment={vertical:"middle",indent:1,wrapText:true};
+  ws.mergeCells(`G${row}:J${row}`); const s1=ws.getCell(`G${row}`); s1.value=`부가세 포함 월  ${won(R.monthAll+R.vat)}원   ·   ${R.heads}명 / 평균 ${won(R.avg)}원`; s1.font=xFont({size:9.5,bold:true}); s1.fill=xFill(XC.greenSoft); s1.alignment={vertical:"middle",indent:1};
+  ws.mergeCells(`G${row+1}:J${row+1}`); const s2=ws.getCell(`G${row+1}`); s2.value=`계약기간 ${R.contractMonths}개월 총액  ${won(R.yearAll)}원 (VAT 별도)`; s2.font=xFont({size:9.5}); s2.fill=xFill(XC.greenSoft); s2.alignment={vertical:"middle",indent:1};
+  ws.getRow(row).height=24; ws.getRow(row+1).height=24;
+  row+=3;
+  // 투입 인력 구성 (그림)
+  const h1=ws.getCell(`A${row}`); h1.value="■ 투입 인력 구성"; h1.font=xFont({size:11,bold:true,color:{argb:XC.navy}}); row++;
+  const imgRow=row, perRow=5, slotCols=[[0,3],[3,4],[4,5],[5,8],[8,10]]; // 열 범위(0-index) 슬롯
+  const colPx=[5,11,9,16,18,7,13,13,15,15].map(w=>w*7.2);
+  const slotX=([a,b])=>{ let x=0; for(let i=0;i<a;i++) x+=colPx[i]; let w=0; for(let i=a;i<b;i++) w+=colPx[i]; return {x,w}; };
+  for(let ci=0; ci<crew.length; ci+=perRow){
+    const chunk=crew.slice(ci,ci+perRow), top=row;
+    for(let r=top;r<top+4;r++) ws.getRow(r).height=19.5;
+    for(let k=0;k<chunk.length;k++){
+      const c=chunk[k], sl=slotCols[k], {x,w}=slotX(sl), imgs=c.imgs;
+      const ih=imgs.length>1?78:96, iw=Math.round(ih*300/412);
+      for(let q=0;q<imgs.length;q++){
+        const p=await imgPng(imgs[q],180); const id=wb.addImage({base64:p.base64,extension:"png"});
+        const totalW=imgs.length*iw+(imgs.length-1)*4, startX=Math.max(x+2, x+(w-totalW)/2)+q*(iw+4);
+        // 픽셀 → 열 위치 환산
+        let acc=0, col=0; while(col<10 && acc+colPx[col]<=startX){ acc+=colPx[col]; col++; }
+        ws.addImage(id,{tl:{col: col + (startX-acc)/colPx[col], row: top-1+(imgs.length>1?0.45:0.08)},ext:{width:iw,height:ih}});
+      }
+      const capR=top+4; const L1=String.fromCharCode(65+sl[0]), L2=String.fromCharCode(64+sl[1]);
+      [[capR,`${CATS[c.cat].label}  ${c.n}명`,xFont({bold:true,size:10,color:{argb:"FF"+CATS[c.cat].color.slice(1).toUpperCase()}})],[capR+1,c.rankText,xFont({size:8.5,color:{argb:XC.muted}})],[capR+2,`월 ${won(c.sum)}원`,xFont({size:9,bold:true})]].forEach(([rr,v,f])=>{
+        if(L1!==L2) ws.mergeCells(`${L1}${rr}:${L2}${rr}`); const cc=ws.getCell(`${L1}${rr}`); cc.value=v; cc.font=f; cc.alignment={horizontal:"center",vertical:"middle",shrinkToFit:true}; });
+    }
+    for(let r=top+4;r<top+7;r++) ws.getRow(r).height=15;
+    row=top+7;
+  }
+  row++;
+  // 견적 내역 표
+  const h2=ws.getCell(`A${row}`); h2.value="■ 견적 내역"; h2.font=xFont({size:11,bold:true,color:{argb:XC.navy}});
+  const u=ws.getCell(`J${row}`); u.value="(단위: 명, 원 / VAT 별도)"; u.font=xFont({size:8,color:{argb:XC.muted}}); u.alignment={horizontal:"right"}; row++;
+  const head=["No","직종","직책","근무지·직무","운영형태","인원",prevCol?`${Y-1}년 단가`:"",`${Y}년 단가`,"월 합계","비고"];
+  const hr=ws.getRow(row); head.forEach((h,i)=>{ const c=hr.getCell(i+1); c.value=h; c.font=xFont({bold:true,color:{argb:XC.white},size:9.5}); c.fill=xFill(XC.navy); c.alignment={horizontal:"center",vertical:"middle"}; c.border=xBorder(XC.navy); }); hr.height=22;
+  const first=row+1;
+  qr.forEach((x,i)=>{ row++; const r=ws.getRow(row); r.height=19;
+    const vals=[i+1,x.cat,x.rank,x.detail,x.shift,bdLink?{formula:`'${bdLink.sheet}'!${bdLink.col(i)}${bdLink.countRow}`,result:x.n}:x.n,x.prev||null,bdLink?{formula:`'${bdLink.sheet}'!${bdLink.col(i)}${bdLink.priceRow}`,result:x.price}:x.price,{formula:`F${row}*H${row}`,result:x.sum},(x.inc!=null?`${x.inc>=0?"▲":"▼"} ${Math.abs(x.inc).toFixed(1)}%`:"")+(x.months!==12?` ${x.months}개월`:"")+(x.note?` ${x.note}`:"")];
+    vals.forEach((v,k)=>{ const c=r.getCell(k+1); c.value=v; c.font=xFont({size:9.5,bold:k===2||k===8,color:k===1?{argb:"FF"+CATS[x.catKey].color.slice(1).toUpperCase()}:undefined}); c.border=xBorder(); c.alignment={vertical:"middle",horizontal:k<=2?"center":k>=5&&k<=8?"right":"left",shrinkToFit:k===3||k===4||k===9}; if(k>=5&&k<=8) c.numFmt="#,##0"; if(i%2) c.fill=xFill("FFF8F9FC");
+      if(k===1){ const hex=CATS[x.catKey].color.slice(1); const tint="FF"+[0,2,4].map(o=>Math.round(parseInt(hex.substr(o,2),16)*0.14+255*0.86).toString(16).padStart(2,"0")).join("").toUpperCase(); c.fill=xFill(tint); }
+      if(i===0){ c.border={...c.border,top:XMED(XC.navy)}; } });
+  });
+  if(R.sepLine){ row++; const r=ws.getRow(row); [qr.length+1,"부대비용","","업무차량·장비·기타 (별도 청구)","","","","",R.sepLine.total,state.addonMargin?"관리비·이윤 포함":"실비"].forEach((v,k)=>{ const c=r.getCell(k+1); c.value=v===""?null:v; c.font=xFont({size:9.5}); c.border=xBorder(); if(k===8) c.numFmt="#,##0"; }); }
+  const last=row;
+  const tot=[["월 합계",{formula:`SUM(F${first}:F${last})`,result:R.heads},{formula:`SUM(I${first}:I${last})`,result:R.monthAll},XC.soft,true],
+    [`부가가치세 (${S.vat}%)`,null,{formula:`ROUND(I${last+1}*${S.vat/100},0)`,result:R.vat},null,false],
+    ["월 총계 (VAT 포함)",null,{formula:`I${last+1}+I${last+2}`,result:R.monthAll+R.vat},XC.greenSoft,true],
+    [`계약기간 총액 (VAT 별도 · ${R.contractMonths}개월)`,null,R.yearAll,null,false]];
+  const prevRows=qr.filter(x=>x.prev>0), prevTot=prevRows.reduce((s,x)=>s+x.prev*x.n,0), curTot=prevRows.reduce((s,x)=>s+x.price*x.n,0);
+  tot.forEach(([lbl,f,i,fill,b],ti)=>{ row++; ws.mergeCells(`A${row}:E${row}`); const r=ws.getRow(row); r.height=20;
+    if(ti===0 && prevCol){ const g=r.getCell(7); g.value={formula:`SUMPRODUCT(F${first}:F${last},G${first}:G${last})`,result:prevTot}; g.numFmt="#,##0";
+      const j=r.getCell(10); j.value={formula:`IFERROR(SUMPRODUCT((G${first}:G${last}>0)*F${first}:F${last}*H${first}:H${last})/G${row}-1,"")`,result:prevTot?curTot/prevTot-1:""};
+      j.numFmt='"평균 인상 "▲0.0%;"평균 인하 "▼0.0%;"동결"'; }
+    const a=r.getCell(1); a.value=lbl; a.font=xFont({bold:b,size:9.5}); a.alignment={horizontal:"center",vertical:"middle"};
+    r.getCell(6).value=f; r.getCell(9).value=i; r.getCell(6).numFmt=r.getCell(9).numFmt="#,##0";
+    const TS=[{fill:"FFD9E3FA",top:XMED(XC.navy),bot:XMED(XC.navy)},{fill:"FFF5F8FF",top:null,bot:null},{fill:"FFCDEBD6",top:XMED(XC.green),bot:XMED(XC.green)},{fill:XC.navy,top:XMED(XC.navy),bot:XMED(XC.navy),white:true}][ti];
+    for(let k=1;k<=10;k++){ const c=r.getCell(k); const bd=xBorder(); if(TS.top) bd.top=TS.top; if(TS.bot) bd.bottom=TS.bot; c.border=bd; c.fill=xFill(TS.fill);
+      c.font=xFont({bold:b||TS.white,size:ti===2||ti===3?10:9.5,color:TS.white?{argb:XC.white}:ti===0&&k===10?{argb:"FFC8323A"}:undefined});
+      if(k===6||k===9||k===7) c.alignment={horizontal:"right",vertical:"middle"}; if(k===10) c.alignment={horizontal:"center",vertical:"middle"}; if(k===1) c.alignment={horizontal:"center",vertical:"middle"}; }
+    r.height=ti===1?18:22; });
+  row+=2;
+  const h3=ws.getCell(`A${row}`); h3.value="■ 견적 조건"; h3.font=xFont({size:11,bold:true,color:{argb:XC.navy}});
+  condTxt.split("\n").forEach(l=>{ row++; ws.mergeCells(`A${row}:J${row}`); const c=ws.getCell(`A${row}`); c.value=l; c.font=xFont({size:9}); c.alignment={wrapText:true,vertical:"middle"}; ws.getRow(row).height=l.length>70?28:16; });
+  row+=2;
+  for(let k=1;k<=10;k++) ws.getRow(row).getCell(k).border={top:{style:"medium",color:{argb:XC.navy}}};
+  ws.getRow(row+1).height=50; ws.getRow(row+2).height=14;
+  ws.addImage(logoId,{tl:{col:0.1,row:row+0.3},ext:logoSm});
+  ws.mergeCells(`C${row+1}:G${row+1}`); const f=ws.getCell(`C${row+1}`); f.value=`${S.coName} · ${S.coBranch}\n${S.coAddr}`; f.font=xFont({size:8.5,color:{argb:XC.muted}}); f.alignment={horizontal:"left",vertical:"middle",wrapText:true,indent:1};
+  if(S.coPerson && xPerson){ const ph=62, pw=Math.round(ph*xPerson.w/xPerson.h);
+    ws.addImage(xPerson.id,{tl:{col:7.15,row:row+0.08},ext:{width:pw,height:ph}});
+    ws.mergeCells(`I${row+1}:J${row+1}`); const pc=ws.getCell(`I${row+1}`);
+    pc.value={richText:[{text:"견적 담당\n",font:xFont({size:8,color:{argb:XC.muted}})},{text:[S.coPerson,S.coPersonTitle].filter(Boolean).join(" ")+"\n",font:xFont({size:11,bold:true,color:{argb:XC.navy}})},{text:S.coPersonTel||S.coBranch,font:xFont({size:8.5,color:{argb:XC.muted}})}]};
+    pc.alignment={vertical:"middle",wrapText:true}; }
+  ws.headerFooter.oddFooter=`&L&8${S.coName} ${sheetName}&R&8&P / &N`;
+
+}
+/* ───────── 산출내역서 (엑셀 수식 연결) ───────── */
+const BD_ROWS=[
+  ["count","인원(명)","i","기초자료"],["wage","시급","i"],["base","기본시간(주휴포함)","i"],["ot","연장근로시간","i"],["night","야간근로시간","i"],
+  ["holDays","공휴일근무(일/년)","i"],["leaveDays","연차적치일수","i"],["ldH","근로자의날 유급시간","i"],["watch","감시단속(1=승인)","i"],["retF","퇴직충당금(1=반영)","i"],
+  ["penP","국민연금 적용률","i"],["specF","특수검진(1=적용)","i"],["addEx","부대비용 배분제외(1=제외)","i"],["months","연간 근무개월","i"],["ordinary","통상시급","hc"],
+  ["basic","기본급여","","직접인건비"],["ot$","연장근로수당",""],["night$","야간가산수당",""],["pos","직책수당",""],["hol","공휴일근무수당",""],["duty","직무수당",""],["meal","식대(비과세)",""],["adj","조정수당",""],["sub1","소  계","s"],
+  ["leave","연차수당(적치)",""],["laborDay","근로자의날",""],["retire","퇴직충당금",""],["direct","직접비 계 ①","s"],
+  ["health","건강보험료","","간접인건비"],["ltc","노인장기요양보험",""],["pension","국민연금",""],["emp","고용보험료",""],["ind","산재보험료",""],["wclaim","임금채권부담금",""],["asb","석면피해구제분담금",""],["special","특수건강검진",""],["dis","장애인고용부담금",""],["indirect","간접비 계 ②","s"],["labor","노무비 계 (1)","s"],
+  ["uniform","피복장구비","","경비"],["gift","직원선물대",""],["meeting","직원회의비",""],["condol","경조비",""],["relief","대치근무비",""],["resTax","주민세(사업소분)",""],["edu","교육훈련비",""],["risk","위험부담금",""],["addon","부대비용 배분",""],["expense","경비 계 (2)","s"],
+  ["dcost","1. 직접원가","s","원가"],["ga","2. 일반관리비",""],["csub","3. 원가소계",""],["profit","4. 기업이윤",""],["total","5. 원가총계","s"],["price","6. 견적금액(인당)","k"]];
+const BD_TOP=10;
+const bdRowOf=k=>BD_TOP+BD_ROWS.findIndex(x=>x[0]===k);
+const bdColL=i=>{ let n=3+i, s=""; while(n>0){ const m=(n-1)%26; s=String.fromCharCode(65+m)+s; n=Math.floor((n-1)/26); } return s; };
+const BD_DESC={
+  basic:"ROUNDUP(시급 × 기본시간, -1)", "ot$":"감시단속: 시급×배율 / 일반: 통상시급×1.5 × 연장시간", "night$":"ROUNDUP(야간근로시간 × 가산율 × 통상시급, -1)",
+  hol:"시급 × 공휴일수 × 8h × 50% ÷ 12", sub1:"기본급여 ~ 조정수당 합계", leave:"ROUNDUP(통상시급 × 연차1일시간 × 적치일수 ÷ 12, -1)",
+  laborDay:"ROUNDUP(유급시간 ÷ 12 × 통상시급, -1)", retire:"ROUNDUP((소계+연차+근로자의날) ÷ 12, -1)", direct:"소계 + 연차 + 근로자의날 + 퇴직충당금",
+  health:"ROUNDUP((직접비 계 − 퇴직충당금 − 식대) × 건강보험요율, -1)", ltc:"ROUNDUP(건강보험료 × 장기요양요율, -1)", pension:"ROUNDUP((직접비−퇴직−식대) × 국민연금요율 × 적용률, -1)",
+  emp:"ROUNDUP((직접비−퇴직−식대) × 고용보험요율, -1)", ind:"ROUNDUP((직접비−퇴직−식대) × 산재보험요율, -1)", wclaim:"ROUNDUP((직접비−퇴직−식대) × 임금채권요율, -1)", asb:"ROUNDUP((직접비−퇴직−식대) × 석면요율, -1)",
+  special:"ROUNDUP(연 검진비 ÷ 12, -1)", dis:"ROUNDUP(의무고용률 × 부담기초액 × 반영률, -1)", indirect:"건강보험 ~ 장애인부담금 합계", labor:"직접비 ① + 간접비 ②",
+  gift:"ROUNDUP(명절선물 ÷ 12, -1)", relief:"통상시급 × 기준시간 × 대치일수 ÷ 12", resTax:"주민세 × 개소 ÷ 12 ÷ 총인원", edu:"고정액 또는 노무비 × 교육훈련비율", risk:"고정액 또는 노무비 × 위험부담율",
+  addon:"부대비용 월계 ÷ 배분 인원", expense:"피복 ~ 부대비용 합계", dcost:"노무비 (1) + 경비 (2)", ga:"직접원가 × 일반관리비율", csub:"직접원가 + 일반관리비", profit:"직접원가(또는 원가소계) × 이윤율", total:"원가소계 + 기업이윤", price:"원가총계 단수처리"
+};
+async function buildBdSheet(wb, sheetName, R, Y, m, S, logoId, logoSm, tab){
+  const nc=R.rows.length, lastC=2+nc+3+1; // +산출근거 열
+  const ws=wb.addWorksheet(sheetName,{properties:{tabColor:{argb:tab}},views:[{showGridLines:false,state:"frozen",xSplit:2,ySplit:9}],pageSetup:{paperSize:9,orientation:"landscape",fitToPage:true,fitToWidth:1,fitToHeight:0,margins:{left:.3,right:.3,top:.4,bottom:.4,header:.2,footer:.2}}});
+  ws.columns=[{width:11},{width:20},...R.rows.map(()=>({width:13})),{width:15},{width:13},{width:16},{width:44}];
+  xHeader(ws,wb,logoId,`${Y}년 ${m.client||""} 산출내역서`,`${m.svc} · 용역기간 ${fmtD(m.from)} ~ ${fmtD(m.to)} · 단위: 원, VAT 별도 · 노란 칸 = 입력값(수정 시 자동 재계산)`,Math.max(lastC,7),logoSm);
+  const cT=nc+3, cA=nc+4, cY=nc+5, cD=nc+6, LT=bdColL(nc), LA=bdColL(nc+1), LY=bdColL(nc+2), Lfirst=bdColL(0), Llast=bdColL(nc-1);
+  // 헤더
+  const r0=7, hh=ws.getRow(r0), hh2=ws.getRow(r0+1), hh3=ws.getRow(r0+2);
+  ws.mergeCells(r0,1,r0+2,2); hh.getCell(1).value="구  분";
+  R.rows.forEach(({r,L},i)=>{ const c=3+i; hh.getCell(c).value=CATS[r.cat].short; hh2.getCell(c).value=r.rank+(r.detail?`\n${r.detail}`:""); hh3.getCell(c).value=shiftLabel(r).replace(/\s*\(.*\)/,""); });
+  [["월간총액",cT],["평균단가",cA],["계약기간 계",cY],["산출 근거 (수식)",cD]].forEach(([t,c])=>{ ws.mergeCells(r0,c,r0+2,c); hh.getCell(c).value=t; });
+  [hh,hh2,hh3].forEach((rw,ri)=>{ rw.height=ri===1?30:18; for(let c=1;c<=lastC;c++){ const cc=rw.getCell(c); cc.font=xFont({bold:true,size:9,color:{argb:XC.white}}); cc.fill=xFill(ri===0?XC.navy:"FF2A3A9C"); cc.alignment={horizontal:"center",vertical:"middle",wrapText:true}; cc.border=xBorder("FF41509F"); } });
+
+  // 산출 기준(요율) 블록 위치
+  const pStart=BD_TOP+BD_ROWS.length+3;
+  const spread=R.spread?1:0, addTot=Math.round((R.add&&R.add.total)||0);
+  const PR=[
+    ["health","건강보험",pct(S.health),"0.000%","보수월액 × 7.19% 중 사업주분"],["ltc","노인장기요양 (건보료 대비)",pct(S.ltc),"0.00%",""],["pension","국민연금",pct(S.pension),"0.000%",""],
+    ["emp","고용보험",pct(S.emp),"0.000%","실업급여 + 고용안정·직능(규모별)"],["ind","산재보험",pct(S.ind),"0.000%","사업종류별 + 출퇴근재해"],["wageClaim","임금채권부담금",pct(S.wageClaim),"0.000%",""],["asb","석면피해구제분담금",pct(S.asb),"0.0000%",""],
+    ["otGen","연장 가산배율 (일반)",+S.otGen,"0.0#",""],["otWatch","연장 배율 (감시단속)",+S.otWatch,"0.0#",""],["nightRate","야간 가산율",+S.nightRate,"0.0#",""],["leaveH","연차 1일 시간",+S.leaveH||8,"0",""],
+    ["exam","특수건강검진 (연/인)",+S.specialExam,"#,##0",""],["disOn","장애인부담금 반영 (1=반영)",S.disOn?1:0,"0",""],["disRate","장애인 의무고용률",pct(S.disRate),"0.0%",""],["disBase","부담기초액",+S.disBase,"#,##0",""],["disRatio","부담금 반영률",pct(S.disRatio),"0%",""],
+    ["gift","명절선물대 (연/인)",+S.gift,"#,##0",""],["meeting","직원회의비 (월)",+S.meeting,"#,##0",""],["condol","경조비 (월)",+S.condol,"#,##0",""],["reliefH","대치근무 기준시간",+S.reliefH,"0.##",""],["reliefDays","대치근무 일수 (연)",+S.reliefDays,"0.##",""],
+    ["resTax","주민세 사업소분 (연)",+S.resTax,"#,##0",""],["resSites","주민세 개소 수",+S.resSites,"0",""],["heads","총 인원",{formula:`SUM(${Lfirst}${bdRowOf("count")}:${Llast}${bdRowOf("count")})`,result:R.heads},"0","인원 행 합계"],
+    ["edu","교육훈련비율 (노무비 대비)",pct(S.edu),"0.0%",""],["eduFix","교육훈련비 고정액",+S.eduFix,"#,##0","0이면 비율 적용"],["risk","위험부담율 (노무비 대비)",pct(S.risk),"0.0%",""],["riskFix","위험부담금 고정액",+S.riskFix,"#,##0","0이면 비율 적용"],
+    ["spread","부대비용 인당 배분 (1=배분)",spread,"0","0이면 별도 청구"],["addTot","부대비용 월계",addTot,"#,##0","차량·장비·기타"],
+    ["elig","배분 대상 인원",{formula:`SUMPRODUCT(${Lfirst}${bdRowOf("count")}:${Llast}${bdRowOf("count")},1-${Lfirst}${bdRowOf("addEx")}:${Llast}${bdRowOf("addEx")})`,result:R.elig||R.heads},"0",""],
+    ["ga","일반관리비율",pct(S.ga),"0.0%",""],["gaRound","일반관리비 10원 절상 (1=예)",S.gaRound?1:0,"0",""],["profit","기업이윤율",pct(S.profit),"0.0%",""],["profitSub","이윤 기준 (0=직접원가, 1=원가소계)",S.profitBase==="sub"?1:0,"0",""]
+  ];
+  const pRow={}; PR.forEach(([k],i)=>pRow[k]=pStart+1+i);
+  const P=k=>`$C$${pRow[k]}`;
+  const priceF={down3:t=>`ROUNDDOWN(${t},-3)`,up3:t=>`ROUNDUP(${t},-3)`,down2:t=>`ROUNDDOWN(${t},-2)`,none:t=>`ROUNDUP(${t},0)`}[S.priceRound]||(t=>`ROUNDDOWN(${t},-3)`);
+
+  const FMT='#,##0;-#,##0;"-"';
+  let grp="";
+  BD_ROWS.forEach(([k,lbl,typ,g],idx)=>{
+    const row=BD_TOP+idx, rw=ws.getRow(row); const firstOfGrp=!!g&&g!==grp; if(g) grp=g;
+    rw.height=typ==="s"||typ==="k"?19:16.5;
+    rw.getCell(1).value=g||""; rw.getCell(2).value=lbl;
+    R.rows.forEach(({r,L},i)=>{
+      const C=bdColL(i), c=x=>`${C}${bdRowOf(x)}`, ib=`(${c("direct")}-${c("retire")}-${c("meal")})`;
+      const spF = r.special==="on" || (r.special==="auto" && +r.night>0) ? 1 : 0;
+      const inputs={count:L.count, wage:+r.wage, base:+r.base, ot:+r.ot, night:+r.night, holDays:+r.holDays||0, leaveDays:+r.leave||0,
+        ldH:r.laborDay?Math.max(0,(+r.dayH||0)-(+r.rest||0)):0, watch:r.watch?1:0, retF:r.retire?1:0, penP:pct(r.pensionPct), specF:spF, addEx:r.addonEx?1:0, months:L.months,
+        pos:+r.pos||0, duty:+r.duty||0, meal:+r.meal||0, adj:+r.adj||0, uniform:+r.uniform||0};
+      const F={
+        ordinary:`IF(${c("base")}=0,0,(${c("basic")}+${c("pos")}+${c("adj")}+${c("duty")})/${c("base")})`,
+        basic:`ROUNDUP(${c("base")}*${c("wage")},-1)`,
+        "ot$":`IF(${c("ot")}=0,0,ROUNDUP(${c("ot")}*IF(${c("watch")}=1,${c("wage")}*${P("otWatch")},${c("ordinary")}*${P("otGen")}),-1))`,
+        "night$":`ROUNDUP(${c("night")}*${P("nightRate")}*${c("ordinary")},-1)`,
+        hol:`IF(${c("holDays")}=0,0,ROUNDUP(${c("wage")}*${c("holDays")}*8*0.5/12,-1))`,
+        sub1:`SUM(${c("basic")}:${c("adj")})`,
+        leave:`ROUNDUP(${c("ordinary")}*${P("leaveH")}*${c("leaveDays")}/12,-1)`,
+        laborDay:`ROUNDUP(${c("ldH")}/12*${c("ordinary")},-1)`,
+        retire:`IF(${c("retF")}=1,ROUNDUP((${c("sub1")}+${c("leave")}+${c("laborDay")})/12,-1),0)`,
+        direct:`${c("sub1")}+${c("leave")}+${c("laborDay")}+${c("retire")}`,
+        health:`ROUNDUP(${ib}*${P("health")},-1)`,
+        ltc:`ROUNDUP(${c("health")}*${P("ltc")},-1)`,
+        pension:`ROUNDUP(${ib}*${P("pension")}*${c("penP")},-1)`,
+        emp:`ROUNDUP(${ib}*${P("emp")},-1)`, ind:`ROUNDUP(${ib}*${P("ind")},-1)`, wclaim:`ROUNDUP(${ib}*${P("wageClaim")},-1)`,
+        asb:`IF(${P("asb")}=0,0,ROUNDUP(${ib}*${P("asb")},-1))`,
+        special:`IF(${c("specF")}=1,ROUNDUP(${P("exam")}/12,-1),0)`,
+        dis:`IF(${P("disOn")}=1,ROUNDUP(${P("disRate")}*${P("disBase")}*${P("disRatio")},-1),0)`,
+        indirect:`SUM(${c("health")}:${c("dis")})`,
+        labor:`${c("direct")}+${c("indirect")}`,
+        gift:`IF(${P("gift")}=0,0,ROUNDUP(${P("gift")}/12,-1))`, meeting:`${P("meeting")}`, condol:`${P("condol")}`,
+        relief:`${c("ordinary")}*${P("reliefH")}*${P("reliefDays")}/12`,
+        resTax:`IF(${P("heads")}=0,0,${P("resTax")}*${P("resSites")}/12/${P("heads")})`,
+        edu:`IF(${P("eduFix")}>0,${P("eduFix")},${c("labor")}*${P("edu")})`,
+        risk:`IF(${P("riskFix")}>0,${P("riskFix")},${c("labor")}*${P("risk")})`,
+        addon:`IF(OR(${P("spread")}=0,${c("addEx")}=1,${P("elig")}=0),0,${P("addTot")}/${P("elig")})`,
+        expense:`SUM(${c("uniform")}:${c("addon")})`,
+        dcost:`${c("labor")}+${c("expense")}`,
+        ga:`IF(${P("gaRound")}=1,ROUNDUP(${c("dcost")}*${P("ga")},-1),${c("dcost")}*${P("ga")})`,
+        csub:`${c("dcost")}+${c("ga")}`,
+        profit:`IF(${P("profitSub")}=1,${c("csub")},${c("dcost")})*${P("profit")}`,
+        total:`${c("csub")}+${c("profit")}`,
+        price:priceF(c("total"))
+      };
+      const resKey={ "ot$":"ot","night$":"night" }[k]||k;
+      const cell=rw.getCell(3+i);
+      if(typ==="i" || inputs[k]!==undefined && !F[k]){ cell.value=inputs[k]; cell.fill=xFill("FFFFF6D5"); cell.numFmt=k==="penP"?"0%":["watch","retF","specF","addEx","count","months"].includes(k)?"0":"#,##0.##"; }
+      else { cell.value={formula:F[k],result:Math.round((L[resKey]||0)*100)/100}; cell.numFmt=k==="ordinary"?"#,##0.00":FMT; }
+    });
+    // 합계 열
+    const rng=`${Lfirst}${row}:${Llast}${row}`, cnt=`${Lfirst}${bdRowOf("count")}:${Llast}${bdRowOf("count")}`, mon=`${Lfirst}${bdRowOf("months")}:${Llast}${bdRowOf("months")}`;
+    if(typ!=="i"&&typ!=="hc"){
+      const sum=R.rows.reduce((a,{L})=>a+(L[{ "ot$":"ot","night$":"night" }[k]||k]||0)*L.count,0);
+      rw.getCell(cT).value={formula:`SUMPRODUCT(${rng},${cnt})`,result:Math.round(sum)};
+      rw.getCell(cA).value={formula:`IF(${P("heads")}=0,0,${LT}${row}/${P("heads")})`,result:R.heads?Math.round(sum/R.heads):0};
+      rw.getCell(cY).value={formula:`SUMPRODUCT(${rng},${cnt},${mon})`,result:Math.round(R.rows.reduce((a,{L})=>a+(L[{ "ot$":"ot","night$":"night" }[k]||k]||0)*L.count*L.months,0))};
+      [cT,cA,cY].forEach(c=>rw.getCell(c).numFmt=FMT);
+    } else if(k==="count"){ rw.getCell(cT).value={formula:`SUM(${rng})`,result:R.heads}; rw.getCell(cT).numFmt="0"; }
+    rw.getCell(cD).value=BD_DESC[k]||(typ==="i"?"입력값":"");
+    // 서식
+    if(typ==="i"||typ==="hc"){
+      for(let c=1;c<=lastC;c++){ const cc=rw.getCell(c); cc.border=xBorder(); if(c<=2||c>=cT) cc.fill=xFill("FFFAFBFD");
+        cc.font=xFont({size:9,bold:c===1||typ==="hc",color:c===1?{argb:XC.navy}:c===cD?{argb:XC.muted}:undefined}); if(c<=2) cc.alignment={horizontal:c===1?"center":"left",vertical:"middle"}; }
+      if(firstOfGrp) for(let c=1;c<=lastC;c++) rw.getCell(c).border={...xBorder(),top:XMED(XC.navy)};
+      if(k==="ordinary") for(let c=1;c<=lastC;c++) rw.getCell(c).border={...xBorder(),bottom:XMED(XC.navy)};
+    } else {
+      styleBdRow(rw,1,lastC,typ,grp,k,firstOfGrp);
+      for(let c=2;c<=lastC;c++){ const cc=rw.getCell(c); cc.font=xFont({size:typ==="s"||typ==="k"?9.5:9,bold:typ==="s"||typ==="k",color:typ==="k"?{argb:XC.white}:c===cD?{argb:XC.muted}:undefined}); }
+      if(typ!=="s"&&typ!=="k") rw.getCell(2).alignment={horizontal:"left",vertical:"middle",indent:1};
+      if(["pos","duty","meal","adj","uniform"].includes(k)) R.rows.forEach((_,i)=>rw.getCell(3+i).fill=xFill("FFFFF6D5"));
+    }
+    rw.getCell(cD).font=xFont({size:8.5,color:typ==="k"?{argb:XC.white}:{argb:XC.muted}}); rw.getCell(cD).alignment={vertical:"middle",shrinkToFit:true};
+  });
+
+  // 산출 기준 블록
+  let r2=pStart-1;
+  const t=ws.getRow(r2).getCell(1); t.value=`■ 산출 기준 (${Y}년 · 사업주 부담) — 노란 칸의 요율·기준을 고치면 위 산출내역이 모두 다시 계산됩니다`; t.font=xFont({size:10,bold:true,color:{argb:XC.navy}}); ws.getRow(r2).height=20; r2++;
+  const hd=ws.getRow(r2); [["항목",2],["값",3],["비고",4]].forEach(([v,c])=>{ const x=hd.getCell(c); x.value=v; x.font=xFont({size:9,bold:true,color:{argb:XC.white}}); x.fill=xFill(XC.navy); x.alignment={horizontal:"center"}; x.border=xBorder("FF41509F"); });
+  if(nc>=2) ws.mergeCells(r2,4,r2,Math.min(4+2,cT));
+  PR.forEach(([k,l,v,f,note])=>{ const row=pRow[k], rw=ws.getRow(row); rw.height=16;
+    const a=rw.getCell(2); a.value=l; a.font=xFont({size:9}); a.border=xBorder(); a.fill=xFill("FFF5F7FC");
+    const b=rw.getCell(3); b.value=v; b.numFmt=f; b.font=xFont({size:9.5,bold:true,color:{argb:XC.navy}}); b.border=xBorder(); b.fill=xFill(v&&v.formula?"FFF5F7FC":"FFFFF6D5"); b.alignment={horizontal:"right"};
+    const n=rw.getCell(4); n.value=note||""; n.font=xFont({size:8.5,color:{argb:XC.muted}}); });
+  r2=pStart+PR.length+2;
+  ws.addImage(logoId,{tl:{col:0.1,row:r2-1+0.1},ext:logoSm});
+  ws.mergeCells(r2,3,r2,lastC); const ft=ws.getRow(r2).getCell(3); ft.value=`${S.coName} · ${S.coBranch}   |   ${S.coAddr}`; ft.font=xFont({size:9,color:{argb:XC.muted}}); ft.alignment={horizontal:"right",vertical:"middle"};
+  ws.getRow(r2).height=26;
+  ws.headerFooter.oddFooter=`&L&8${S.coName} ${sheetName}&R&8&P / &N`;
+  return {sheet:sheetName, col:bdColL, priceRow:bdRowOf("price"), countRow:bdRowOf("count")};
+}
+
+let xPerson=null;
+async function exportXlsx(){
+  if(!window.ExcelJS){ toast("엑셀 라이브러리를 불러오지 못했습니다"); return; }
+  toast("엑셀 파일을 만드는 중…");
+  try{
+  const R=calcAll(state), m=state.meta, S=state.set, Y=m.year;
+  const wb=new ExcelJS.Workbook(); wb.creator=S.coName; wb.created=new Date();
+  const logo=await imgPng("logo",360); const logoId=wb.addImage({base64:logo.base64,extension:"png"});
+  const pimg=await imgPng("person",240); xPerson={id:wb.addImage({base64:pimg.base64,extension:"png"}), w:pimg.w, h:pimg.h};
+  const logoBig={w:150,h:Math.round(150*logo.h/logo.w)}, logoSm={w:90,h:Math.round(90*logo.h/logo.w)};
+  const qr=quoteRows(R), prevCol=qr.some(x=>x.prev>0), crew=crewByCat(R.rows);
+
+  const prev=prevDataset(), tagC=prev?`(${Y})`:"";
+  await buildCover(wb, R, crew, m, S, logoId, logo, prev);
+  const link=nm=>({sheet:nm, col:bdColL, priceRow:bdRowOf("price"), countRow:bdRowOf("count")});
+  await buildQuoteSheet(wb, `견적서${tagC}`, R, qr, crew, Y, m, S, prevCol, logoId, logoBig, logoSm, condText(), XC.navy, prev?`Q U O T A T I O N  ·  ${Y}년 견적`:"Q U O T A T I O N", link(`산출내역서${tagC}`));
+  await buildBdSheet(wb, `산출내역서${tagC}`, R, Y, m, S, logoId, logoSm, XC.navy);
+  if(prev){
+    await addCompareSheet(wb, logoId, logoSm);
+    await buildQuoteSheet(wb, `견적서(${prev.Y})`, prev.R, prev.qr, prev.crew, prev.Y, prev.m, prev.S, false, logoId, logoBig, logoSm, prev.cond, "FF8A93AD", `Q U O T A T I O N  ·  ${prev.Y}년 현행(당해년) 견적`, link(`산출내역서(${prev.Y})`));
+    await buildBdSheet(wb, `산출내역서(${prev.Y})`, prev.R, prev.Y, prev.m, prev.S, logoId, logoSm, "FF8A93AD");
+  }
+  /* ── 부대비용 ── */
+  const w3=wb.addWorksheet("부대비용",{views:[{showGridLines:false}],pageSetup:{paperSize:9,orientation:"portrait",fitToPage:true,fitToWidth:1,fitToHeight:0}});
+  w3.columns=[{width:11},{width:26},{width:7},{width:14},{width:62}];
+  xHeader(w3,wb,logoId,"부대비용 산출 명세",`${m.client||""} · 반영방식 ${R.spread?"인당 단가 균등 배분":"별도 청구"} · 단위: 원, VAT 별도`,5,logoSm);
+  let r3=7; const h=w3.getRow(r3); ["구분","항목","수량","월 금액","산출 근거"].forEach((t,i)=>{ const c=h.getCell(i+1); c.value=t; c.font=xFont({bold:true,color:{argb:XC.white},size:9.5}); c.fill=xFill(XC.navy); c.alignment={horizontal:"center"}; c.border=xBorder(XC.navy); });
+  const lines=[];
+  state.vehicles.forEach(v=>{ const c=vehMonthly(v); lines.push(["업무차량",v.name,v.qty,c.total,`감가 ${won(c.parts.depr)} + 소모품 ${won(c.parts.cons)} + 수리 ${won(c.parts.repair)} + 검사·세금·보험 ${won(c.parts.insp+c.parts.tax+c.parts.ins)} + 유류 ${won(c.parts.fuel)} = ${won(c.sum)} → 만원 절상 ${won(c.unit)}`]); });
+  state.equips.forEach(e=>lines.push(["장비",e.name,e.qty,Math.round(eqMonthly(e)),e.mode==="new"?`신규구매 ${won(e.price*e.qty)} × (1+${e.rep}%) ÷ ${e.months}개월`:`보유장비 ${won(e.price*e.qty)} × 수선율 ${e.rep}% ÷ 12개월`]));
+  state.others.forEach(o=>lines.push(["기타",o.name,"",Math.round(etcMonthly(o)),`${won(o.amount)}원 / ${o.cycle}${o.cycle==="1회"?` ÷ ${o.months}개월`:o.cycle==="연"?" ÷ 12개월":""} ${o.note||""}`]));
+  lines.push(["합계","","",Math.round(R.add.total),R.spread&&R.elig?`인당 ${won(R.add.total/R.elig)}원 배분 (${R.elig}명)`:R.sepLine?`별도 청구액 ${won(R.sepLine.total)}원`:""]);
+  lines.forEach((l,i)=>{ r3++; const rw=w3.getRow(r3); l.forEach((v,k)=>{ const c=rw.getCell(k+1); c.value=v===""?null:v; c.border=xBorder(); c.font=xFont({size:9,bold:i===lines.length-1}); if(k===3) c.numFmt="#,##0"; if(k===4) c.alignment={wrapText:true,vertical:"middle"}; if(i===lines.length-1) c.fill=xFill(XC.soft); }); rw.height=l[4]&&l[4].length>60?30:18; });
+
+  const buf=await wb.xlsx.writeBuffer();
+  const d=m.date?m.date.slice(2).replace(/-/g,""):"";
+  await offerFile(`${d} ${m.client||"견적"} ${Y} 견적서.xlsx`, buf, "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet");
+  }catch(err){ console.error(err); toast("엑셀 생성 중 오류: "+(err&&err.message||err)); }
+}
+
+/* ───────── 시작 ───────── */
+function applyState(st){
+  state=st; uid = 1000; state.roles.forEach(migrateRole);
+  if(!state.meta.mode) state.meta.mode = state.roles.length||state.meta.siteId ? "renew" : "new";
+  bindMeta(); renderRoles(); renderSettings(); renderAddons(); renderSiteInfo(); renderMode();
+  if(map){ showSel(); if(state.meta.lat==null) map.setView([35.55,128.9],8); }
+  recalc();
+}
+function boot(){
+  renderCats();
+  const draft = LS.get("stec_quote_draft",null);
+  state = draft && draft.meta && draft.set ? Object.assign(newState(), draft, {set:Object.assign(defaultSettings(draft.meta.year), draft.set)}) : null;
+  if(!state){ loadSample("song"); }
+  else applyState(state);
+  onMeta();
+  $$(".step").forEach(b=>b.onclick=()=>go(+b.dataset.step));
+  $("#btnLookup").onclick=lookupOnline;
+  $("#btnPick").onclick=()=>{ pickMode=!pickMode; $("#btnPick").classList.toggle("pri",pickMode); $("#lookupMsg").textContent=pickMode?"지도에서 사업장 위치를 클릭하세요.":""; };
+  $("#btnFromSite").onclick=draftFromSite;
+  renderKakao();
+  $("#kk_save").onclick=async()=>{ const k=$("#kk_key").value.trim(); const msg=$("#kk_msg"); if(!k){ msg.textContent="키를 입력하세요"; return; }
+    msg.textContent="확인 중…";
+    try{ const res=await kakaoSearch("울산시청",k,1); try{ localStorage.setItem("stec_kakao_key",k); }catch(e){}
+      msg.textContent=res.length?"연결되었습니다 ✓":"연결되었습니다 (테스트 결과 0건)"; renderKakao(); setTimeout(()=>$("#kakaoBox").hidden=true,900); }
+    catch(e){ msg.textContent=(e&&e.kakao)||(inFrame?"이 화면에서는 외부 연결이 차단됩니다. PC용 HTML 파일에서 설정하세요.":"카카오 서버에 연결할 수 없습니다."); } };
+  $("#kk_del").onclick=()=>{ try{ localStorage.removeItem("stec_kakao_key"); }catch(e){} $("#kk_key").value=""; $("#kk_msg").textContent="삭제했습니다"; renderKakao(); };
+  $$(".seg [data-mode]").forEach(b=>b.onclick=()=>{ state.meta.mode=b.dataset.mode; renderMode(); persistDraft(); if($("#m_client").value.trim()) suggest(); $("#m_client").focus(); });
+  $("#sampleSel").onchange=e=>{ if(e.target.value) loadSample(e.target.value); e.target.value=""; };
+  $("#btnNew").onclick=()=>{ if(state.roles.length) rollover(); else toast("갱신할 견적이 없습니다 · 예시 견적이나 저장된 견적을 먼저 여세요"); };
+  $("#btnBlank").onclick=()=>{ applyState(newState()); go(1); setTimeout(()=>$("#m_client").focus(),300); toast("신규 영업 견적을 시작합니다 · 영업 대상 사업장을 검색하세요"); };
+  $("#btnSave").onclick=saveQuote;
+  $("#btnXlsx").onclick=exportXlsx; $("#btnXlsx2").onclick=exportXlsx;
+  if(inFrame) $("#btnPrint").hidden=true;
+  $("#btnPrint").onclick=()=>window.print();
+  $$("[data-addveh]").forEach(b=>b.onclick=()=>{ state.vehicles.push(newVeh(b.dataset.addveh)); renderAddons(); recalc(); });
+  $("#eqCat").innerHTML=EQUIP_CAT.map(([n,p],i)=>`<option value="${i}">${n} · ${won(p)}원</option>`).join("");
+  $("#btnAddEq").onclick=()=>{ const [n,p]=EQUIP_CAT[+$("#eqCat").value]; state.equips.push({id:nid(),name:n,mode:"new",qty:1,price:p,rep:5,months:60}); renderAddons(); recalc(); };
+  $("#btnAddEtc").onclick=()=>{ state.others.push({id:nid(),name:"청소 소모품비",amount:300000,cycle:"월",months:24,note:""}); renderAddons(); recalc(); };
+  $("#am_spread").onchange=()=>{ state.addonMode="spread"; renderAddons(); recalc(); };
+  $("#am_sep").onchange=()=>{ state.addonMode="separate"; renderAddons(); recalc(); };
+  $("#am_margin").onchange=e=>{ state.addonMargin=e.target.checked; recalc(); };
+  $$("[data-doc]").forEach(b=>b.onclick=()=>{ $$("[data-doc]").forEach(x=>x.setAttribute("aria-selected",x===b)); $("#docQuote").hidden=b.dataset.doc!=="quote"; $("#docBd").hidden=b.dataset.doc!=="bd"; $("#docAdd").hidden=b.dataset.doc!=="add"; $("#docCmp").hidden=b.dataset.doc!=="cmp"; });
+  $("#btnJson").onclick=()=>offerFile(`견적_${state.meta.client||"백업"}.json`, JSON.stringify(state,null,1), "application/json");
+  $("#fileJson").onchange=e=>{ const f=e.target.files[0]; if(!f) return; const rd=new FileReader(); rd.onload=()=>{ try{ const st=JSON.parse(rd.result); applyState(Object.assign(newState(),st,{set:Object.assign(defaultSettings(st.meta.year),st.set)})); toast("JSON 견적을 불러왔습니다"); }catch(err){ toast("JSON 형식이 올바르지 않습니다"); } }; rd.readAsText(f); e.target.value=""; };
+  renderSaved();
+  let st=1; try{ st=+localStorage.getItem("stec_step")||1; }catch(e){}
+  go(st);
+}
+window.__st = ()=>state;
+window.__calc = { calcAll, calcRole, vehMonthly, defaultSettings, newRole, loadSample: k=>{loadSample(k); return calcAll(state);} };
+if(document.readyState==="loading") document.addEventListener("DOMContentLoaded",boot); else boot();
+</script>
