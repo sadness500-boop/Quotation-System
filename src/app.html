@@ -167,6 +167,45 @@ textarea.inp{resize:vertical;min-height:110px;line-height:1.6}
 .rn-tbl td,.rn-tbl th{font-size:12px;padding:5px 6px}.rn-warn{color:#b4561b;font-weight:700}
 @media (max-width:640px){.rn-ov{padding:0}.rn-src,.rn-cloud{grid-template-columns:1fr}.rn-pop{margin:0;border-radius:0;min-height:100%}}
 .veh-quick{display:flex;flex-wrap:wrap;gap:6px;margin:-2px 0 6px}
+/* 성장 스트립 · 성장 카드 */
+.topbar .sp{display:flex;justify-content:center;min-width:0}
+.gstrip{display:flex;align-items:center;gap:14px;padding:6px 16px 6px 10px;border-radius:999px;background:rgba(255,255,255,.08);border:1px solid rgba(255,255,255,.16);max-width:640px;min-width:0;overflow:hidden}
+.gstrip svg{flex:none}
+.gstrip .gs-k{display:flex;flex-direction:column;line-height:1.1;white-space:nowrap}
+.gstrip .gs-k b{font-size:16px;font-weight:800;color:#fff}.gstrip .gs-k b em{font-style:normal;color:#8ee59f;font-size:12px;margin-left:3px}
+.gstrip .gs-k small{font-size:10.5px;opacity:.7}
+.gstrip .gs-sep{width:1px;height:26px;background:rgba(255,255,255,.18);flex:none}
+.gstrip .gs-slogan{position:relative;min-width:200px;height:20px;overflow:hidden;font-size:13px;font-weight:600;color:#dfe5ff;flex:1}
+.gstrip .gs-slogan span{position:absolute;left:0;top:0;white-space:nowrap;opacity:0;transform:translateY(12px);transition:opacity .5s,transform .5s}
+.gstrip .gs-slogan span.on{opacity:1;transform:none}
+@media (max-width:1280px){.gstrip .gs-slogan,.gstrip .gs-sep.s2{display:none}}
+@media (max-width:1080px){.gstrip{display:none}}
+.grow{flex:none;margin-top:14px;border-radius:14px;overflow:hidden;background:linear-gradient(165deg,#1b2a86 0%,#14206a 55%,#0f6b3a 140%);color:#fff;box-shadow:0 6px 20px rgba(20,32,106,.25);position:relative}
+.grow::after{content:"";position:absolute;right:-40px;top:-40px;width:140px;height:140px;border-radius:50%;background:radial-gradient(circle,rgba(142,229,159,.25),transparent 70%);pointer-events:none}
+.grow .g-hd{display:flex;align-items:center;gap:10px;padding:14px 14px 4px}
+.grow .g-hd img{width:46px;height:40px;object-fit:cover;border-radius:8px;box-shadow:0 2px 6px rgba(0,0,0,.35)}
+.grow .g-hd b{display:block;font-size:13.5px;line-height:1.25}.grow .g-hd small{font-size:10.5px;opacity:.75}
+.grow .g-chart{padding:4px 8px 0}
+.grow .g-chart svg{width:100%;height:auto;display:block}
+.grow .g-cap{font-size:10px;opacity:.65;padding:0 14px 8px}
+.grow .g-tiles{display:grid;grid-template-columns:1fr 1fr;gap:1px;background:rgba(255,255,255,.12);border-top:1px solid rgba(255,255,255,.12)}
+.grow .g-tile{background:rgba(10,16,60,.35);padding:9px 12px}
+.grow .g-tile b{display:block;font-size:19px;font-weight:800;letter-spacing:-.02em}.grow .g-tile b small{font-size:11px;font-weight:600;opacity:.8;margin-left:2px}
+.grow .g-tile span{font-size:10.5px;opacity:.75}
+.grow .g-br{padding:10px 14px 4px}
+.grow .g-br .r{display:grid;grid-template-columns:34px 1fr 42px;align-items:center;gap:6px;font-size:11px;margin-bottom:6px}
+.grow .g-br .bar{height:7px;border-radius:4px;background:rgba(255,255,255,.12);overflow:hidden}
+.grow .g-br .bar i{display:block;height:100%;border-radius:4px;background:linear-gradient(90deg,#5fcf7a,#b6f0c2);width:0;transition:width 1.2s cubic-bezier(.2,.8,.2,1)}
+.grow .g-br .r.me{font-weight:800}.grow .g-br .r.me .bar i{background:linear-gradient(90deg,#ffd166,#fff1b8)}
+.grow .g-br .n{text-align:right;opacity:.85}
+.grow .g-ft{padding:8px 14px 14px;font-size:11.5px;font-weight:700;color:#b6f0c2;display:flex;align-items:center;gap:6px}
+@keyframes gdraw{from{stroke-dashoffset:var(--len)}to{stroke-dashoffset:0}}
+@keyframes gfade{from{opacity:0}to{opacity:1}}
+.g-line{stroke-dasharray:var(--len);animation:gdraw 1.8s cubic-bezier(.3,.7,.2,1) forwards}
+.g-area,.g-end{opacity:0;animation:gfade .8s 1.2s forwards}
+@media (prefers-reduced-motion:reduce){.g-line,.g-area,.g-end{animation:none;opacity:1;stroke-dasharray:none}}
+@media (min-width:1101px){nav.steps>.step{flex:none}nav.steps{max-height:calc(100vh - 96px);overflow-y:auto;scrollbar-width:none;padding-bottom:8px}nav.steps::-webkit-scrollbar{display:none}}
+@media (max-width:1100px){.grow{display:none}}
 .qr-ov{position:fixed;inset:0;background:rgba(10,16,40,.6);z-index:200;display:grid;place-items:center;padding:20px}
 .qr-pop{background:#fff;color:#16192a;border-radius:16px;padding:24px;display:flex;flex-direction:column;align-items:center;gap:8px;max-width:360px;width:100%;text-align:center}
 .qr-pop-box{position:relative;width:min(280px,70vw);aspect-ratio:1}
@@ -437,8 +476,8 @@ aside.rail{position:sticky;top:calc(env(safe-area-inset-top,0px) + 82px);align-s
 
 <header class="topbar">
   <div class="logo-fig"><img src="__FIGLOGO__" alt="S-Tec 에스텍베스트"></div>
-  <div class="brand"><b>S-Tec Quotation System</b><span>에스텍베스트 동부지사 · v2.7</span></div>
-  <div class="sp"></div>
+  <div class="brand"><b>S-Tec Quotation System</b><span>에스텍베스트 동부지사 · v2.8</span></div>
+  <div class="sp"><div class="gstrip" id="gstrip" aria-hidden="true"></div></div>
   <div class="tb-actions">
     <button class="tbtn" id="btnBlank">신규 영업 견적</button>
     <button class="tbtn" id="btnNew">갱신 견적</button>
@@ -454,6 +493,7 @@ aside.rail{position:sticky;top:calc(env(safe-area-inset-top,0px) + 82px);align-s
     <button class="step" role="tab" data-step="3"><span class="k">3</span><span><b>부대비용</b><small>차량 · 장비 · 기타</small></span></button>
     <button class="step" role="tab" data-step="4"><span class="k">4</span><span><b>요율·기준</b><small>4대보험 · 관리비 · 이윤</small></span></button>
     <button class="step" role="tab" data-step="5"><span class="k">5</span><span><b>견적서 출력</b><small>견적서 · 산출내역서</small></span></button>
+    <section class="grow" id="growCard" aria-label="에스텍 성장 현황"></section>
   </nav>
 
   <main>
@@ -2161,6 +2201,59 @@ function fxCalibrate(st){
   });
 }
 
+/* ───────── 에스텍 성장 현황 (사업장 데이터 기반) ───────── */
+function growthData(){
+  const S=SITEDB.sites, Y=new Date().getFullYear();
+  const ys=S.map(x=>+String(x.since||"").slice(0,4)).filter(y=>y>1990&&y<=Y);
+  const y0=Math.min(...ys), pts=[]; let c=0;
+  for(let y=y0;y<=Y;y++){ c+=ys.filter(v=>v===y).length; pts.push([y,c]); }
+  const now=Date.now(), tenure=S.map(x=>{ const d=String(x.since||"").replace(/\./g,"-"); const t=Date.parse(d); return isNaN(t)?null:(now-t)/31557600000; }).filter(v=>v!=null);
+  const people=S.reduce((a,x)=>a+(+x.total||0),0);
+  const br=SITEDB.branches.map(b=>({key:b.key,name:b.name.replace("지사",""),n:S.filter(x=>x.br===b.key).length,p:S.filter(x=>x.br===b.key).reduce((a,x)=>a+(+x.total||0),0)}));
+  const last5=pts.length>5?pts[pts.length-1][1]-pts[pts.length-6][1]:0;
+  return {pts, sites:S.length, people, br, tenure: tenure.length? tenure.reduce((a,b)=>a+b,0)/tenure.length : 0, last5, y0, Y};
+}
+function growthSvg(pts, w, h, pad, opt={}){
+  const xs=pts.map(p=>p[0]), vs=pts.map(p=>p[1]), x0=Math.min(...xs), x1=Math.max(...xs), vmax=Math.max(...vs)*1.08;
+  const X=x=>pad.l+(x-x0)/((x1-x0)||1)*(w-pad.l-pad.r), Yv=v=>h-pad.b-(v/vmax)*(h-pad.t-pad.b);
+  const P=pts.map(([x,v])=>[X(x),Yv(v)]);
+  let d=`M${P[0][0].toFixed(1)},${P[0][1].toFixed(1)}`; for(let i=1;i<P.length;i++){ const [a,b]=P[i-1],[c,e]=P[i], mx=(a+c)/2; d+=` C${mx.toFixed(1)},${b.toFixed(1)} ${mx.toFixed(1)},${e.toFixed(1)} ${c.toFixed(1)},${e.toFixed(1)}`; }
+  const area=`${d} L${P[P.length-1][0].toFixed(1)},${h-pad.b} L${P[0][0].toFixed(1)},${h-pad.b} Z`;
+  let len=0; for(let i=1;i<P.length;i++) len+=Math.hypot(P[i][0]-P[i-1][0],P[i][1]-P[i-1][1]); len=Math.ceil(len*1.15);
+  const id="gg"+Math.random().toString(36).slice(2,7), [ex,ey]=P[P.length-1];
+  const ticks = opt.ticks ? pts.filter((p,i)=>i===0||i===pts.length-1||p[0]%4===0).map(([x])=>`<text x="${X(x).toFixed(1)}" y="${h-3}" font-size="8.5" fill="rgba(255,255,255,.6)" text-anchor="middle">${String(x).slice(2)}</text>`).join("") : "";
+  return `<svg viewBox="0 0 ${w} ${h}" width="${opt.width||w}" height="${opt.height||h}" role="img" aria-label="운영 사업장 누적 증가 추이">
+    <defs><linearGradient id="${id}" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#5fcf7a" stop-opacity=".55"/><stop offset="1" stop-color="#5fcf7a" stop-opacity="0"/></linearGradient></defs>
+    ${opt.grid?[.33,.66].map(f=>`<line x1="${pad.l}" x2="${w-pad.r}" y1="${(pad.t+(h-pad.t-pad.b)*f).toFixed(1)}" y2="${(pad.t+(h-pad.t-pad.b)*f).toFixed(1)}" stroke="rgba(255,255,255,.08)"/>`).join(""):""}
+    <path class="g-area" d="${area}" fill="url(#${id})"/>
+    <path class="g-line" d="${d}" fill="none" stroke="#8ee59f" stroke-width="${opt.sw||2.2}" stroke-linecap="round" style="--len:${len}"/>
+    <g class="g-end"><circle cx="${ex}" cy="${ey}" r="${opt.r||3.5}" fill="#fff"/><circle cx="${ex}" cy="${ey}" r="${(opt.r||3.5)*2.2}" fill="none" stroke="#8ee59f" stroke-opacity=".6"><animate attributeName="r" values="${opt.r||3.5};${(opt.r||3.5)*3}" dur="1.8s" repeatCount="indefinite"/><animate attributeName="stroke-opacity" values=".7;0" dur="1.8s" repeatCount="indefinite"/></circle>
+    ${opt.label?`<text x="${ex-6}" y="${ey-9}" font-size="11" font-weight="800" fill="#fff" text-anchor="end">${opt.label}</text>`:""}</g>${ticks}</svg>`;
+}
+const SLOGANS=["사랑과 안전을 생각하는 에스텍","고객의 현장을 지키는 든든한 파트너","정확한 견적, 신뢰받는 서비스","오늘의 견적이 내일의 성장으로","함께 성장하는 에스텍베스트"];
+function renderGrowth(){
+  const G=growthData(), my=(state&&state.meta&&state.meta.branch)||"동부", maxN=Math.max(...G.br.map(b=>b.n));
+  const gs=$("#gstrip");
+  if(gs){ gs.innerHTML=`${growthSvg(G.pts,96,30,{l:2,r:6,t:4,b:3},{sw:2,r:2.4})}
+      <div class="gs-k"><b>${G.sites}<em>곳 ▲</em></b><small>운영 사업장</small></div><span class="gs-sep"></span>
+      <div class="gs-k"><b>${won(G.people)}<em>명</em></b><small>현장 인력</small></div><span class="gs-sep s2"></span>
+      <div class="gs-slogan">${SLOGANS.map((t,i)=>`<span class="${i?"":"on"}">${t}</span>`).join("")}</div>`;
+    clearInterval(renderGrowth._t); let k=0;
+    renderGrowth._t=setInterval(()=>{ const sp=gs.querySelectorAll(".gs-slogan span"); if(!sp.length) return; sp[k].classList.remove("on"); k=(k+1)%sp.length; sp[k].classList.add("on"); },4200); }
+  const gc=$("#growCard");
+  if(gc){ gc.innerHTML=`<div class="g-hd"><img src="${IMG.figlogo||IMG.cube}" alt=""><div><b>함께 성장하는<br>에스텍베스트</b><small>S-Tec Growth</small></div></div>
+      <div class="g-chart">${growthSvg(G.pts,200,96,{l:6,r:10,t:16,b:14},{grid:true,ticks:true,label:G.sites+"곳"})}</div>
+      <div class="g-cap">운영 중인 사업장 · 계약 시작연도 기준 누적</div>
+      <div class="g-tiles">
+        <div class="g-tile"><b>${G.sites}<small>곳</small></b><span>운영 사업장</span></div>
+        <div class="g-tile"><b>${won(G.people)}<small>명</small></b><span>현장 인력</span></div>
+        <div class="g-tile"><b>+${G.last5}<small>곳</small></b><span>최근 5년 신규</span></div>
+        <div class="g-tile"><b>${G.tenure.toFixed(1)}<small>년</small></b><span>평균 거래기간</span></div></div>
+      <div class="g-br">${G.br.map(b=>`<div class="r ${b.key===my?"me":""}"><span>${b.name}</span><span class="bar"><i data-w="${(b.n/maxN*100).toFixed(1)}"></i></span><span class="n">${b.n}곳</span></div>`).join("")}</div>
+      <div class="g-ft">↗ 오늘의 견적이 내일의 성장</div>`;
+    requestAnimationFrame(()=>setTimeout(()=>gc.querySelectorAll(".bar i").forEach(i=>i.style.width=i.dataset.w+"%"),80)); }
+}
+
 /* ───────── 갱신 견적 : 당해년 견적 불러오기 ───────── */
 const DATA_SHEET="_stec_data", DATA_MARK="STEC-QUOTE";
 function normState(st){
@@ -3001,7 +3094,7 @@ function boot(){
   $$("[data-doc]").forEach(b=>b.onclick=()=>{ $$("[data-doc]").forEach(x=>x.setAttribute("aria-selected",x===b)); $("#docQuote").hidden=b.dataset.doc!=="quote"; $("#docBd").hidden=b.dataset.doc!=="bd"; $("#docAdd").hidden=b.dataset.doc!=="add"; $("#docCmp").hidden=b.dataset.doc!=="cmp"; });
   $("#btnJson").onclick=()=>offerFile(`견적_${state.meta.client||"백업"}.json`, JSON.stringify(state,null,1), "application/json");
   $("#fileJson").onchange=e=>{ const f=e.target.files[0]; if(!f) return; const rd=new FileReader(); rd.onload=()=>{ try{ applyState(normState(JSON.parse(rd.result))); toast("JSON 견적을 불러왔습니다"); }catch(err){ toast("JSON 형식이 올바르지 않습니다"); } }; rd.readAsText(f); e.target.value=""; };
-  renderSaved(); renderQR();
+  renderSaved(); renderQR(); renderGrowth();
   if(location.protocol==="https:" && !inFrame && "serviceWorker" in navigator) navigator.serviceWorker.register("sw.js").catch(()=>{});
   let st=1; try{ st=+localStorage.getItem("stec_step")||1; }catch(e){}
   go(st);
