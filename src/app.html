@@ -426,7 +426,7 @@ aside.rail{position:sticky;top:calc(env(safe-area-inset-top,0px) + 82px);align-s
 
 <header class="topbar">
   <div class="logo-plate"><img src="__LOGO__" alt="S-Tec 에스텍베스트"></div>
-  <div class="brand"><b>용역인력 견적시스템</b><span>에스텍베스트 동부지사 · v2.4</span></div>
+  <div class="brand"><b>용역인력 견적시스템</b><span>에스텍베스트 동부지사 · v2.5</span></div>
   <div class="sp"></div>
   <div class="tb-actions">
     <button class="tbtn" id="btnBlank">신규 영업 견적</button>
@@ -675,7 +675,9 @@ function migrateRole(r){
 const SHIFTS = {
   day5_8:{label:"주간 주5일 (8h)", base:209, ot:0, night:0, dayH:9, rest:1},
   day5_9:{label:"주간 주5일 (9h·연장1h/일)", base:209, ot:22, night:0, dayH:10, rest:1},
+  day5_10:{label:"주간 주5일 (10h·연장2h/일)", base:209, ot:43, night:0, dayH:11, rest:1},
   day5_11:{label:"주간 주5일 (11h·연장3h/일)", base:209, ot:65, night:0, dayH:12, rest:1},
+  day5_12:{label:"주간 주5일 (12h·연장4h/일)", base:209, ot:87, night:0, dayH:13, rest:1},
   day6:{label:"주간 주6일 (토 4h)", base:209, ot:17, night:0, dayH:9, rest:1},
   s32:{label:"3조2교대 (12h)", base:209, ot:25, night:82, dayH:12, rest:1},
   s42:{label:"4조2교대 (12h)", base:209, ot:0, night:62, dayH:12, rest:1},
