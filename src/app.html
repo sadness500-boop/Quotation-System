@@ -43,6 +43,9 @@ a{color:var(--accent)}
   display:flex;align-items:center;gap:14px;flex-wrap:wrap}
 .logo-plate{background:#fff;border-radius:8px;padding:4px 8px;display:flex;align-items:center;height:44px}
 .logo-plate img{height:34px;width:auto;display:block}
+.logo-fig{flex:none;height:60px;margin:-4px 0;border-radius:10px;overflow:hidden;box-shadow:0 2px 8px rgba(0,0,0,.35);border:1px solid rgba(255,255,255,.25)}
+.logo-fig img{height:100%;width:auto;display:block}
+@media (max-width:640px){.logo-fig{height:46px;margin:0}}
 .brand{display:flex;flex-direction:column;line-height:1.2;min-width:0}
 .brand b{font-size:17px;letter-spacing:-.01em}
 .brand span{font-size:12px;opacity:.75}
@@ -433,8 +436,8 @@ aside.rail{position:sticky;top:calc(env(safe-area-inset-top,0px) + 82px);align-s
 </style>
 
 <header class="topbar">
-  <div class="logo-plate"><img src="__LOGO__" alt="S-Tec 에스텍베스트"></div>
-  <div class="brand"><b>용역인력 견적시스템</b><span>에스텍베스트 동부지사 · v2.6</span></div>
+  <div class="logo-fig"><img src="__FIGLOGO__" alt="S-Tec 에스텍베스트"></div>
+  <div class="brand"><b>S-Tec Quotation System</b><span>에스텍베스트 동부지사 · v2.7</span></div>
   <div class="sp"></div>
   <div class="tb-actions">
     <button class="tbtn" id="btnBlank">신규 영업 견적</button>
