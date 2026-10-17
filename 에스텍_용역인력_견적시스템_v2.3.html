@@ -792,6 +792,35 @@ textarea.inp{resize:vertical;min-height:110px;line-height:1.6}
 .qr-btns{margin-top:10px;gap:6px}
 .qr-btns a.btn{text-decoration:none;color:inherit}
 #qrEditBox{margin-top:8px}
+.rn-ov{place-items:start center;overflow:auto}
+.rn-pop{background:var(--paper,#fff);color:var(--ink);border-radius:14px;width:min(860px,100%);margin:3vh 0;box-shadow:0 20px 60px rgba(0,0,0,.35);display:flex;flex-direction:column}
+.rn-head{display:flex;gap:12px;align-items:flex-start;justify-content:space-between;padding:18px 20px 12px;border-bottom:1px solid var(--line)}
+.rn-head h2{margin:0 0 4px;font-size:18px}
+.rn-body{padding:14px 20px 20px;display:flex;flex-direction:column;gap:12px}
+.rn-src{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+.rn-card{border:1px solid var(--line);border-radius:10px;padding:12px 14px;min-width:0}
+.rn-card:last-child{grid-column:1/-1}
+.rn-card h3{margin:0 0 6px;font-size:14px;display:flex;align-items:center;gap:6px}
+.rn-card h3 small{font-weight:400;color:var(--muted);font-size:11.5px}
+.rn-ic{font-size:16px}
+.rn-list{display:flex;flex-direction:column;gap:6px;max-height:200px;overflow:auto}
+.rn-item{display:flex;gap:8px;align-items:center;border:1px solid var(--line-2,#e6e9f2);border-radius:8px;padding:6px 8px;font-size:12.5px}
+.rn-item span{flex:1;min-width:0;display:flex;flex-direction:column;overflow:hidden}
+.rn-item span b{white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.rn-item small{color:var(--muted);font-size:11px}
+.rn-drop{display:flex;flex-direction:column;align-items:center;gap:2px;border:2px dashed var(--line);border-radius:10px;padding:16px 10px;cursor:pointer;text-align:center;font-size:12.5px;color:var(--muted)}
+.rn-drop b{color:var(--accent);font-size:14px}
+.rn-drop.on,.rn-drop:hover{border-color:var(--accent);background:rgba(27,42,134,.05)}
+.rn-cloud{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+.rn-cl{border:1px solid var(--line-2,#e6e9f2);border-radius:8px;padding:10px;min-width:0}
+.rn-cl-h{display:flex;gap:6px;align-items:center;margin-bottom:2px}
+.rn-gd{margin-top:8px}.rn-gd ol{padding-left:18px;margin:6px 0 0}.rn-gd code{font-size:11px;overflow-wrap:anywhere}
+.rn-prev{border:2px solid var(--accent);border-radius:10px;padding:12px 14px;background:rgba(27,42,134,.04)}
+.rn-sel h3{margin:6px 0;font-size:17px}.rn-sel h3 small{font-weight:400;color:var(--muted);font-size:12.5px}
+.rn-kv{display:flex;gap:16px;flex-wrap:wrap;font-size:13px}
+.rn-err{color:#b42318;font-size:13px;margin:0}
+@media (max-width:640px){.rn-ov{padding:0}.rn-src,.rn-cloud{grid-template-columns:1fr}.rn-pop{margin:0;border-radius:0;min-height:100%}}
+.veh-quick{display:flex;flex-wrap:wrap;gap:6px;margin:-2px 0 6px}
 .qr-ov{position:fixed;inset:0;background:rgba(10,16,40,.6);z-index:200;display:grid;place-items:center;padding:20px}
 .qr-pop{background:#fff;color:#16192a;border-radius:16px;padding:24px;display:flex;flex-direction:column;align-items:center;gap:8px;max-width:360px;width:100%;text-align:center}
 .qr-pop-box{position:relative;width:min(280px,70vw);aspect-ratio:1}
@@ -1062,15 +1091,9 @@ aside.rail{position:sticky;top:calc(env(safe-area-inset-top,0px) + 82px);align-s
 
 <header class="topbar">
   <div class="logo-plate"><img src="data:image/webp;base64,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" alt="S-Tec 에스텍베스트"></div>
-  <div class="brand"><b>용역인력 견적시스템</b><span>에스텍베스트 동부지사 · v2.2</span></div>
+  <div class="brand"><b>용역인력 견적시스템</b><span>에스텍베스트 동부지사 · v2.3</span></div>
   <div class="sp"></div>
   <div class="tb-actions">
-    <select id="sampleSel" class="tbtn" aria-label="예시 견적 불러오기" style="appearance:auto">
-      <option value="">예시 견적 불러오기…</option>
-      <option value="song">송원산업 2026 · 보안 12명</option>
-      <option value="lotte">롯데정밀화학 2027 · 폐기물수거 + 차량</option>
-      <option value="uc">울산과학대 2026 · 미화 22명(학기중) + 차량·장비</option>
-    </select>
     <button class="tbtn" id="btnBlank">신규 영업 견적</button>
     <button class="tbtn" id="btnNew">갱신 견적</button>
     <button class="tbtn" id="btnSave">저장</button>
@@ -1167,7 +1190,8 @@ aside.rail{position:sticky;top:calc(env(safe-area-inset-top,0px) + 82px);align-s
       </div>
       <div class="card">
         <div class="h-row"><div><h2>업무차량</h2><p class="sub">구매가 감가상각(60개월) + 소모품·수리·검사·세금·보험 + 유류비 → 월 청구액 만원 단위 절상</p></div>
-          <div class="row"><button class="btn" data-addveh="porter_used">+ 포터2 중고</button><button class="btn" data-addveh="porter_new">+ 포터2 신차</button><button class="btn" data-addveh="ev">+ 1톤 전기트럭</button></div></div>
+          <div class="row"><select class="inp" id="vehSel" style="width:auto" aria-label="차종 선택"></select><button class="btn" id="btnAddVeh">+ 차량 추가</button></div></div>
+        <div class="veh-quick" id="vehQuick"></div>
         <div id="vehList"></div>
       </div>
       <div class="card">
@@ -1176,8 +1200,8 @@ aside.rail{position:sticky;top:calc(env(safe-area-inset-top,0px) + 82px);align-s
         <div id="eqList"></div>
       </div>
       <div class="card">
-        <div class="h-row"><div><h2>기타 추가비용</h2><p class="sub">소모품·재료비, 무전기, 순찰시스템, 특수작업 등. 월/연/1회(상각) 단위로 입력합니다.</p></div>
-          <div class="row"><button class="btn" id="btnAddEtc">+ 항목 추가</button></div></div>
+        <div class="h-row"><div><h2>기타 부대비용</h2><p class="sub">통신·보호구·보험·소모품·법정 청소·교육 등 용역 운영비. 월/연/1회(상각) 단위, 수량 또는 인원 연동으로 계산합니다. 목록 단가는 참고값이니 현장 조건에 맞게 고치세요.</p></div>
+          <div class="row"><select class="inp" id="etcSel" style="width:auto;max-width:300px" aria-label="부대비용 항목 선택"></select><button class="btn" id="btnAddEtcCat">+ 추가</button><button class="btn" id="btnEtcRec" title="현재 투입 직종에 자주 들어가는 항목을 한 번에 추가">직종 맞춤 추천</button><button class="btn ghost" id="btnAddEtc">+ 빈 항목</button></div></div>
         <div id="etcList"></div>
         <div class="addsum" id="addonSum"></div>
       </div>
@@ -3669,13 +3693,67 @@ const SHIFTS = {
 const EQUIP_CAT = [
   ["탑승식청소차 (S5)",4950000],["보행식청소차 (MEDIA75BT)",6500000],["보행식청소차 (K5)",3800000],["고압분사기",1750000],
   ["왁스머신기 (BP-16\")",590000],["업소용 진공청소기",450000],["습식청소기",1200000],["송풍기(블로어)",380000],
-  ["무전기",350000],["순찰시스템(태그형)",1500000],["주차 유도봉·안전용품 세트",200000],["예초기",650000]
+  ["무전기",350000],["순찰시스템(태그형)",1500000],["주차 유도봉·안전용품 세트",200000],["예초기",650000],
+  ["스팀청소기",900000],["카펫 세척기",2500000],["유리창 청소 장비 세트",350000],["고소작업용 사다리(A형)",250000],["제설기(소형)",1500000],["전동 낙엽청소기",450000],
+  ["금속탐지기(봉형)",180000],["바디캠",350000],["경광봉·호루라기 세트",30000],["출입통제 단말기",1200000],["무선 순찰단말(NFC)",600000]
 ];
+/* 차량 기준가: 2026년형 최저트림 공시가(옵션 제외) · 연비는 복합연비. 실제 견적 시 수정 */
 const VEH_PRESET = {
-  porter_used:{name:"포터2 (중고)", price:10000000, km:30, fuel:1785, eff:8.7},
-  porter_new:{name:"포터2 (신차)", price:22000000, km:30, fuel:1785, eff:8.7},
-  ev:{name:"1톤 전기트럭 (포터2 EV)", price:43000000, km:30, fuel:347, eff:3.5}
+  porter_used:{grp:"화물", name:"포터2 (중고)", price:10000000, km:30, fuel:1785, eff:8.7},
+  porter_new:{grp:"화물", name:"포터2 (신차)", price:22000000, km:30, fuel:1785, eff:8.7},
+  ev:{grp:"화물", name:"1톤 전기트럭 (포터2 EV)", price:43000000, km:30, fuel:347, eff:3.5},
+  sedan:{grp:"승용", name:"세단 (쏘나타 1.6T 급)", price:29370000, km:40, fuel:1700, eff:13.5, cons:60000, insp:20000, tax:290840, ins:1200000, reg:0, acq:7, fuelType:"휘발유", note:"관리소장 업무·지사 순회"},
+  suv:{grp:"승용", name:"SUV (쏘렌토 2.5T 급)", price:36310000, km:40, fuel:1700, eff:10.8, cons:70000, insp:20000, tax:649220, ins:1400000, reg:0, acq:7, fuelType:"휘발유", note:"순찰·현장 관리"},
+  pickup:{grp:"픽업", name:"픽업트럭 (타스만 2.5T 급)", price:37500000, km:40, fuel:1700, eff:8.6, cons:75000, insp:40000, tax:28500, ins:1300000, reg:0, acq:5, fuelType:"휘발유", note:"화물차 분류 · 자재·장비 운반"},
+  light:{grp:"승용", name:"경차 (레이 급)", price:14500000, km:30, fuel:1700, eff:13.0, cons:45000, insp:20000, tax:129870, ins:900000, reg:0, acq:4, fuelType:"휘발유", note:"단지 내 순회 · 경차 취득세 감면"},
+  van:{grp:"승합", name:"승합 (스타리아 11인승 급)", price:33000000, km:50, fuel:1600, eff:10.0, cons:75000, insp:40000, tax:65000, ins:1500000, reg:0, acq:5, fuelType:"경유", note:"근무자 출퇴근·현장 이동"},
+  cart:{grp:"기타", name:"전동 카트 (4인승)", price:11000000, km:20, fuel:250, eff:6.0, cons:30000, insp:0, tax:0, ins:400000, reg:0, acq:0, fuelType:"전기", note:"캠퍼스·단지 순찰·미화"}
 };
+/* 기타 부대비용 카탈로그 : [이름, 금액, 주기, 상각개월, 인원연동, 비고, 추천직종] — 참고 단가, 현장 조건에 맞게 수정 */
+const ETC_CAT = [
+  ["통신·순찰", [
+    ["무전기 구입 (대당)",400000,"1회",36,0,"디지털 무전기 · 36개월 상각","sec park fac"],
+    ["LTE 무전기 통신료 (대당)",15000,"월",12,0,"",""],
+    ["업무용 휴대폰 통신료",50000,"월",12,0,"현장 대표번호",""],
+    ["순찰관리 시스템 이용료 (QR·NFC)",50000,"월",12,0,"순찰 기록·보고","sec"],
+    ["CCTV 저장장치·모니터 유지보수",100000,"월",12,0,"","sec"]]],
+  ["안전·보호구", [
+    ["안전보호구 (안전화·안전모·장갑)",80000,"연",12,1,"인당","cln fac spc"],
+    ["동절기 방한복·우의",100000,"연",12,1,"인당","sec park"],
+    ["경광봉·신호기·안전조끼",30000,"연",12,1,"인당","park"],
+    ["구급함·상비약 보충",120000,"연",12,0,"",""],
+    ["근로자 단체상해보험",60000,"연",12,1,"인당 · 산재 외 보장",""]]],
+  ["보험·보증", [
+    ["영업배상책임보험 (현장 분담)",1200000,"연",12,0,"대인·대물 배상",""],
+    ["계약이행보증보험 보증료",300000,"1회",12,0,"계약금액 10% 보증 · 계약기간 상각",""]]],
+  ["미화 소모품·작업", [
+    ["청소 소모품 (세제·걸레·봉투 등)",30000,"월",12,1,"인당","cln"],
+    ["위생소모품 (화장지·핸드타올·비누)",500000,"월",12,0,"고객사 제공 시 제외",""],
+    ["종량제·대형 쓰레기봉투",200000,"월",12,0,"",""],
+    ["바닥 왁스·박리 작업 재료비",1500000,"연",12,0,"연 2회 기준",""],
+    ["외벽·유리창 고소 청소 (외주)",3000000,"연",12,0,"",""],
+    ["방역·소독 (외주)",150000,"월",12,0,"",""],
+    ["저수조 청소 (반기 1회, 법정)",1200000,"연",12,0,"수도법 · 연 2회",""],
+    ["정화조 청소 (연 1회, 법정)",1000000,"연",12,0,"하수도법",""]]],
+  ["주차", [
+    ["주차권·영수증 용지",50000,"월",12,0,"","park"],
+    ["라바콘·안내표지·차단봉",300000,"1회",24,0,"","park"],
+    ["주차관제 시스템 유지보수",200000,"월",12,0,"",""]]],
+  ["시설관리", [
+    ["공구·계측기 소모품",100000,"월",12,0,"","fac"],
+    ["시설 점검 자재 (전구·필터 등)",200000,"월",12,0,"고객사 부담 시 제외",""]]],
+  ["교육·채용", [
+    ["경비원 신임교육 (일반경비 24h)",70000,"1회",12,0,"신규 배치 인원 수 입력",""],
+    ["채용 공고·배치 비용",300000,"1회",12,0,"",""]]],
+  ["복리·사무", [
+    ["정수기 렌탈",30000,"월",12,0,"",""],
+    ["휴게실 비품·사무용품",50000,"월",12,0,"",""],
+    ["근무자 간식·음료",10000,"월",12,1,"인당",""]]],
+  ["차량 운행", [
+    ["통행료·하이패스",100000,"월",12,0,"",""],
+    ["차량 GPS 관제 이용료 (대당)",15000,"월",12,0,"",""],
+    ["차량 주차비",100000,"월",12,0,"",""]]]
+];
 const DEFAULT_COND =
 `○ 견적 기준 : {연도}년 최저임금({최저시급}원) 및 통상시급 적용
     단, 매년 법정최저임금(4대보험 포함) 등 관계법령이 변경될 경우 그 즉시 변경된 내용에 따라 적용합니다.
@@ -3750,14 +3828,20 @@ function eqMonthly(e){
   const amt = (+e.price||0)*(+e.qty||0);
   return e.mode === "new" ? amt*(1+pct(e.rep))/((+e.months)||60) : amt*pct(e.rep)/12;
 }
-function etcMonthly(o){
+function headsOf(st){ return st.roles.reduce((s,r)=>s+(+r.count||0),0); }
+function etcQty(o, heads){ return o.per==="head" ? (heads||0) : (o.qty==null ? 1 : +o.qty||0); }
+function etcMonthly(o, heads){
   const a = +o.amount||0;
-  return o.cycle==="월" ? a : o.cycle==="연" ? a/12 : a/((+o.months)||12);
+  return (o.cycle==="월" ? a : o.cycle==="연" ? a/12 : a/((+o.months)||12)) * etcQty(o, heads);
+}
+function etcBasis(o, heads){
+  const q=etcQty(o,heads);
+  return `${won(o.amount)}원 / ${o.cycle}${o.cycle==="1회"?` ÷ ${o.months}개월`:o.cycle==="연"?" ÷ 12개월":""}${q!==1||o.per==="head"?` × ${q}${o.per==="head"?"명(인원 연동)":""}`:""}`;
 }
 function addonTotals(st){
   const veh = st.vehicles.reduce((s,v)=>s+vehMonthly(v).total,0);
   const eq = st.equips.reduce((s,e)=>s+eqMonthly(e),0);
-  const etc = st.others.reduce((s,o)=>s+etcMonthly(o),0);
+  const hd = headsOf(st), etc = st.others.reduce((s,o)=>s+etcMonthly(o,hd),0);
   return {veh, eq, etc, total: veh+eq+etc};
 }
 
@@ -4235,7 +4319,7 @@ function roleCard(r){
 function renderRoles(){
   const box=$("#roles");
   if(!state.roles.length){
-    box.innerHTML=`<div class="empty"><img src="${IMG.team}" alt=""><b>아직 인력이 없습니다</b><br>위 직종 카드를 눌러 추가하거나, 상단 ‘예시 견적 불러오기’로 실제 견적 예시를 열어보세요.</div>`;
+    box.innerHTML=`<div class="empty"><img src="${IMG.team}" alt=""><b>아직 인력이 없습니다</b><br>위 직종 카드를 눌러 추가하거나, 상단 ‘갱신 견적’에서 당해년 견적을 불러오세요.</div>`;
     return;
   }
   box.innerHTML=state.roles.map(roleCard).join("");
@@ -4275,20 +4359,21 @@ function draftFromSite(){
 }
 
 /* ───────── 렌더: STEP 3 부대비용 ───────── */
-function newVeh(k){ const p=VEH_PRESET[k]; return {id:nid(), name:p.name, qty:1, price:p.price, reg:3, acq:4, etcFee:30000, incTax:false, dep:60, cons:73541.67, repair:30, insp:60000, tax:150000, ins:1000000, km:p.km, days:22, fuel:p.fuel, eff:p.eff}; }
+function newVeh(k){ const p=VEH_PRESET[k]; return {id:nid(), name:p.name, qty:1, price:p.price, reg:p.reg??3, acq:p.acq??4, etcFee:30000, incTax:false, dep:60, cons:p.cons??73541.67, repair:30, insp:p.insp??60000, tax:p.tax??150000, ins:p.ins??1000000, km:p.km, days:22, fuel:p.fuel, eff:p.eff, fuelType:p.fuelType||"경유", note:p.note||""}; }
 function renderAddons(){
   const vl=$("#vehList");
   vl.innerHTML = state.vehicles.length ? state.vehicles.map(v=>{ const c=vehMonthly(v); return `<div class="card" style="padding:12px;margin-top:8px" data-vid="${v.id}">
     <div class="h-row" style="margin-bottom:8px"><b>${esc(v.name)}</b><span class="row"><span class="pill g">월 ${won(c.unit)}원 × ${v.qty}대 = ${won(c.total)}원</span><button class="btn sm ghost" data-vdel>삭제</button></span></div>
     <div class="grid g6">
       <label class="f"><span>차종</span><input class="inp" data-v="name" value="${esc(v.name)}"></label>
+      <label class="f"><span>연료</span><select class="inp" data-v="fuelType">${["경유","휘발유","LPG","전기","하이브리드"].map(f=>`<option ${(v.fuelType||"경유")===f?"selected":""}>${f}</option>`).join("")}</select></label>
       ${[["qty","대수"],["price","구매가(원)"],["dep","감가(개월)"],["cons","소모품(월)"],["repair","수리비(구매가 %)"],["insp","검사비(연)"],["tax","자동차세 등(연)"],["ins","보험료(연)"],["km","운행거리(km/일)"],["days","운행일수(월)"],["fuel","연료단가(원/ℓ·kWh)"],["eff","연비(km/ℓ·kWh)"]].map(([k,l])=>`<label class="f"><span>${l}</span><input class="inp n" data-v="${k}" value="${v[k]}" inputmode="decimal"></label>`).join("")}
     </div>
     <div class="calcline">감가 <b>${won(c.parts.depr)}</b> 소모품 <b>${won(c.parts.cons)}</b> 수리 <b>${won(c.parts.repair)}</b> 검사·세금·보험 <b>${won(c.parts.insp+c.parts.tax+c.parts.ins)}</b> 유류 <b>${won(c.parts.fuel)}</b> 합계 <b>${won(c.sum)}</b> → 만원 절상 <b>${won(c.unit)}</b>
-    <label class="chk" style="margin-left:auto"><input type="checkbox" data-v="incTax" ${v.incTax?"checked":""}> 등록세·취득세 감가 포함</label></div></div>`; }).join("") : `<p class="hint">업무차량이 없으면 비워두세요. (폐기물수거·순찰·캠퍼스 미화 등)</p>`;
+    <label class="chk" style="margin-left:auto"><input type="checkbox" data-v="incTax" ${v.incTax?"checked":""}> 등록세·취득세 감가 포함</label></div></div>`; }).join("") : `<p class="hint">업무차량이 없으면 비워두세요. 위 단추나 목록에서 화물·승용(세단·SUV)·픽업·승합 차량을 추가할 수 있습니다.</p>`;
   vl.querySelectorAll("[data-vid]").forEach(card=>{
     const v=state.vehicles.find(x=>x.id===card.dataset.vid);
-    card.querySelectorAll("[data-v]").forEach(el=>el.addEventListener(el.type==="checkbox"?"change":"change",()=>{ const k=el.dataset.v; v[k]= el.type==="checkbox"?el.checked : k==="name"?el.value : +el.value||0; renderAddons(); recalc(); }));
+    card.querySelectorAll("[data-v]").forEach(el=>el.addEventListener(el.type==="checkbox"?"change":"change",()=>{ const k=el.dataset.v; v[k]= el.type==="checkbox"?el.checked : (k==="name"||k==="fuelType"||k==="note")?el.value : +el.value||0; renderAddons(); recalc(); }));
     card.querySelector("[data-vdel]").onclick=()=>{ state.vehicles=state.vehicles.filter(x=>x!==v); renderAddons(); recalc(); };
   });
   const el=$("#eqList");
@@ -4304,14 +4389,17 @@ function renderAddons(){
     tr.querySelector("[data-edel]").onclick=()=>{ state.equips=state.equips.filter(x=>x!==e); renderAddons(); recalc(); };
   });
   const ol=$("#etcList");
-  ol.innerHTML = state.others.length ? `<div class="tscroll"><table class="t"><thead><tr><th>항목</th><th class="n">금액</th><th>주기</th><th class="n">상각(개월)</th><th class="n">월 환산</th><th>비고</th><th></th></tr></thead><tbody>${state.others.map(o=>`<tr data-oid="${o.id}">
-    <td><input class="inp" data-o="name" value="${esc(o.name)}" style="min-width:150px"></td><td><input class="inp n" data-o="amount" value="${o.amount}" style="width:120px"></td>
-    <td><select class="inp" data-o="cycle">${["월","연","1회"].map(c=>`<option ${o.cycle===c?"selected":""}>${c}</option>`).join("")}</select></td>
-    <td><input class="inp n" data-o="months" value="${o.months}" style="width:64px" ${o.cycle!=="1회"?"disabled":""}></td>
-    <td class="n num"><b>${won(etcMonthly(o))}</b></td><td><input class="inp" data-o="note" value="${esc(o.note||"")}" style="min-width:140px"></td><td><button class="btn sm ghost" data-odel>삭제</button></td></tr>`).join("")}</tbody></table></div>` : `<p class="hint">예: 청소 소모품비(월), 재료비, 무전기 구입(1회·24개월), 왁스작업(연)</p>`;
+  const HD=headsOf(state);
+  ol.innerHTML = state.others.length ? `<div class="tscroll"><table class="t"><thead><tr><th>항목</th><th class="n">단가</th><th>주기</th><th class="n">상각(개월)</th><th class="n">수량</th><th>인원 연동</th><th class="n">월 환산</th><th>비고</th><th></th></tr></thead><tbody>${state.others.map(o=>`<tr data-oid="${o.id}">
+    <td>${o.grp?`<small class="hint" style="display:block">${esc(o.grp)}</small>`:""}<input class="inp" data-o="name" value="${esc(o.name)}" style="min-width:170px"></td><td><input class="inp n" data-o="amount" value="${o.amount}" style="width:110px"></td>
+    <td><select class="inp" data-o="cycle" style="min-width:70px">${["월","연","1회"].map(c=>`<option ${o.cycle===c?"selected":""}>${c}</option>`).join("")}</select></td>
+    <td><input class="inp n" data-o="months" value="${o.months}" style="width:60px" ${o.cycle!=="1회"?"disabled":""}></td>
+    <td><input class="inp n" data-o="qty" value="${etcQty(o,HD)}" style="width:56px" ${o.per==="head"?"disabled":""}></td>
+    <td><label class="chk" style="white-space:nowrap"><input type="checkbox" data-o="per" ${o.per==="head"?"checked":""}> 인당</label></td>
+    <td class="n num"><b>${won(etcMonthly(o,HD))}</b></td><td><input class="inp" data-o="note" value="${esc(o.note||"")}" style="min-width:140px"></td><td><button class="btn sm ghost" data-odel>삭제</button></td></tr>`).join("")}</tbody></table></div>` : `<p class="hint">위 목록에서 항목을 고르거나 ‘직종 맞춤 추천’을 누르세요. 예: 청소 소모품(인당·월), 무전기 구입(1회·36개월), 저수조 청소(연)</p>`;
   ol.querySelectorAll("[data-oid]").forEach(tr=>{
     const o=state.others.find(x=>x.id===tr.dataset.oid);
-    tr.querySelectorAll("[data-o]").forEach(i=>i.addEventListener("change",()=>{ const k=i.dataset.o; o[k]= ["name","cycle","note"].includes(k)? i.value : +i.value||0; renderAddons(); recalc(); }));
+    tr.querySelectorAll("[data-o]").forEach(i=>i.addEventListener("change",()=>{ const k=i.dataset.o; if(k==="per") o.per=i.checked?"head":""; else o[k]= ["name","cycle","note"].includes(k)? i.value : +i.value||0; renderAddons(); recalc(); }));
     tr.querySelector("[data-odel]").onclick=()=>{ state.others=state.others.filter(x=>x!==o); renderAddons(); recalc(); };
   });
   const A=addonTotals(state), elig=state.roles.reduce((s,r)=>s+(r.addonEx?0:(+r.count||0)),0);
@@ -4535,7 +4623,7 @@ function renderDocs(R){
     <div class="tscroll"><table class="bd" style="width:100%"><thead><tr><th>구분</th><th>항목</th><th>산출 근거</th><th>월 금액</th></tr></thead><tbody>
     ${state.vehicles.map(v=>{const c=vehMonthly(v);return `<tr><td class="g">업무차량</td><td>${esc(v.name)} × ${v.qty}대</td><td class="desc">구매가 ${won(v.price)} ÷ ${v.dep}개월 = ${won(c.parts.depr)} / 소모품 ${won(c.parts.cons)} / 수리 ${won(c.parts.repair)} (구매가 ${v.repair}%÷${v.dep}) / 검사 ${won(c.parts.insp)} · 세금 ${won(c.parts.tax)} · 보험 ${won(c.parts.ins)} / 유류 ${v.km}km×${v.days}일×${won(v.fuel)}÷${v.eff} = ${won(c.parts.fuel)} → 만원 절상 ${won(c.unit)}</td><td class="n">${won(c.total)}</td></tr>`;}).join("")}
     ${state.equips.map(e=>`<tr><td class="g">장비</td><td>${esc(e.name)} × ${e.qty}</td><td class="desc">${e.mode==="new"?`신규구매 ${won(e.price*e.qty)} × (1+${e.rep}%) ÷ ${e.months}개월`:`보유장비 수선비 ${won(e.price*e.qty)} × ${e.rep}% ÷ 12개월`}</td><td class="n">${won(eqMonthly(e))}</td></tr>`).join("")}
-    ${state.others.map(o=>`<tr><td class="g">기타</td><td>${esc(o.name)}</td><td class="desc">${won(o.amount)}원 / ${o.cycle}${o.cycle==="1회"?` ÷ ${o.months}개월`:o.cycle==="연"?" ÷ 12개월":""} ${esc(o.note||"")}</td><td class="n">${won(etcMonthly(o))}</td></tr>`).join("")}
+    ${state.others.map(o=>`<tr><td class="g">${esc(o.grp||"기타")}</td><td>${esc(o.name)}</td><td class="desc">${etcBasis(o,headsOf(state))} ${esc(o.note||"")}</td><td class="n">${won(etcMonthly(o,headsOf(state)))}</td></tr>`).join("")}
     <tr class="s"><td colspan="3">부대비용 월계</td><td class="n">${won(A.total)}</td></tr>
     ${R.sepLine?`<tr><td colspan="3">일반관리비 + 이윤</td><td class="n">${won(R.sepLine.ga+R.sepLine.pr)}</td></tr><tr class="k"><td colspan="3">별도 청구액 (천원 미만 절삭)</td><td class="n">${won(R.sepLine.total)}</td></tr>`:R.elig?`<tr><td colspan="3">인당 배분액 (경비 항목에 포함, ${R.elig}명)</td><td class="n">${won(A.total/R.elig)}</td></tr>`:""}
     </tbody></table></div>
@@ -4711,8 +4799,8 @@ function rollover(){
 }
 function updateNewBtn(){
   const b=$("#btnNew"); if(!b) return;
-  b.textContent = state.roles.length ? `갱신 견적 (${+state.meta.year+1}년)` : "갱신 견적"; b.disabled=!state.roles.length;
-  b.title = state.roles.length ? `현재 ${state.meta.year}년 견적의 인력·부대비용을 그대로 두고 ${+state.meta.year+1}년 최저시급·4대보험 요율로 다시 산출합니다. 현재 단가는 전년 단가로 들어갑니다.` : "";
+  b.textContent = "갱신 견적"; b.disabled=false;
+  b.title = "당해년 견적을 불러와(이 기기·파일·구글 드라이브 등) 다음 연도 최저시급·4대보험 요율로 다시 산출합니다. 당해년 단가는 전년 단가로 들어갑니다.";
 }
 
 /* ───────── 저장/불러오기 ───────── */
@@ -4737,6 +4825,170 @@ async function offerFile(filename, data, mime){
   }catch(e){ if(e && e.code==="declined") return; }
   const blob = data instanceof Blob ? data : new Blob([data],{type:mime});
   const a=document.createElement("a"); a.href=URL.createObjectURL(blob); a.download=filename; document.body.appendChild(a); a.click(); setTimeout(()=>{URL.revokeObjectURL(a.href); a.remove();},500);
+}
+
+/* ───────── 갱신 견적 : 당해년 견적 불러오기 ───────── */
+const DATA_SHEET="_stec_data", DATA_MARK="STEC-QUOTE";
+function normState(st){
+  if(!st || !st.meta || !st.set || !Array.isArray(st.roles)) throw new Error("견적 데이터가 아닙니다");
+  return Object.assign(newState(), st, {set:Object.assign(defaultSettings(+st.meta.year), st.set)});
+}
+function embedState(wb){
+  const ws=wb.addWorksheet(DATA_SHEET,{state:"veryHidden"});
+  const js=JSON.stringify(state); ws.getCell("B1").value=DATA_MARK+" v1"; ws.getCell("C1").value=js.length;
+  for(let i=0,r=1;i<js.length;i+=30000,r++) ws.getCell(r,1).value=js.slice(i,i+30000);
+}
+async function stateFromFile(name, buf){
+  const low=(name||"").toLowerCase();
+  if(low.endsWith(".json")) return normState(JSON.parse(new TextDecoder().decode(buf)));
+  if(low.endsWith(".xlsx") || low.endsWith(".xlsm") || !low.includes(".")){
+    const wb=new ExcelJS.Workbook(); await wb.xlsx.load(buf);
+    const ws=wb.getWorksheet(DATA_SHEET);
+    if(!ws || !String(ws.getCell("B1").value||"").startsWith(DATA_MARK)) throw new Error("NOEMBED");
+    let js=""; for(let r=1;r<=ws.rowCount;r++){ const v=ws.getCell(r,1).value; if(v==null) break; js+=typeof v==="object"&&v.richText?v.richText.map(t=>t.text).join(""):String(v); }
+    return normState(JSON.parse(js));
+  }
+  throw new Error("이 프로그램에서 내보낸 엑셀(.xlsx) 또는 JSON 백업만 불러올 수 있습니다");
+}
+function fileErr(e){
+  return e && e.message==="NOEMBED"
+    ? "이 엑셀에는 견적 데이터가 없습니다. v2.3 이후 ‘엑셀 내보내기’로 만든 파일이나 JSON 백업을 고르세요. (다른 양식의 엑셀은 자동으로 읽을 수 없습니다)"
+    : (e && e.message) || "파일을 읽을 수 없습니다";
+}
+let rnPick=null;
+function rnSummary(st){ const R=calcAll(st); return {client:st.meta.client||"(사업장 미입력)", year:+st.meta.year, heads:R.heads, month:R.monthAll, roles:st.roles.length}; }
+function openRenew(){
+  rnPick=null;
+  const ov=document.createElement("div"); ov.className="qr-ov rn-ov"; ov.id="rnOv";
+  ov.innerHTML=`<div class="rn-pop" role="dialog" aria-modal="true" aria-labelledby="rnTitle">
+    <div class="rn-head"><div><h2 id="rnTitle">갱신 견적 · 당해년 견적 불러오기</h2>
+      <p class="sub">올해(당해년) 견적을 불러오면 인력·부대비용은 그대로 두고 다음 연도 최저시급·4대보험 요율로 다시 산출합니다. 당해년 단가는 전년 단가로 들어가 비교표가 만들어집니다.</p></div>
+      <button class="btn sm ghost" data-x aria-label="닫기">✕</button></div>
+    <div class="rn-body">
+      <div class="rn-src" id="rnSrc"></div>
+      <div class="rn-prev" id="rnPrev" hidden></div>
+    </div></div>`;
+  ov.addEventListener("click",e=>{ if(e.target===ov||e.target.closest("[data-x]")) ov.remove(); });
+  document.body.appendChild(ov);
+  renderRenewSrc();
+}
+function renderRenewSrc(){
+  const box=$("#rnSrc"); if(!box) return;
+  const saved=savedList(), cur=state.roles.length?rnSummary(state):null;
+  const gdKey=(()=>{ try{ return localStorage.getItem("stec_gd_client")||""; }catch(e){ return ""; } })();
+  box.innerHTML=`
+    ${cur?`<section class="rn-card"><h3><span class="rn-ic">📝</span>지금 화면의 견적</h3>
+      <div class="rn-item"><span><b>${esc(cur.client)}</b> · ${cur.year}년 · ${cur.heads}명 · 월 ${won(cur.month)}원</span><button class="btn sm" data-cur>선택</button></div></section>`:""}
+    <section class="rn-card"><h3><span class="rn-ic">💾</span>이 기기에 저장된 견적</h3>
+      <p class="hint">이 PC·태블릿·휴대폰 브라우저에 ‘저장’해 둔 견적입니다.</p>
+      <div class="rn-list">${saved.length?saved.map((q,i)=>`<div class="rn-item"><span><b>${esc(q.name)}</b><small>${esc(q.at)}</small></span><button class="btn sm" data-saved="${i}">선택</button></div>`).join(""):`<span class="hint">저장된 견적이 없습니다.</span>`}</div></section>
+    <section class="rn-card"><h3><span class="rn-ic">📁</span>파일에서 불러오기 <small>PC · 태블릿 · 휴대폰</small></h3>
+      <label class="rn-drop" id="rnDrop" for="rnFile"><b>견적 파일 선택</b><span>또는 여기로 끌어다 놓기</span><small>이 프로그램에서 내보낸 엑셀(.xlsx) · JSON 백업</small></label>
+      <input type="file" id="rnFile" accept=".xlsx,.json,application/json,application/vnd.openxmlformats-officedocument.spreadsheetml.sheet" hidden>
+      <p class="hint">휴대폰·태블릿은 파일 선택 창에서 <b>내 파일·다운로드</b> 외에 Google Drive, 네이버 MYBOX, iCloud, OneDrive 앱 폴더도 고를 수 있습니다(해당 앱이 설치돼 있고 파일 선택 창 연동을 지원하는 경우).</p></section>
+    <section class="rn-card"><h3><span class="rn-ic">☁️</span>온라인 드라이브</h3>
+      <div class="rn-cloud">
+        <div class="rn-cl"><div class="rn-cl-h"><b>Google Drive</b>${gdKey?`<span class="pill g">설정됨</span>`:""}</div>
+          <p class="hint">내 드라이브의 견적 엑셀·JSON을 찾아 바로 불러옵니다.</p>
+          <div class="row" style="gap:6px"><button class="btn sm pri" id="gdOpen">드라이브에서 찾기</button><button class="btn sm ghost" id="gdSet">연결 설정</button></div>
+          <div id="gdBox"></div></div>
+        <div class="rn-cl"><div class="rn-cl-h"><b>네이버 MYBOX</b></div>
+          <p class="hint">MYBOX는 외부 프로그램 연결을 공개하지 않아 직접 접속은 안 됩니다. PC는 <b>MYBOX 탐색기(동기화 폴더)</b>, 휴대폰은 파일 선택 창의 MYBOX 항목에서 고르세요.</p>
+          <label class="btn sm" for="rnFile" style="cursor:pointer">MYBOX 폴더에서 파일 선택</label></div>
+      </div></section>`;
+  box.querySelector("[data-cur]")?.addEventListener("click",()=>rnShow(JSON.parse(JSON.stringify(state)),"지금 화면"));
+  box.querySelectorAll("[data-saved]").forEach(b=>b.onclick=()=>{ const q=savedList()[+b.dataset.saved]; rnShow(normState(JSON.parse(JSON.stringify(q.state))),"이 기기 저장"); });
+  const fi=$("#rnFile"); fi.onchange=()=>{ const f=fi.files[0]; if(f) rnReadFile(f); fi.value=""; };
+  const dz=$("#rnDrop");
+  ["dragenter","dragover"].forEach(t=>dz.addEventListener(t,e=>{ e.preventDefault(); dz.classList.add("on"); }));
+  ["dragleave","drop"].forEach(t=>dz.addEventListener(t,e=>{ e.preventDefault(); dz.classList.remove("on"); }));
+  dz.addEventListener("drop",e=>{ const f=e.dataTransfer.files[0]; if(f) rnReadFile(f); });
+  $("#gdOpen").onclick=gdOpen; $("#gdSet").onclick=()=>gdSetup(true);
+}
+async function rnReadFile(f){
+  try{ const st=await stateFromFile(f.name, await f.arrayBuffer()); rnShow(st, f.name); }
+  catch(e){ console.error(e); rnMsg(fileErr(e)); }
+}
+function rnMsg(t){ const p=$("#rnPrev"); if(!p) return; p.hidden=false; p.innerHTML=`<p class="rn-err">${esc(t)}</p>`; p.scrollIntoView({block:"nearest",behavior:"smooth"}); }
+function rnShow(st, src){
+  rnPick=st; const s=rnSummary(st), Y=s.year+1, p=$("#rnPrev"); p.hidden=false;
+  const roles=st.roles.slice(0,6).map(r=>`${CATS[r.cat]?CATS[r.cat].short:""} ${esc(r.rank)} ${r.count}명`).join(" · ")+(st.roles.length>6?` 외 ${st.roles.length-6}건`:"");
+  const add=addonTotals(st);
+  p.innerHTML=`<div class="rn-sel"><span class="pill">불러온 견적 · ${esc(src)}</span>
+    <h3>${esc(s.client)} <small>${s.year}년 당해년 견적</small></h3>
+    <div class="rn-kv"><span>투입 인원 <b>${s.heads}명</b></span><span>월 도급비 <b>${won(s.month)}원</b></span><span>부대비용 <b>${won(add.total)}원/월</b></span></div>
+    <p class="hint">${roles||"인력 없음"}</p>
+    ${st.roles.length?"":`<p class="rn-err">인력 구성이 없어 갱신 산출을 할 수 없습니다.</p>`}
+    <div class="row" style="gap:8px;margin-top:10px">
+      <button class="btn pri" id="rnGo" ${st.roles.length?"":"disabled"}>${Y}년 갱신 견적 만들기</button>
+      <button class="btn" id="rnOpen">${s.year}년 견적 그대로 열기</button></div></div>`;
+  $("#rnGo").onclick=()=>{ $("#rnOv")?.remove(); applyState(rnPick); rollover(); };
+  $("#rnOpen").onclick=()=>{ $("#rnOv")?.remove(); applyState(rnPick); toast(`${s.year}년 견적을 열었습니다`); };
+  p.scrollIntoView({block:"nearest",behavior:"smooth"});
+}
+
+/* Google Drive (OAuth 클라이언트 ID는 이 기기 브라우저에만 저장) */
+let gdToken=null, gdTokenExp=0;
+function gdClient(){ try{ return localStorage.getItem("stec_gd_client")||""; }catch(e){ return ""; } }
+function gdSetup(show){
+  const box=$("#gdBox"); if(!box) return;
+  if(!show){ box.innerHTML=""; return; }
+  box.innerHTML=`<div class="rn-gd">
+    <label class="f"><span>OAuth 클라이언트 ID (웹 애플리케이션)</span><input class="inp" id="gdKey" value="${esc(gdClient())}" placeholder="xxxx.apps.googleusercontent.com"></label>
+    <div class="row" style="gap:6px;margin-top:6px"><button class="btn sm pri" id="gdSave">저장</button><button class="btn sm ghost" id="gdDel">삭제</button></div>
+    <ol class="hint"><li>Google Cloud 콘솔에서 프로젝트를 만들고 <b>Google Drive API</b>를 사용 설정합니다.</li>
+    <li>사용자 인증 정보 → <b>OAuth 클라이언트 ID</b>(웹 애플리케이션)를 만들고, 승인된 JavaScript 원본에 <code>${esc(location.origin&&location.origin!=="null"?location.origin:"https://sadness500-boop.github.io")}</code> 를 넣습니다.</li>
+    <li>만든 클라이언트 ID를 위 칸에 붙여 넣습니다. 처음 연결할 때 구글 로그인·권한(읽기 전용) 확인 창이 뜹니다.</li></ol></div>`;
+  $("#gdSave").onclick=()=>{ const v=$("#gdKey").value.trim(); try{ v?localStorage.setItem("stec_gd_client",v):localStorage.removeItem("stec_gd_client"); }catch(e){} gdToken=null; toast(v?"구글 드라이브 연결 정보를 저장했습니다":"삭제했습니다"); renderRenewSrc(); };
+  $("#gdDel").onclick=()=>{ try{ localStorage.removeItem("stec_gd_client"); }catch(e){} gdToken=null; renderRenewSrc(); };
+}
+function loadScript(src){ return new Promise((ok,no)=>{ if(document.querySelector(`script[src="${src}"]`)) return ok(); const s=document.createElement("script"); s.src=src; s.async=true; s.onload=ok; s.onerror=()=>no(new Error("스크립트를 불러오지 못했습니다")); document.head.appendChild(s); }); }
+async function gdAuth(){
+  if(gdToken && Date.now()<gdTokenExp) return gdToken;
+  const cid=gdClient(); if(!cid) throw new Error("SETUP");
+  if(inFrame) throw new Error("이 화면(미리보기)에서는 외부 연결이 막혀 있습니다. 웹 주소(GitHub Pages)로 열어 주세요.");
+  if(location.protocol!=="https:" && location.hostname!=="localhost") throw new Error("구글 로그인은 웹 주소(https)에서만 됩니다. PC 파일로 열었다면 GitHub Pages 주소로 열거나, 드라이브에서 내려받아 ‘파일에서 불러오기’를 쓰세요.");
+  await loadScript("https://accounts.google.com/gsi/client");
+  return new Promise((ok,no)=>{
+    const tc=google.accounts.oauth2.initTokenClient({client_id:cid, scope:"https://www.googleapis.com/auth/drive.readonly",
+      callback:r=>{ if(r.error) return no(new Error("구글 권한 확인이 취소되었습니다")); gdToken=r.access_token; gdTokenExp=Date.now()+((+r.expires_in||3600)-60)*1000; ok(gdToken); },
+      error_callback:e=>no(new Error(e&&e.type==="popup_closed"?"구글 로그인 창이 닫혔습니다":"구글 로그인 창을 열 수 없습니다 (팝업 차단 확인)"))});
+    tc.requestAccessToken();
+  });
+}
+const GD_MIMES=["application/vnd.openxmlformats-officedocument.spreadsheetml.sheet","application/json","application/vnd.google-apps.spreadsheet"];
+async function gdList(q){
+  const tok=await gdAuth();
+  let query=`trashed=false and (${GD_MIMES.map(m=>`mimeType='${m}'`).join(" or ")})`;
+  if(q) query+=` and name contains '${q.replace(/['\\]/g,"\\$&")}'`;
+  const u=`https://www.googleapis.com/drive/v3/files?q=${encodeURIComponent(query)}&orderBy=modifiedTime desc&pageSize=40&fields=files(id,name,mimeType,modifiedTime,size)&supportsAllDrives=true&includeItemsFromAllDrives=true`;
+  const r=await fetch(u,{headers:{Authorization:"Bearer "+tok}}); if(r.status===401){ gdToken=null; throw new Error("구글 로그인이 만료되었습니다. 다시 눌러 주세요"); }
+  if(!r.ok) throw new Error("드라이브 목록을 가져오지 못했습니다 ("+r.status+")");
+  return (await r.json()).files||[];
+}
+async function gdFetch(f){
+  const tok=await gdAuth();
+  const u= f.mimeType==="application/vnd.google-apps.spreadsheet"
+    ? `https://www.googleapis.com/drive/v3/files/${f.id}/export?mimeType=${encodeURIComponent(GD_MIMES[0])}`
+    : `https://www.googleapis.com/drive/v3/files/${f.id}?alt=media&supportsAllDrives=true`;
+  const r=await fetch(u,{headers:{Authorization:"Bearer "+tok}}); if(!r.ok) throw new Error("파일을 내려받지 못했습니다 ("+r.status+")");
+  const name=f.mimeType==="application/vnd.google-apps.spreadsheet"?f.name+".xlsx":f.name;
+  return stateFromFile(/\.(xlsx|json)$/i.test(name)?name:name+(f.mimeType==="application/json"?".json":".xlsx"), await r.arrayBuffer());
+}
+async function gdOpen(){
+  const box=$("#gdBox");
+  if(!gdClient()){ gdSetup(true); toast("먼저 구글 드라이브 연결 정보를 넣어 주세요"); return; }
+  box.innerHTML=`<p class="hint">드라이브에 연결하는 중…</p>`;
+  const draw=async q=>{
+    try{ const files=await gdList(q);
+      box.innerHTML=`<div class="row" style="gap:6px;margin:6px 0"><input class="inp" id="gdQ" placeholder="파일 이름 검색 (예: 송원)" value="${esc(q||"")}"><button class="btn sm" id="gdQb">검색</button></div>
+        <div class="rn-list">${files.length?files.map((f,i)=>`<div class="rn-item"><span><b>${esc(f.name)}</b><small>${f.mimeType.includes("google-apps")?"구글 시트":f.mimeType.includes("json")?"JSON":"엑셀"} · ${new Date(f.modifiedTime).toLocaleDateString("ko-KR")}</small></span><button class="btn sm" data-gd="${i}">선택</button></div>`).join(""):`<span class="hint">엑셀·JSON 파일이 없습니다.</span>`}</div>`;
+      $("#gdQb").onclick=()=>draw($("#gdQ").value.trim()); $("#gdQ").onkeydown=e=>{ if(e.key==="Enter") draw(e.target.value.trim()); };
+      box.querySelectorAll("[data-gd]").forEach(b=>b.onclick=async()=>{ const f=files[+b.dataset.gd]; b.disabled=true; b.textContent="여는 중…";
+        try{ rnShow(await gdFetch(f), "Google Drive · "+f.name); }catch(e){ console.error(e); rnMsg(fileErr(e)); } b.disabled=false; b.textContent="선택"; });
+    }catch(e){ if(e.message==="SETUP"){ gdSetup(true); return; } box.innerHTML=`<p class="rn-err">${esc(e.message||String(e))}</p>`; }
+  };
+  draw("");
 }
 
 /* ───────── 전년 대비 비교 ───────── */
@@ -5303,12 +5555,14 @@ async function exportXlsx(){
   xHeader(w3,wb,logoId,"부대비용 산출 명세",`${m.client||""} · 반영방식 ${R.spread?"인당 단가 균등 배분":"별도 청구"} · 단위: 원, VAT 별도`,5,logoSm);
   let r3=7; const h=w3.getRow(r3); ["구분","항목","수량","월 금액","산출 근거"].forEach((t,i)=>{ const c=h.getCell(i+1); c.value=t; c.font=xFont({bold:true,color:{argb:XC.white},size:9.5}); c.fill=xFill(XC.navy); c.alignment={horizontal:"center"}; c.border=xBorder(XC.navy); });
   const lines=[];
-  state.vehicles.forEach(v=>{ const c=vehMonthly(v); lines.push(["업무차량",v.name,v.qty,c.total,`감가 ${won(c.parts.depr)} + 소모품 ${won(c.parts.cons)} + 수리 ${won(c.parts.repair)} + 검사·세금·보험 ${won(c.parts.insp+c.parts.tax+c.parts.ins)} + 유류 ${won(c.parts.fuel)} = ${won(c.sum)} → 만원 절상 ${won(c.unit)}`]); });
+  state.vehicles.forEach(v=>{ const c=vehMonthly(v); lines.push(["업무차량",`${v.name}${v.fuelType?` (${v.fuelType})`:""}`,v.qty,c.total,`감가 ${won(c.parts.depr)} + 소모품 ${won(c.parts.cons)} + 수리 ${won(c.parts.repair)} + 검사·세금·보험 ${won(c.parts.insp+c.parts.tax+c.parts.ins)} + 유류 ${won(c.parts.fuel)} = ${won(c.sum)} → 만원 절상 ${won(c.unit)}`]); });
   state.equips.forEach(e=>lines.push(["장비",e.name,e.qty,Math.round(eqMonthly(e)),e.mode==="new"?`신규구매 ${won(e.price*e.qty)} × (1+${e.rep}%) ÷ ${e.months}개월`:`보유장비 ${won(e.price*e.qty)} × 수선율 ${e.rep}% ÷ 12개월`]));
-  state.others.forEach(o=>lines.push(["기타",o.name,"",Math.round(etcMonthly(o)),`${won(o.amount)}원 / ${o.cycle}${o.cycle==="1회"?` ÷ ${o.months}개월`:o.cycle==="연"?" ÷ 12개월":""} ${o.note||""}`]));
+  const HD=headsOf(state);
+  state.others.forEach(o=>lines.push([o.grp||"기타",o.name,etcQty(o,HD),Math.round(etcMonthly(o,HD)),`${etcBasis(o,HD)} ${o.note||""}`]));
   lines.push(["합계","","",Math.round(R.add.total),R.spread&&R.elig?`인당 ${won(R.add.total/R.elig)}원 배분 (${R.elig}명)`:R.sepLine?`별도 청구액 ${won(R.sepLine.total)}원`:""]);
   lines.forEach((l,i)=>{ r3++; const rw=w3.getRow(r3); l.forEach((v,k)=>{ const c=rw.getCell(k+1); c.value=v===""?null:v; c.border=xBorder(); c.font=xFont({size:9,bold:i===lines.length-1}); if(k===3) c.numFmt="#,##0"; if(k===4) c.alignment={wrapText:true,vertical:"middle"}; if(i===lines.length-1) c.fill=xFill(XC.soft); }); rw.height=l[4]&&l[4].length>60?30:18; });
 
+  embedState(wb);
   const buf=await wb.xlsx.writeBuffer();
   const d=m.date?m.date.slice(2).replace(/-/g,""):"";
   await offerFile(`${d} ${m.client||"견적"} ${Y} 견적서.xlsx`, buf, "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet");
@@ -5327,8 +5581,7 @@ function boot(){
   renderCats();
   const draft = LS.get("stec_quote_draft",null);
   state = draft && draft.meta && draft.set ? Object.assign(newState(), draft, {set:Object.assign(defaultSettings(draft.meta.year), draft.set)}) : null;
-  if(!state){ loadSample("song"); }
-  else applyState(state);
+  applyState(state || newState());
   onMeta();
   $$(".step").forEach(b=>b.onclick=()=>go(+b.dataset.step));
   $("#btnLookup").onclick=lookupOnline;
@@ -5342,23 +5595,34 @@ function boot(){
     catch(e){ msg.textContent=(e&&e.kakao)||(inFrame?"이 화면에서는 외부 연결이 차단됩니다. PC용 HTML 파일에서 설정하세요.":"카카오 서버에 연결할 수 없습니다."); } };
   $("#kk_del").onclick=()=>{ try{ localStorage.removeItem("stec_kakao_key"); }catch(e){} $("#kk_key").value=""; $("#kk_msg").textContent="삭제했습니다"; renderKakao(); };
   $$(".seg [data-mode]").forEach(b=>b.onclick=()=>{ state.meta.mode=b.dataset.mode; renderMode(); persistDraft(); if($("#m_client").value.trim()) suggest(); $("#m_client").focus(); });
-  $("#sampleSel").onchange=e=>{ if(e.target.value) loadSample(e.target.value); e.target.value=""; };
-  $("#btnNew").onclick=()=>{ if(state.roles.length) rollover(); else toast("갱신할 견적이 없습니다 · 예시 견적이나 저장된 견적을 먼저 여세요"); };
+  $("#btnNew").onclick=openRenew;
   $("#btnBlank").onclick=()=>{ applyState(newState()); go(1); setTimeout(()=>$("#m_client").focus(),300); toast("신규 영업 견적을 시작합니다 · 영업 대상 사업장을 검색하세요"); };
   $("#btnSave").onclick=saveQuote;
   $("#btnXlsx").onclick=exportXlsx; $("#btnXlsx2").onclick=exportXlsx;
   if(inFrame) $("#btnPrint").hidden=true;
   $("#btnPrint").onclick=()=>window.print();
-  $$("[data-addveh]").forEach(b=>b.onclick=()=>{ state.vehicles.push(newVeh(b.dataset.addveh)); renderAddons(); recalc(); });
+  const vg={}; Object.entries(VEH_PRESET).forEach(([k,p])=>(vg[p.grp]=vg[p.grp]||[]).push([k,p]));
+  $("#vehSel").innerHTML=Object.entries(vg).map(([g,L])=>`<optgroup label="${g}">${L.map(([k,p])=>`<option value="${k}">${p.name} · ${won(p.price)}원</option>`).join("")}</optgroup>`).join("");
+  const addVeh=k=>{ state.vehicles.push(newVeh(k)); renderAddons(); recalc(); toast(`${VEH_PRESET[k].name}을(를) 추가했습니다 · 구매가·운행거리를 확인하세요`); };
+  $("#btnAddVeh").onclick=()=>addVeh($("#vehSel").value);
+  $("#vehQuick").innerHTML=[["porter_used","포터2 중고"],["porter_new","포터2 신차"],["ev","1톤 전기트럭"],["sedan","세단 (쏘나타 급)"],["suv","SUV (쏘렌토 급)"],["pickup","픽업트럭 (타스만 급)"]].map(([k,l])=>`<button class="btn sm" data-addveh="${k}">+ ${l}</button>`).join("");
+  $$("[data-addveh]").forEach(b=>b.onclick=()=>addVeh(b.dataset.addveh));
+  $("#etcSel").innerHTML=ETC_CAT.map(([g,L],gi)=>`<optgroup label="${g}">${L.map((x,i)=>`<option value="${gi}.${i}">${x[0]} · ${won(x[1])}원/${x[2]}${x[4]?"·인당":""}</option>`).join("")}</optgroup>`).join("");
+  const etcItem=(g,x)=>({id:nid(),grp:g,name:x[0],amount:x[1],cycle:x[2],months:x[3],qty:1,per:x[4]?"head":"",note:x[5]||""});
+  $("#btnAddEtcCat").onclick=()=>{ const [gi,i]=$("#etcSel").value.split(".").map(Number); const [g,L]=ETC_CAT[gi]; state.others.push(etcItem(g,L[i])); renderAddons(); recalc(); };
+  $("#btnEtcRec").onclick=()=>{ const cats=new Set(state.roles.map(r=>r.cat)); if(!cats.size){ toast("먼저 인력 구성에서 직종을 추가하세요"); return; }
+    const have=new Set(state.others.map(o=>o.name)); let n=0;
+    ETC_CAT.forEach(([g,L])=>L.forEach(x=>{ if(x[6] && x[6].split(" ").some(c=>cats.has(c)) && !have.has(x[0])){ state.others.push(etcItem(g,x)); n++; } }));
+    renderAddons(); recalc(); toast(n?`투입 직종에 맞는 항목 ${n}개를 추가했습니다 · 단가를 현장에 맞게 고치세요`:"추천 항목이 이미 모두 들어 있습니다"); };
   $("#eqCat").innerHTML=EQUIP_CAT.map(([n,p],i)=>`<option value="${i}">${n} · ${won(p)}원</option>`).join("");
   $("#btnAddEq").onclick=()=>{ const [n,p]=EQUIP_CAT[+$("#eqCat").value]; state.equips.push({id:nid(),name:n,mode:"new",qty:1,price:p,rep:5,months:60}); renderAddons(); recalc(); };
-  $("#btnAddEtc").onclick=()=>{ state.others.push({id:nid(),name:"청소 소모품비",amount:300000,cycle:"월",months:24,note:""}); renderAddons(); recalc(); };
+  $("#btnAddEtc").onclick=()=>{ state.others.push({id:nid(),name:"",amount:0,cycle:"월",months:12,qty:1,per:"",note:""}); renderAddons(); recalc(); };
   $("#am_spread").onchange=()=>{ state.addonMode="spread"; renderAddons(); recalc(); };
   $("#am_sep").onchange=()=>{ state.addonMode="separate"; renderAddons(); recalc(); };
   $("#am_margin").onchange=e=>{ state.addonMargin=e.target.checked; recalc(); };
   $$("[data-doc]").forEach(b=>b.onclick=()=>{ $$("[data-doc]").forEach(x=>x.setAttribute("aria-selected",x===b)); $("#docQuote").hidden=b.dataset.doc!=="quote"; $("#docBd").hidden=b.dataset.doc!=="bd"; $("#docAdd").hidden=b.dataset.doc!=="add"; $("#docCmp").hidden=b.dataset.doc!=="cmp"; });
   $("#btnJson").onclick=()=>offerFile(`견적_${state.meta.client||"백업"}.json`, JSON.stringify(state,null,1), "application/json");
-  $("#fileJson").onchange=e=>{ const f=e.target.files[0]; if(!f) return; const rd=new FileReader(); rd.onload=()=>{ try{ const st=JSON.parse(rd.result); applyState(Object.assign(newState(),st,{set:Object.assign(defaultSettings(st.meta.year),st.set)})); toast("JSON 견적을 불러왔습니다"); }catch(err){ toast("JSON 형식이 올바르지 않습니다"); } }; rd.readAsText(f); e.target.value=""; };
+  $("#fileJson").onchange=e=>{ const f=e.target.files[0]; if(!f) return; const rd=new FileReader(); rd.onload=()=>{ try{ applyState(normState(JSON.parse(rd.result))); toast("JSON 견적을 불러왔습니다"); }catch(err){ toast("JSON 형식이 올바르지 않습니다"); } }; rd.readAsText(f); e.target.value=""; };
   renderSaved(); renderQR();
   if(location.protocol==="https:" && !inFrame && "serviceWorker" in navigator) navigator.serviceWorker.register("sw.js").catch(()=>{});
   let st=1; try{ st=+localStorage.getItem("stec_step")||1; }catch(e){}
