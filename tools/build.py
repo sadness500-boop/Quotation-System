@@ -13,6 +13,7 @@ t = t.replace("__CUBE__", img["cube"]).replace("__LOGO__", img["logo"]).replace(
 t = t.replace("/*__LEAFLET_JS__*/", rd("vendor/leaflet-1.9.4.min.js"))
 t = t.replace("/*__EXCELJS__*/", rd("vendor/exceljs-4.4.0.min.js").replace("�", "\\ufffd"))
 t = t.replace("/*__QRCODE__*/", rd("vendor/qrcode-generator-1.4.4.js"))
+t = t.replace("/*__SHEETJS__*/", rd("vendor/xlsx-0.18.5.core.min.js").replace("\ufffd", "\\ufffd").replace("</script", "<\\/script"))
 t = t.replace("/*__IMG__*/{}", json.dumps(img)).replace("/*__SITES__*/{}", rd("assets/sites.json")).replace("/*__ADM__*/{}", rd("assets/adm.json"))
 os.makedirs(p("dist"), exist_ok=True)
 open(p("dist/artifact.html"), "w", encoding="utf-8").write(t)
