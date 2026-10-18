@@ -1,4 +1,4 @@
-<title>에스텍 용역인력 견적시스템</title>
+<title>에스텍 그룹 용역인력 견적시스템</title>
 <meta name="claude:viewport-fit-sides" content="cover">
 <link rel="icon" href="__CUBE__">
 <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -196,7 +196,23 @@ textarea.inp{resize:vertical;min-height:110px;line-height:1.6}
 .grow .g-tile b{display:block;font-size:19px;font-weight:800;letter-spacing:-.02em}.grow .g-tile b small{font-size:11px;font-weight:600;opacity:.8;margin-left:2px}
 .grow .g-tile span{font-size:10.5px;opacity:.75}
 .grow .g-br{padding:10px 14px 4px}
-.grow .g-br .r{display:grid;grid-template-columns:34px 1fr 42px;align-items:center;gap:6px;font-size:11px;margin-bottom:6px}
+.grow .g-sub{font-size:10.5px;opacity:.75;padding:8px 14px 0;letter-spacing:.02em}.grow .g-sub em{font-style:normal;color:#8ee59f;font-weight:800;margin-left:4px}
+.grow .g-sub+.g-br{padding-top:6px}
+.pf-pop{background:var(--paper);color:var(--ink);border-radius:16px;padding:18px;width:min(640px,100%);max-height:calc(100vh - 40px);overflow:auto;box-shadow:0 20px 60px rgba(0,0,0,.35)}
+.pf-pop h2{margin:0}
+.pf-grid{display:grid;grid-template-columns:130px 1fr;gap:16px;margin-top:12px;align-items:start}
+.pf-photo{display:flex;flex-direction:column;gap:6px;align-items:stretch}
+.pf-photo img{width:130px;height:156px;object-fit:cover;border-radius:12px;border:1px solid var(--line);background:var(--field)}
+.pf-photo .btn{justify-content:center;text-align:center}
+.pf-co{margin-top:14px;border:1px solid var(--line);border-radius:12px;padding:10px 12px;background:var(--field)}
+.pf-co summary{cursor:pointer;font-weight:700;font-size:13px}
+@media (max-width:560px){.pf-grid{grid-template-columns:1fr}.pf-photo{flex-direction:row;flex-wrap:wrap;align-items:center}.pf-photo img{width:90px;height:108px}}
+.best-ov{display:flex;align-items:center;justify-content:center;padding:16px}
+.best-pop{position:relative;width:min(380px,100%);max-height:calc(100vh - 32px);overflow:auto}
+.best-pop .grow{margin:0}
+.best-x{position:absolute;top:10px;right:10px;z-index:3;width:30px;height:30px;border-radius:50%;border:0;background:rgba(255,255,255,.18);color:#fff;font-size:14px;cursor:pointer}
+.best-x:hover{background:rgba(255,255,255,.3)}
+.grow .g-br .r{display:grid;grid-template-columns:34px 1fr auto;align-items:center;gap:6px;font-size:11px;margin-bottom:6px}
 .grow .g-br .bar{height:7px;border-radius:4px;background:rgba(255,255,255,.12);overflow:hidden}
 .grow .g-br .bar i{display:block;height:100%;border-radius:4px;background:linear-gradient(90deg,#5fcf7a,#b6f0c2);width:0;transition:width 1.2s cubic-bezier(.2,.8,.2,1)}
 .grow .g-br .r.me{font-weight:800}.grow .g-br .r.me .bar i{background:linear-gradient(90deg,#ffd166,#fff1b8)}
@@ -272,9 +288,11 @@ body:not(.is-home) .home-only{display:none!important}
 .grp-num.g{background:linear-gradient(135deg,#0f6b3a,#2b8a3e)}
 .grp-cos div{display:flex;flex-wrap:wrap;gap:6px;margin-top:6px}
 .grp-cos em{font-style:normal;font-size:12px;padding:4px 10px;border-radius:999px;border:1px solid var(--line);background:var(--paper)}
-.grp-cos em.me{background:var(--accent);color:#fff;border-color:var(--accent);font-weight:700}
-:root[data-theme="dark"] .grp-cos em.me{color:#0f1426}
-@media (prefers-color-scheme: dark){:root:not([data-theme="light"]) .grp-cos em.me{color:#0f1426}}
+.grp-cos .me{background:var(--accent);color:#fff;border:1px solid var(--accent);font-weight:700}
+.grp-cos button.me{font:inherit;font-size:12px;padding:4px 10px;border-radius:999px;cursor:pointer;box-shadow:0 0 0 3px var(--accent-soft);animation:bestPulse 2.4s ease-in-out 3}.grp-cos button.me:hover{filter:brightness(1.15)}
+@keyframes bestPulse{50%{box-shadow:0 0 0 6px var(--accent-soft)}}
+:root[data-theme="dark"] .grp-cos .me{color:#0f1426}
+@media (prefers-color-scheme: dark){:root:not([data-theme="light"]) .grp-cos .me{color:#0f1426}}
 .grp-gal{display:grid;grid-template-columns:1fr 1.7fr 1fr;gap:10px;margin-top:14px}
 .grp-gal figure{margin:0;position:relative;border-radius:12px;overflow:hidden;background:#111;aspect-ratio:4/3}
 .grp-gal figure.w{aspect-ratio:auto}
@@ -594,8 +612,8 @@ aside.rail{position:sticky;top:calc(env(safe-area-inset-top,0px) + 82px);align-s
 
 <script>try{var _t=localStorage.getItem("stec_theme");if(_t==="light"||_t==="dark")document.documentElement.setAttribute("data-theme",_t)}catch(e){}</script>
 <header class="topbar">
-  <button type="button" class="logo-fig" id="logoHome" title="메인화면으로" aria-label="메인화면으로"><img src="__FIGLOGO__" alt="S-Tec 에스텍베스트"></button>
-  <div class="brand"><b>S-Tec Quotation System</b><span>에스텍베스트 · v3.9</span></div>
+  <button type="button" class="logo-fig" id="logoHome" title="메인화면으로" aria-label="메인화면으로"><img src="__FIGLOGO__" alt="S-Tec 에스텍 그룹"></button>
+  <div class="brand" title="에스텍 그룹 용역인력 견적시스템 · v4.0"><b>S-Tec Quotation System</b></div>
   <div class="sp"><div class="gstrip" id="gstrip" aria-hidden="true"></div></div>
   <div class="tb-home home-only" id="tbHome"></div>
   <div class="tb-actions">
@@ -621,7 +639,7 @@ aside.rail{position:sticky;top:calc(env(safe-area-inset-top,0px) + 82px);align-s
     <button class="step" role="tab" data-step="3"><span class="k">3</span><span><b>부대비용</b><small>차량 · 장비 · 기타</small></span></button>
     <button class="step" role="tab" data-step="4"><span class="k">4</span><span><b>요율·기준</b><small>4대보험 · 관리비 · 이윤</small></span></button>
     <button class="step" role="tab" data-step="5"><span class="k">5</span><span><b>견적서 출력</b><small>견적서 · 산출내역서</small></span></button>
-    <section class="grow" id="growCard" aria-label="에스텍 성장 현황"></section>
+    <section class="grow" id="growCard" aria-label="에스텍 그룹 성장 현황"></section>
   </nav>
 
   <main>
@@ -637,22 +655,22 @@ aside.rail{position:sticky;top:calc(env(safe-area-inset-top,0px) + 82px);align-s
       <div class="kpi">
         <div><b>1998<small>.12 설립</small></b><span>에스원 인력경비 부문에서 분사</span></div>
         <div><b>9,752<small>억 원</small></b><span>2025년 연결 매출 · 전년 대비 +2.2%</span></div>
-        <div><b>5,414<small>억 원</small></b><span>2026년 상반기 매출 · 전년 동기 +11.1%</span></div>
-        <div><b>11,982<small>명</small></b><span>에스텍시스템 직원 · 2026.6.30</span></div>
-        <div><b>AA+</b><span>기업신용등급 · 나이스디앤비 2026.4</span></div>
-        <div><b>11<small>개사</small></b><span>에스텍시스템 기업집단 계열회사</span></div>
+        <div><b>5,414<small>억 원</small></b><span>2026년 상반기 연결 매출 · 전년 동기 +11.1%</span></div>
+        <div><b>245<small>억 원</small></b><span>2026년 상반기 연결 영업이익 · 전년 동기 +33.7%</span></div>
+        <div><b>4,456<small>억 원</small></b><span>연결 자산총계 · 2026.6.30</span></div>
+        <div><b>11<small>개사</small></b><span>에스텍 그룹 계열회사 · 연결 종속회사 8개사</span></div>
       </div>
 
       <div class="card grp">
-        <div class="grp-hd"><div><span class="grp-k">ABOUT S-TEC GROUP</span><h2>국내 최대 종합안전관리서비스 기업, 에스텍그룹</h2>
-          <p class="sub">에스텍시스템은 1998년 에스원의 인력경비 부문에서 분사한 이후 삼성 그룹사를 비롯한 대형 사업장에서 운영 경험을 쌓아 온 시큐리티 업계의 선두주자입니다. 시큐리티·인프라(시설관리·방역)·소방·환경(파쇄·자원순환) 4개 사업부문에서 사람과 기계경비를 결합한 토털 서비스를 제공하며, 상표권 114건을 보유하고 있습니다.</p></div>
+        <div class="grp-hd"><div><span class="grp-k">ABOUT S-TEC GROUP</span><h2>국내 최대 종합안전관리서비스 기업, 에스텍 그룹</h2>
+          <p class="sub">에스텍시스템은 1998년 에스원의 인력경비 부문에서 분사한 이후 삼성 그룹사를 비롯한 대형 사업장에서 운영 경험을 쌓아 온 시큐리티 업계의 선두주자입니다. 에스텍 그룹은 시큐리티·인프라(시설관리·방역)·소방·환경(파쇄·자원순환) 4개 사업부문에서 사람과 기계경비를 결합한 토털 서비스를 제공합니다. 2026년 상반기 연결 기준 매출 5,414억 원, 영업이익 245억 원, 자본총계 2,609억 원이며 기업신용등급 AA+(나이스디앤비, 2026.4)를 받았습니다.</p></div>
           <a class="btn" href="https://www.s-tec.co.kr/main.php" target="_blank" rel="noopener">에스텍시스템 홈페이지 ↗</a></div>
         <blockquote class="vision">“시큐리티 서비스의 새로운 문화를 창조하는 <b>국내 시큐리티 업계의 선두주자</b>” <span>— 고객만족을 위한 전문성 · 우수성 · 정예인력, 그리고 ‘안전 NO.1 기업’이라는 비전</span></blockquote>
       </div>
 
       <div class="grp-row">
         <div class="card">
-          <div class="sec-h"><span class="grp-k">HISTORY</span><h2>에스텍이 걸어온 길</h2></div>
+          <div class="sec-h"><span class="grp-k">HISTORY</span><h2>에스텍 그룹이 걸어온 길</h2></div>
           <ol class="tl">
             <li><b>1998</b><span>12월 30일 에스텍시스템 설립 — 에스원 인력경비 부문 분사</span></li>
             <li><b>2015</b><span>통합관제시스템 GS 품질인증 획득</span></li>
@@ -664,22 +682,22 @@ aside.rail{position:sticky;top:calc(env(safe-area-inset-top,0px) + 82px);align-s
           </ol>
         </div>
         <div class="card">
-          <div class="sec-h"><span class="grp-k">WITH YOU</span><h2>함께 성장하는 에스텍</h2></div>
+          <div class="sec-h"><span class="grp-k">WITH YOU</span><h2>함께 성장하는 에스텍 그룹</h2></div>
           <div class="csr">
-            <div><b>🤝 어울림에프</b><span>발달장애인과 함께 일하는 자회사형 장애인표준사업장. 에스텍그룹이 지분 100%(에스텍시스템 80%)를 보유하며 새니텍 제품을 직접 생산합니다.</span></div>
+            <div><b>🤝 어울림에프</b><span>발달장애인과 함께 일하는 자회사형 장애인표준사업장. 에스텍 그룹이 지분 100%(에스텍시스템 80%)를 보유하며 새니텍 제품을 직접 생산합니다.</span></div>
             <div><b>🌿 새니텍 생활케어</b><span>바이러스케어·해충방제 노하우를 생활 서비스로 넓혀 고객 곁의 안전을 지킵니다.</span></div>
-            <div><b>📺 당신 곁에 언제나</b><span>고객의 현장 가장 가까이에서 안전을 책임지는 친근한 에스텍을 약속합니다.</span></div>
+            <div><b>📺 당신 곁에 언제나</b><span>고객의 현장 가장 가까이에서 안전을 책임지는 친근한 에스텍 그룹을 약속합니다.</span></div>
           </div>
-          <div class="grp-cos"><span class="lbl">에스텍그룹 계열회사 11개사 (2026.6.30)</span><div><em>에스텍시스템</em><em>에스텍에이스</em><em>에스텍퍼스트</em><em class="me">에스텍베스트</em><em>에스텍세이프</em><em>에스텍플러스</em><em>에스텍프라임</em><em>에스텍에코</em><em>어울림에프</em><em>S-TEC SYSTEM VINA</em><em>S-TEC VINA</em><em>SANITEC VIETNAM</em></div></div>
+          <div class="grp-cos"><span class="lbl">에스텍 그룹 계열회사 11개사 (2026.6.30) · <small>에스텍베스트를 누르면 운영 현황</small></span><div><em>에스텍시스템</em><em>에스텍에이스</em><em>에스텍퍼스트</em><button type="button" class="me" id="coBest" title="에스텍베스트 운영 현황 보기">에스텍베스트 ↗</button><em>에스텍세이프</em><em>에스텍플러스</em><em>에스텍프라임</em><em>에스텍에코</em><em>어울림에프</em><em>S-TEC SYSTEM VINA</em><em>S-TEC VINA</em><em>SANITEC VIETNAM</em></div></div>
         </div>
       </div>
 
       <div class="grp-gal">
         <figure><img src="__BRANDSIGN__" alt="S-Tec 사인 조형물"><figcaption>S-Tec Brand</figcaption></figure>
-        <figure class="w"><img src="__BRANDCASE__" alt="S-Tec 산업현장 디오라마"><figcaption>산업현장과 함께하는 에스텍</figcaption></figure>
+        <figure class="w"><img src="__BRANDCASE__" alt="S-Tec 산업현장 디오라마"><figcaption>산업현장과 함께하는 에스텍 그룹</figcaption></figure>
         <figure><img src="__BRANDOFFICE__" alt="S-Tec 큐브 피규어"><figcaption>S-Tec Premium</figcaption></figure>
       </div>
-      <p class="hint" style="margin:0">숫자는 (주)에스텍시스템 2026년 반기보고서(2026.6.30 기준, 2026.8.27 제출·정정)를 기준으로 했습니다. 매출은 연결 기준, 직원 수는 에스텍시스템 별도 기준입니다. 최신 내용은 에스텍시스템 홈페이지에서 확인하세요.</p>
+      <p class="hint" style="margin:0">숫자는 [에스텍시스템][정정]반기보고서(2026.8.28) — 2026.6.30 기준 <b>연결재무제표</b>를 기준으로 했습니다. 최신 내용은 에스텍시스템 홈페이지에서 확인하세요.</p>
     </section>
 
     <!-- STEP 1 -->
@@ -688,13 +706,13 @@ aside.rail{position:sticky;top:calc(env(safe-area-inset-top,0px) + 82px);align-s
         <div class="tx">
           <span class="pill g" style="align-self:flex-start;background:rgba(255,255,255,.16);color:#fff">사업장 명칭부터 입력하세요</span>
           <h1>사업장 위치와 현황을 확인하고 바로 산출합니다</h1>
-          <p>신규 영업은 전국 사업장을 인터넷 지도에서 검색해 위치·세부현황을 확인하고, 재계약·갱신은 에스텍 사업장 151곳의 현황을 그대로 불러옵니다.</p>
+          <p>신규 영업은 전국 사업장을 인터넷 지도에서 검색해 위치·세부현황을 확인하고, 재계약·갱신은 에스텍 그룹 사업장 DB(등록 151곳)의 현황을 그대로 불러옵니다.</p>
         </div>
-        <img src="__TEAM__" alt="에스텍 보안·미화·주차·시설·사무 인력">
+        <img src="__TEAM__" alt="에스텍 그룹 보안·미화·주차·시설·사무 인력">
       </div>
 
       <div class="card">
-        <div class="h-row"><div><h2>사업장</h2><p class="sub" id="modeSub"></p></div><div class="row"><div class="seg" role="radiogroup" aria-label="검색 대상"><button type="button" data-mode="new">신규 영업 사업장</button><button type="button" data-mode="renew">기존 에스텍 사업장</button></div><span id="siteBadge"></span></div></div>
+        <div class="h-row"><div><h2>사업장</h2><p class="sub" id="modeSub"></p></div><div class="row"><div class="seg" role="radiogroup" aria-label="검색 대상"><button type="button" data-mode="new">신규 영업 사업장</button><button type="button" data-mode="renew">기존 에스텍 그룹 사업장</button></div><span id="siteBadge"></span></div></div>
         <div class="row" style="margin:-4px 0 10px" id="kakaoState"></div>
         <div class="kakao-box" id="kakaoBox" hidden>
           <p class="hint" style="margin:0 0 8px"><b>한 번만 설정하면 모든 직원이 자동 연결</b>됩니다: 카카오 디벨로퍼스(developers.kakao.com) → 내 애플리케이션 → 앱 추가 → 앱 설정 ‘카카오맵’ 사용 ON → 플랫폼 ‘Web’에 <code>https://sadness500-boop.github.io</code> 등록 → <b>JavaScript 키</b>를 GitHub 저장소의 <code>app-config.json</code> 파일 <code>kakaoJsKey</code>에 넣으세요. (JavaScript 키는 등록한 주소에서만 동작해 공개돼도 안전합니다)<br>이 기기에서만 쓰려면 아래에 넣으세요. PC에 내려받은 HTML 파일로 열 때는 <b>REST API 키</b>가 필요합니다.</p>
@@ -702,7 +720,7 @@ aside.rail{position:sticky;top:calc(env(safe-area-inset-top,0px) + 82px);align-s
         </div>
         <div class="grid g3">
           <label class="f site-search" style="grid-column:span 2"><span>사업장 명칭 <em>*</em></span>
-            <input class="inp" id="m_client" autocomplete="off" placeholder="예: 송원산업, 대경대학교, 현대자동차 울산공장 — 에스텍 사업장 + 전국 검색">
+            <input class="inp" id="m_client" autocomplete="off" placeholder="예: 송원산업, 대경대학교, 현대자동차 울산공장 — 에스텍 그룹 사업장 + 전국 검색">
             <div class="sugg" id="sugg" hidden></div>
           </label>
           <label class="f"><span>견적 대상 주소 (선택)</span><input class="inp" id="m_addr" placeholder="주소를 알면 입력 → 위치 조회 정확도 향상"></label>
@@ -718,7 +736,7 @@ aside.rail{position:sticky;top:calc(env(safe-area-inset-top,0px) + 82px);align-s
         <div class="mapwrap">
           <div>
             <div id="map" role="region" aria-label="사업장 지도"></div>
-            <div class="mapnote" id="mapNote">● 보안 ● 미화 ● 복합 — 에스텍 운영 사업장 · 사각 라벨은 지사/본사</div>
+            <div class="mapnote" id="mapNote">● 보안 ● 미화 ● 복합 — 에스텍 그룹 운영 사업장 · 사각 라벨은 지사/본사</div>
           </div>
           <div class="info" id="siteInfo"></div>
         </div>
@@ -794,7 +812,7 @@ aside.rail{position:sticky;top:calc(env(safe-area-inset-top,0px) + 82px);align-s
       </div>
       <div class="card">
         <h2>경비(복리후생) 기준 · 인당</h2>
-        <p class="sub">에스텍베스트 지급 기준. 교육훈련비·위험부담금은 노무비 대비 비율, 고정액을 넣으면 고정액이 우선합니다.</p>
+        <p class="sub">에스텍 그룹 지급 기준. 교육훈련비·위험부담금은 노무비 대비 비율, 고정액을 넣으면 고정액이 우선합니다.</p>
         <div class="grid g4" id="setExp"></div>
       </div>
       <div class="card">
@@ -825,8 +843,8 @@ aside.rail{position:sticky;top:calc(env(safe-area-inset-top,0px) + 82px);align-s
   <aside class="rail" aria-label="견적 요약">
     <div class="sum person-card est-only" id="personCard"></div>
     <div class="sum qr-card est-only" id="qrCard"></div>
-    <div class="sum rail-biz home-only" id="railBiz"><span class="grp-k">BUSINESS</span><h3>에스텍시스템 사업 분야</h3>
-      <p class="rb-cap">2026년 상반기 매출 5,414억 원 · 사업부문별 비중</p>
+    <div class="sum rail-biz home-only" id="railBiz"><span class="grp-k">BUSINESS</span><h3>에스텍 그룹 사업 분야</h3>
+      <p class="rb-cap">2026년 상반기 연결 매출 5,414억 원 · 사업부문별 비중</p>
       <div class="rb-list">
           <div class="biz"><i>🛡️</i><b>시큐리티</b><span>관공서·공장·빌딩·공동주택 경비, 개인·행사 경호, 전자보안 원격감시·SI</span><em class="rb-bar"><s style="width:60.7%"></s></em><small>3,283억 원 · 60.7%</small></div>
           <div class="biz"><i>🛠️</i><b>인프라</b><span>시설물 유지관리(FM·PM), 미화, 방역·해충방제 — 새니텍 SANITECH</span><em class="rb-bar"><s style="width:26.3%"></s></em><small>1,422억 원 · 26.3%</small></div>
@@ -1004,19 +1022,68 @@ const DEFAULT_COND =
 ○ 상기 금액은 피복, 장비, 복리후생 등 포함한 금액입니다.
 ○ 업무 수행에 필요한 근무실, 휴게실, 청소용품(소모품 포함), 집기류, 통신, 식사는 고객사 제공조건`;
 
+/* ───────── 내 정보(견적 담당자·공급자) — 이 PC에만 저장 ─────────
+   프로그램을 내려받아 쓰는 사람이 자기 사진·이름·소속·공급자(회사) 정보를 등록하면 새 견적과 엑셀에 들어갑니다. */
+const CO_PRESETS={
+  "에스텍베스트":{coName:"㈜에스텍베스트", coCeo:"정규상", coBizNo:"607-81-56605", coAddr:"부산시 부산진구 중앙대로 920, 2층(설비건설회관)", coType:"서비스", coItem:"경비용역,시설관리,위생관리", coLic:"경찰청 허가 제243호 / 위생관리 신고증 제139호"},
+  "에스텍시스템":{coName:"㈜에스텍시스템", coCeo:"이병화", coBizNo:"", coAddr:"서울특별시 강남구 개포로 619", coType:"", coItem:"", coLic:""}
+};
+const GROUP_COS=["에스텍시스템","에스텍에이스","에스텍퍼스트","에스텍베스트","에스텍세이프","에스텍플러스","에스텍프라임","에스텍에코","어울림에프"];
+const AVATAR="data:image/svg+xml,"+encodeURIComponent('<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 120 140"><defs><linearGradient id="g" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#e7eaf8"/><stop offset="1" stop-color="#c9d1f0"/></linearGradient></defs><rect width="120" height="140" fill="url(#g)"/><circle cx="60" cy="52" r="24" fill="#1b2a86" opacity=".85"/><path d="M18 140c4-30 22-46 42-46s38 16 42 46z" fill="#1b2a86" opacity=".85"/><text x="60" y="58" font-family="sans-serif" font-size="13" font-weight="700" fill="#fff" text-anchor="middle">S-Tec</text></svg>');
+function getProfile(){ try{ const p=JSON.parse(localStorage.getItem("stec_profile")||"null"); return p&&typeof p==="object"?p:null; }catch(e){ return null; } }
+function profileSettings(){
+  const P=getProfile()||{}, co=P.co||CO_PRESETS["에스텍베스트"];
+  return {coName:co.coName||"", coCeo:co.coCeo||"", coBizNo:co.coBizNo||"", coAddr:co.coAddr||"", coType:co.coType||"", coItem:co.coItem||"", coLic:co.coLic||"",
+    coBranch:P.org||"에스텍 그룹", coPerson:P.name||"", coPersonTitle:P.title||"", coPersonTel:P.tel||""};
+}
+function applyProfileImg(){ const P=getProfile(); IMG.person=(P&&P.photo)||AVATAR; Object.keys(imgCache).forEach(k=>{ if(k.startsWith("person@")) delete imgCache[k]; }); }
+function shrinkPhoto(file){ return new Promise((ok,no)=>{ const fr=new FileReader(); fr.onerror=()=>no(fr.error); fr.onload=()=>{ const im=new Image(); im.onload=()=>{ const W=300, H=360, c=document.createElement("canvas"); c.width=W; c.height=H; const x=c.getContext("2d"); x.fillStyle="#fff"; x.fillRect(0,0,W,H);
+      const r=Math.max(W/im.naturalWidth,H/im.naturalHeight), w=im.naturalWidth*r, h=im.naturalHeight*r; x.drawImage(im,(W-w)/2,Math.min(0,(H-h)*0.25),w,h); ok(c.toDataURL("image/jpeg",0.86)); }; im.onerror=()=>no(new Error("사진을 읽지 못했습니다")); im.src=fr.result; }; fr.readAsDataURL(file); }); }
+function openProfile(){
+  const P=getProfile()||{}, co={...(P.co||CO_PRESETS["에스텍베스트"])}; let photo=P.photo||"";
+  const ov=document.createElement("div"); ov.className="qr-ov pf-ov";
+  const f=(id,label,val,ph="")=>`<label class="f"><span>${label}</span><input class="inp" id="${id}" value="${esc(val||"")}" placeholder="${esc(ph)}"></label>`;
+  ov.innerHTML=`<div class="pf-pop" role="dialog" aria-modal="true" aria-labelledby="pfT">
+    <div class="h-row"><div><h2 id="pfT">내 정보 등록</h2><p class="sub">이 PC(휴대폰)에만 저장됩니다. 새 견적서·엑셀의 ‘견적 담당’과 공급자 칸에 들어갑니다.</p></div><button type="button" class="btn sm ghost" data-x>닫기</button></div>
+    <div class="pf-grid">
+      <div class="pf-photo"><img id="pfImg" src="${photo||AVATAR}" alt="내 사진"><label class="btn sm" for="pfFile">사진 선택</label><input type="file" id="pfFile" accept="image/*" hidden><button type="button" class="btn sm ghost" id="pfDel">사진 지우기</button></div>
+      <div class="grid g2">
+        ${f("pf_name","이름",P.name,"예: 홍길동")}${f("pf_title","직책",P.title,"예: 과장")}
+        <label class="f"><span>소속</span><input class="inp" id="pf_org" list="pfOrgs" value="${esc(P.org||"")}" placeholder="예: 에스텍베스트 동부지사"><datalist id="pfOrgs">${GROUP_COS.map(c=>`<option value="${c}">`).join("")}</datalist></label>
+        ${f("pf_tel","연락처",P.tel,"예: 010-0000-0000")}
+      </div>
+    </div>
+    <details class="pf-co" ${P.co?"open":""}><summary>견적서 공급자(회사) 정보 — 상호·대표·사업자등록번호</summary>
+      <div class="row" style="gap:6px;margin:8px 0">${Object.keys(CO_PRESETS).map(k=>`<button type="button" class="btn sm" data-preset="${k}">${k} 정보 넣기</button>`).join("")}</div>
+      <div class="grid g2">${f("pc_coName","상호",co.coName)}${f("pc_coCeo","대표이사",co.coCeo)}${f("pc_coBizNo","사업자등록번호",co.coBizNo)}${f("pc_coType","업태",co.coType)}${f("pc_coItem","종목",co.coItem)}${f("pc_coLic","허가·신고",co.coLic)}</div>
+      ${f("pc_coAddr","주소",co.coAddr)}
+    </details>
+    <div class="row" style="justify-content:space-between;margin-top:12px"><button type="button" class="btn sm ghost" id="pfReset">등록 정보 지우기</button><div class="row" style="gap:8px"><button type="button" class="btn" data-x>취소</button><button type="button" class="btn pri" id="pfSave">저장</button></div></div>
+  </div>`;
+  document.body.appendChild(ov);
+  const close=()=>ov.remove(); ov.querySelectorAll("[data-x]").forEach(b=>b.onclick=close); ov.onclick=e=>{ if(e.target===ov) close(); };
+  ov.querySelector("#pfFile").onchange=async e=>{ const fl=e.target.files[0]; if(!fl) return; try{ photo=await shrinkPhoto(fl); ov.querySelector("#pfImg").src=photo; }catch(err){ toast(err.message); } };
+  ov.querySelector("#pfDel").onclick=()=>{ photo=""; ov.querySelector("#pfImg").src=AVATAR; };
+  ov.querySelectorAll("[data-preset]").forEach(b=>b.onclick=()=>{ const c=CO_PRESETS[b.dataset.preset]; Object.entries(c).forEach(([k,v])=>{ const i=ov.querySelector("#pc_"+k); if(i) i.value=v; }); });
+  const val=id=>ov.querySelector("#"+id).value.trim();
+  ov.querySelector("#pfSave").onclick=()=>{
+    const np={name:val("pf_name"), title:val("pf_title"), org:val("pf_org"), tel:val("pf_tel"), photo,
+      co:Object.fromEntries(["coName","coCeo","coBizNo","coAddr","coType","coItem","coLic"].map(k=>[k,val("pc_"+k)]))};
+    try{ localStorage.setItem("stec_profile",JSON.stringify(np)); }catch(e){ toast("저장 공간이 부족해 사진을 줄여서 다시 저장해 주세요"); return; }
+    applyProfileImg(); Object.assign(state.set, profileSettings()); renderPerson(); renderSettings(); recalc(); close(); toast("내 정보를 저장했습니다 · 새 견적과 지금 견적에 반영했습니다"); };
+  ov.querySelector("#pfReset").onclick=()=>{ try{ localStorage.removeItem("stec_profile"); }catch(e){} applyProfileImg(); Object.assign(state.set, profileSettings()); renderPerson(); renderSettings(); recalc(); close(); toast("등록 정보를 지웠습니다"); };
+}
 function defaultSettings(year){
   const YR = RATES[year] || RATES[2026];
   return {
     minWage: YR.minWage,
-    health:YR.health, ltc:YR.ltc, pension:YR.pension, empSize:"m1000", emp:r3(YR.ui+0.65), indBase:0.8, indCom:YR.indCom, ind:r3(0.8+YR.indCom), wageClaim:YR.wageClaim, asb:YR.asb,
+    health:YR.health, ltc:YR.ltc, pension:YR.pension, empSize:"o1000", emp:r3(YR.ui+EMP_SIZE.o1000[1]), indBase:0.8, indCom:YR.indCom, ind:r3(0.8+YR.indCom), wageClaim:YR.wageClaim, asb:YR.asb,
     otGen:1.5, otWatch:1.0, nightRate:0.5,
     specialExam:80000, disOn:true, disRate:3.1, disBase:1360000, disRatio:100,
     gift:100000, meeting:10000, condol:4000, reliefH:12, reliefDays:1.8,
     resTax:62500, resSites:1, edu:1.0, eduFix:0, risk:0.5, riskFix:0, leaveH:8,
     ga:5, profit:2, profitBase:"direct", gaRound:true, priceRound:"down3", vat:10,
-    coName:"㈜에스텍베스트", coCeo:"정규상", coBizNo:"607-81-56605",
-    coAddr:"부산시 부산진구 중앙대로 920, 2층(설비건설회관)", coType:"서비스", coItem:"경비용역,시설관리,위생관리",
-    coLic:"경찰청 허가 제243호 / 위생관리 신고증 제139호", coBranch:"에스텍베스트", coPerson:"최민영", coPersonTitle:"", coPersonTel:"",
+    ...profileSettings(),
     cond: DEFAULT_COND
   };
 }
@@ -1217,7 +1284,7 @@ function initMap(){
   const sat=L.layerGroup([L.tileLayer(ESRI("World_Imagery"),{maxZoom:19,maxNativeZoom:18,attribution:"&copy; Esri, Maxar"}),
     L.tileLayer(ESRI("Reference/World_Boundaries_and_Places"),{maxZoom:19,maxNativeZoom:18})]);
   const offline=L.layerGroup();
-  const onTile=()=>{ if(tileOk) return; tileOk=true; setBase("tiles"); $("#mapNote").textContent="● 보안 ● 미화 ● 복합 — 에스텍 운영 사업장 · 사각 라벨은 지사/본사 · 오른쪽 위 [지도 종류]에서 일반·지형·위성 지도 변경"; };
+  const onTile=()=>{ if(tileOk) return; tileOk=true; setBase("tiles"); $("#mapNote").textContent="● 보안 ● 미화 ● 복합 — 에스텍 그룹 운영 사업장 · 사각 라벨은 지사/본사 · 오른쪽 위 [지도 종류]에서 일반·지형·위성 지도 변경"; };
   [street,topo].forEach(t=>t.on("tileload",onTile)); sat.eachLayer(t=>t.on("tileload",onTile));
   street.addTo(map);
   L.control.layers({"일반 지도":street,"지형 지도":topo,"위성 지도":sat,"행정경계(오프라인)":offline},null,{position:"topright"}).addTo(map);
@@ -1265,12 +1332,12 @@ function selectSite(id, fromMap){
   $("#m_client").value=s.name; $("#m_addr").value=s.addr;
   const w=s.work; state.meta.svc = (w.includes("보안")&&w.includes("미화"))?"보안·미화용역 도급업무": w.startsWith("미화")?"미화(위생관리)용역 도급업무": w.startsWith("주차")?"주차관리용역 도급업무":"보안용역 도급업무";
   $("#m_svc").value=state.meta.svc;
-  setLoc(s.lat,s.lng,"에스텍 사업장 DB", s.name);
+  setLoc(s.lat,s.lng,"에스텍 그룹 사업장 DB", s.name);
   $("#sugg").hidden=true;
 }
 function siteBadge(){
   const m=state.meta, el=$("#siteBadge");
-  if(m.siteId) el.innerHTML=`<span class="pill g">기존 에스텍 사업장</span>`;
+  if(m.siteId) el.innerHTML=`<span class="pill g">기존 에스텍 그룹 사업장</span>`;
   else if(m.client) el.innerHTML=`<span class="pill w">신규 사업장</span>`;
   else el.innerHTML="";
 }
@@ -1279,7 +1346,7 @@ function renderSiteInfo(){
   const m=state.meta, box=$("#siteInfo"); const s = m.siteId ? SITEDB.sites.find(x=>x.id===m.siteId) : null;
   let h="";
   if(!m.client && m.lat==null){
-    box.innerHTML=`<div class="blk"><h3>사업장 현황</h3><p class="hint" style="margin:0">사업장 명칭을 입력하면 위치·인원·근무형태와 인근 에스텍 사업장, 관할 지사까지 거리를 보여줍니다.</p></div>`+linksBlk();
+    box.innerHTML=`<div class="blk"><h3>사업장 현황</h3><p class="hint" style="margin:0">사업장 명칭을 입력하면 위치·인원·근무형태와 인근 에스텍 그룹 사업장, 관할 지사까지 거리를 보여줍니다.</p></div>`+linksBlk();
     $("#btnFromSite").hidden=true; return;
   }
   if(s){
@@ -1300,7 +1367,7 @@ function renderSiteInfo(){
     const near=SITEDB.sites.filter(x=>x.id!==m.siteId).map(x=>({...x,d:hav(m.lat,m.lng,x.lat,x.lng)})).sort((a,b)=>a.d-b.d);
     const n10=near.filter(x=>x.d<=10);
     h+=`<div class="blk"><h3>관할·접근성</h3><dl class="kv">${brs.slice(0,3).map(b=>`<dt>${esc(b.n)}</dt><dd>직선 ${b.d.toFixed(1)} km${b.k===m.branch?' <span class="pill">관할</span>':""}</dd>`).join("")}</dl></div>
-      <div class="blk"><h3>인근 에스텍 사업장 <span class="pill">${n10.length}곳 · 10km 이내</span></h3><ul class="near">${near.slice(0,5).map(x=>`<li><span>${esc(x.name)} <small class="hint">${esc(x.work)} ${x.total}명</small></span><span class="num">${x.d.toFixed(1)}km</span></li>`).join("")}</ul>
+      <div class="blk"><h3>인근 에스텍 그룹 사업장 <span class="pill">${n10.length}곳 · 10km 이내</span></h3><ul class="near">${near.slice(0,5).map(x=>`<li><span>${esc(x.name)} <small class="hint">${esc(x.work)} ${x.total}명</small></span><span class="num">${x.d.toFixed(1)}km</span></li>`).join("")}</ul>
       <p class="hint" style="margin:6px 0 0">대체근무·순회점검·차량 공동운영 검토 시 참고</p></div>`;
   }
   box.innerHTML=h+linksBlk();
@@ -1362,7 +1429,7 @@ function paintWiki(w){
   const box=$("#wikiBox"); if(!box||!w||!w.extract) return;
   box.innerHTML=`<div class="wiki">${w.thumbnail?`<img src="${esc(w.thumbnail.source)}" alt="">`:""}<div><b>${esc(w.title)}</b> <span class="pill">위키백과</span><br>${esc(w.extract.slice(0,260))}${w.extract.length>260?"…":""} <a href="${esc(w.content_urls?.desktop?.page||"#")}" target="_blank" rel="noopener">더보기</a></div></div>`;
 }
-/* ── 사업장 검색: 에스텍 사업장(전 지사) + 전국 인터넷 검색 ── */
+/* ── 사업장 검색: 에스텍 그룹 사업장 + 전국 인터넷 검색 ── */
 const OSM_TYPE={factory:"공장",industrial:"산업시설",works:"공장",warehouse:"창고",university:"대학교",college:"대학",school:"학교",kindergarten:"유치원",hospital:"병원",clinic:"의원",
   apartments:"아파트",residential:"주거",office:"사무소",company:"회사",government:"관공서",townhall:"관공서",public:"공공시설",commercial:"상업시설",retail:"상가",mall:"쇼핑몰",
   supermarket:"마트",department_store:"백화점",hotel:"호텔",golf_course:"골프장",parking:"주차장",station:"역",bus_station:"터미널",library:"도서관",stadium:"경기장",sports_centre:"체육시설",
@@ -1436,9 +1503,9 @@ function renderMode(){
   const md=siteMode();
   $$(".seg [data-mode]").forEach(b=>b.setAttribute("aria-checked",b.dataset.mode===md));
   $("#modeSub").textContent = md==="new"
-    ? "신규 영업 대상 사업장을 인터넷 지도에서 전국 검색합니다. 결과를 누르면 위치와 세부현황이 표시됩니다. (이미 에스텍이 운영 중인 곳은 표시해 드립니다)"
-    : "기존 에스텍 사업장(전 지사 151곳)에서 찾습니다. 재계약·갱신 견적에 사용하세요.";
-  $("#m_client").placeholder = md==="new" ? "예: 현대자동차 울산공장, ○○대학교, ○○아파트 — 전국 검색" : "예: 송원산업, 대경대학교 — 에스텍 사업장 검색";
+    ? "신규 영업 대상 사업장을 인터넷 지도에서 전국 검색합니다. 결과를 누르면 위치와 세부현황이 표시됩니다. (이미 에스텍 그룹이 운영 중인 곳은 표시해 드립니다)"
+    : "기존 에스텍 그룹 사업장(등록 151곳)에서 찾습니다. 재계약·갱신 견적에 사용하세요.";
+  $("#m_client").placeholder = md==="new" ? "예: 현대자동차 울산공장, ○○대학교, ○○아파트 — 전국 검색" : "예: 송원산업, 대경대학교 — 에스텍 그룹 사업장 검색";
 }
 function ownMatch(name){ const k=String(name||"").replace(/\s|\(주\)|㈜|주식회사/g,""); if(k.length<2) return null; return SITEDB.sites.find(s=>{ const n=s.name.replace(/\s|\(주\)|㈜|주식회사/g,""); return n.includes(k)||k.includes(n); })||null; }
 function suggest(){
@@ -1455,18 +1522,18 @@ function paintSugg(hit){
   const box=$("#sugg"), md=siteMode();
   const brOrder={"동부":0,"서부":1,"남부":2,"중부":3};
   hit=[...hit].sort((a,b)=>(brOrder[a.br]??9)-(brOrder[b.br]??9));
-  let own=`<div class="sg-h">에스텍 사업장 <b>${hit.length}</b>곳 <small>전 지사 · 기존 운영</small></div>`;
-  own+= hit.length ? hit.slice(0,40).map(s=>`<button type="button" data-sid="${s.id}"><span><span class="sg-br">${esc(s.br)}</span>${esc(s.name)}</span><small>${esc(s.type)} · ${esc(s.work)} ${s.total}명</small></button>`).join("") : `<div class="sg-none">일치하는 에스텍 사업장이 없습니다</div>`;
+  let own=`<div class="sg-h">에스텍 그룹 사업장 <b>${hit.length}</b>곳 <small>전 지사 · 기존 운영</small></div>`;
+  own+= hit.length ? hit.slice(0,40).map(s=>`<button type="button" data-sid="${s.id}"><span><span class="sg-br">${esc(s.br)}</span>${esc(s.name)}</span><small>${esc(s.type)} · ${esc(s.work)} ${s.total}명</small></button>`).join("") : `<div class="sg-none">일치하는 에스텍 그룹 사업장이 없습니다</div>`;
   let net=`<div class="sg-h">${md==="new"?"신규 영업 대상 · ":""}전국 사업장 검색 <small>${sgSource==="kakao"?"카카오맵 기준":"OpenStreetMap 기준"+(sgErr?` · ${esc(sgErr)}`:"")}</small></div>`;
   if(md==="renew" && !$("#m_client").value.trim()) net="";
   else if(sgState==="loading") net+=`<div class="sg-none">검색 중…</div>`;
   else if(sgState==="short") net+=`<div class="sg-none">두 글자 이상 입력하면 전국을 검색합니다</div>`;
   else if(sgState==="blocked") net+=`<div class="sg-none">${inFrame?"이 화면(Claude 앱)에서는 외부 검색이 차단됩니다. PC용 HTML 파일에서 실행하면 전국 검색이 됩니다.":"인터넷 검색에 실패했습니다. 연결을 확인하세요."}</div>`;
   else if(!sgOnline.length) net+=`<div class="sg-none">검색 결과가 없습니다 · Enter로 상세 검색</div>`;
-  else net+=sgOnline.map((f,i)=>{ const o=ownMatch(f.name); return `<button type="button" data-oid="${i}"><span>${esc(f.name)} <span class="pill">${esc(f.typeKo)}</span>${o?`<span class="sg-own">● 에스텍 운영중</span>`:""}</span><small>${esc(f.addr)}</small></button>`; }).join("");
+  else net+=sgOnline.map((f,i)=>{ const o=ownMatch(f.name); return `<button type="button" data-oid="${i}"><span>${esc(f.name)} <span class="pill">${esc(f.typeKo)}</span>${o?`<span class="sg-own">● 에스텍 그룹 운영중</span>`:""}</span><small>${esc(f.addr)}</small></button>`; }).join("");
   let h;
   if(md==="new"){
-    h=net + (hit.length?`<div class="sg-h">참고 · 이미 에스텍이 운영 중인 사업장 <b>${hit.length}</b>곳 <small><button type="button" class="linkbtn" data-tomode="renew">기존 사업장 검색으로 전환</button></small></div>`:"");
+    h=net + (hit.length?`<div class="sg-h">참고 · 이미 에스텍 그룹이 운영 중인 사업장 <b>${hit.length}</b>곳 <small><button type="button" class="linkbtn" data-tomode="renew">기존 사업장 검색으로 전환</button></small></div>`:"");
   } else {
     h=own + (sgState!=="short"?net:"");
   }
@@ -1554,7 +1621,7 @@ function geoDetailBlk(g){
       ${row("좌표",`${(+g.lat).toFixed(5)}, ${(+g.lng).toFixed(5)}`)}${row("출처",esc(g.src||""))}
       ${g.kakaoUrl?row("장소 상세",`<a href="${esc(g.kakaoUrl)}" target="_blank" rel="noopener">카카오맵 장소 페이지</a> · <a href="https://map.naver.com/p/search/${encodeURIComponent(g.name)}" target="_blank" rel="noopener">네이버 지도</a>`):""}
     </dl>
-    ${own?`<p class="hint" style="margin:6px 0 0;color:var(--warn)">● 이름이 비슷한 에스텍 운영 사업장: <b>${esc(own.name)}</b> (${esc(own.br)}지사 · ${esc(own.work)} ${own.total}명${ownNear!=null?` · ${ownNear.toFixed(1)}km`:""}) — 기존 사업장이면 ‘기존 에스텍 사업장’ 검색으로 선택하세요.</p>`:""}
+    ${own?`<p class="hint" style="margin:6px 0 0;color:var(--warn)">● 이름이 비슷한 에스텍 그룹 운영 사업장: <b>${esc(own.name)}</b> (${esc(own.br)}지사 · ${esc(own.work)} ${own.total}명${ownNear!=null?` · ${ownNear.toFixed(1)}km`:""}) — 기존 사업장이면 ‘기존 에스텍 그룹 사업장’ 검색으로 선택하세요.</p>`:""}
     ${g.loading?'<p class="hint" style="margin:6px 0 0">세부정보 불러오는 중…</p>':""}
     ${g.wiki?`<div class="wiki" style="margin-top:8px">${g.wiki.thumb?`<img src="${esc(g.wiki.thumb)}" alt="">`:""}<div><b>${esc(g.wiki.title)}</b> <span class="pill">위키백과</span><br>${esc(g.wiki.extract.slice(0,300))}${g.wiki.extract.length>300?"…":""} ${g.wiki.url?`<a href="${esc(g.wiki.url)}" target="_blank" rel="noopener">더보기</a>`:""}</div></div>`:""}
     <p class="hint" style="margin:8px 0 0">${g.src==="카카오맵"?"카카오맵 장소 정보 기준입니다.":"인터넷 지도(OpenStreetMap) 공개 정보 기준입니다."} 규모·인원은 아래 링크(사람인·DART)로 확인하세요.</p></div>`;
@@ -1745,7 +1812,7 @@ function renderInsTable(rebindOnly){
   box.innerHTML=`${srcNote}<div class="grid g3" style="margin-bottom:10px">
      <label class="f"><span>고용보험 · 회사 상시근로자 규모</span><select class="inp" data-s="empSize">${Object.entries(EMP_SIZE).map(([k,[l,v]])=>`<option value="${k}" ${S.empSize===k?"selected":""}>${l} (+${v}%)</option>`).join("")}</select></label>
      <label class="f"><span>산재보험 · 사업종류별 요율(%)</span><input class="inp n" data-s="indBase" value="${S.indBase??0.8}"></label>
-     <div class="hint" style="align-self:end">경비·미화·주차·시설관리는 ‘시설관리 및 사업지원 서비스업’ 0.8%(2026 고시). 개별실적요율을 받는 경우 직접 수정하세요.</div></div>
+     <div class="hint" style="align-self:end">기본값은 <b>에스텍시스템 기준</b> — 상시근로자 1,000인 이상(고용안정·직능 0.85%), 산재 ‘시설관리 및 사업지원 서비스업’ 0.8%. 소속 회사 규모나 개별실적요율이 다르면 직접 수정하세요.</div></div>
     <div class="tscroll"><table class="t instbl"><thead><tr><th>항목</th><th class="n">${Y}년 법정(사업주)</th><th class="n">적용 요율</th><th>상태</th><th>산정 근거</th></tr></thead><tbody>
     ${INS_ROWS.map(([k,l,u,d])=>{ const lv=st?st[k]:null, same=lv!=null&&Math.abs((+S[k])-lv)<1e-9;
       return `<tr><td><b>${l}</b></td><td class="n num">${lv!=null?fmt(k,lv)+(k==="minWage"?"원":"%"):"-"}</td>
@@ -1808,7 +1875,7 @@ function krWon(n){
 const fmtD=d=>d?d.replace(/-/g,". ").replace(/\. 0/g,". "):"";
 function docNo(){ const m=state.meta; return `${(m.date||"").slice(2).replace(/-/g,"")}-${String(m.year).slice(2)}${(state.roles.length+"").padStart(2,"0")}`; }
 function docHead(title, en, sub){
-  return `<div class="dh"><div class="dh-logo"><img src="${IMG.logo}" alt="S-Tec 에스텍베스트"></div>
+  return `<div class="dh"><div class="dh-logo"><img src="${IMG.logo}" alt="S-Tec 에스텍 그룹"></div>
     <div class="dh-t"><h1>${title}</h1><span>${en}</span></div>
     <div class="dh-no"><span>No. ${esc(docNo())}</span><span>${fmtD(state.meta.date)}</span></div></div>
     <div class="dh-rule"><i></i><b></b></div>${sub?`<div class="dh-sub">${sub}</div>`:""}`;
@@ -1910,10 +1977,10 @@ function renderDocs(R){
       ${line("장애인고용부담금","dis",`${S.disRate}% × ${won(S.disBase)}원${S.disRatio!=100?` × ${S.disRatio}%`:""}`)}
       ${line("간접비 계 ②","indirect","","s")}
       ${line("노무비 계 (1)","labor","직접비 ① + 간접비 ②","s")}
-      ${line("피복장구비","uniform","에스텍베스트 지급기준","",won2,g("경비"))}
+      ${line("피복장구비","uniform","에스텍 그룹 지급기준","",won2,g("경비"))}
       ${line("직원선물대","gift",`명절선물 연 ${won(S.gift)}원 ÷ 12개월`)}
       ${line("직원회의비","meeting","근무자 회의비")}
-      ${line("경조비","condol","에스텍베스트 지급기준")}
+      ${line("경조비","condol","에스텍 그룹 지급기준")}
       ${line("대치근무비","relief",`통상시급 × ${S.reliefH}h × 연 ${S.reliefDays}일 ÷ 12개월`)}
       ${line("주민세(사업소분)","resTax",`${won(S.resTax)}원 × ${S.resSites}개소 ÷ 12개월 ÷ 총인원`)}
       ${line("교육훈련비","edu",S.eduFix?`인당 고정 ${won(S.eduFix)}원`:`신임·직무교육 등 (노무비 × ${S.edu}%)`)}
@@ -1947,15 +2014,15 @@ function renderDocs(R){
 let lastR=null;
 function renderTbHome(){
   const el=$("#tbHome"); if(!el||!state) return; const S=state.set, url=appUrl();
-  el.innerHTML=`<button type="button" class="tbp" id="tbPerson" title="담당자 정보 수정"><img src="${IMG.person}" alt=""><span>견적 담당<b>${esc(S.coPerson||"담당자 미지정")}${S.coPersonTitle?` ${esc(S.coPersonTitle)}`:""}</b>${esc(S.coBranch||"")}</span></button>
+  el.innerHTML=`<button type="button" class="tbp" id="tbPerson" title="내 정보(사진·이름·소속) 등록"><img src="${IMG.person}" alt=""><span>견적 담당<b>${esc(S.coPerson||"내 정보 등록")}${S.coPersonTitle?` ${esc(S.coPersonTitle)}`:""}</b>${esc(S.coBranch||"")}</span></button>
     <button type="button" class="tbq" id="tbQR" title="QR 크게 보기"><span class="qb">${qrSvg(url,3)}<img src="${IMG.cube}" alt=""></span><span>앱 다운로드 QR<b>휴대폰으로 찍기</b>누르면 크게 보기</span></button>`;
-  $("#tbPerson").onclick=()=>{ go(4); setTimeout(()=>{ const x=document.querySelector('[data-s="coPerson"]'); if(x){ x.scrollIntoView({block:"center"}); x.focus(); } },250); };
+  $("#tbPerson").onclick=openProfile;
   $("#tbQR").onclick=()=>$("#qrBig")&&$("#qrBig").click();
 }
 function renderPerson(){ renderTbHome();
   const S=state.set, el=$("#personCard"); if(!el) return;
-  el.innerHTML=`<img src="${IMG.person}" alt="견적 담당자"><div class="pc-tx"><span class="lbl">견적 담당</span><b>${esc(S.coPerson||"담당자 미지정")}${S.coPersonTitle?` <small>${esc(S.coPersonTitle)}</small>`:""}</b><span>${esc(S.coBranch)}</span>${S.coPersonTel?`<span class="num">${esc(S.coPersonTel)}</span>`:""}<button type="button" class="btn sm ghost" id="pcEdit">담당자 정보 수정</button></div>`;
-  $("#pcEdit").onclick=()=>{ go(4); setTimeout(()=>{ const x=document.querySelector('[data-s="coPerson"]'); if(x){ x.scrollIntoView({block:"center"}); x.focus(); } },250); };
+  el.innerHTML=`<img src="${IMG.person}" alt="견적 담당자"><div class="pc-tx"><span class="lbl">견적 담당</span><b>${esc(S.coPerson||"담당자 미등록")}${S.coPersonTitle?` <small>${esc(S.coPersonTitle)}</small>`:""}</b><span>${esc(S.coBranch)}</span>${S.coPersonTel?`<span class="num">${esc(S.coPersonTel)}</span>`:""}<button type="button" class="btn sm ${getProfile()?"ghost":"pri"}" id="pcEdit">${getProfile()?"내 정보 수정":"내 정보 등록"}</button></div>`;
+  $("#pcEdit").onclick=openProfile;
 }
 /* ── 앱 다운로드 QR ── */
 const APP_URL_DEFAULT="https://sadness500-boop.github.io/Quotation-System/install.html";
@@ -1982,7 +2049,7 @@ function renderQR(){
   $("#qrEdit").onclick=()=>{ $("#qrEditBox").hidden=!$("#qrEditBox").hidden; };
   renderTbHome();
   $("#qrSave").onclick=()=>{ const v=$("#qrUrlIn").value.trim(); try{ if(v&&v!==APP_URL_DEFAULT) localStorage.setItem("stec_app_url",v); else localStorage.removeItem("stec_app_url"); }catch(e){} renderQR(); toast("QR 주소를 바꿨습니다"); };
-  $("#qrBig").onclick=()=>{ const ov=document.createElement("div"); ov.className="qr-ov"; ov.innerHTML=`<div class="qr-pop"><div class="qr-pop-box">${qrSvg(url,8)}<img class="qr-logo" src="${IMG.cube}" alt=""></div><b>에스텍 용역인력 견적시스템</b><span>${esc(url)}</span><button type="button" class="btn pri">닫기</button></div>`; ov.onclick=e=>{ if(e.target===ov||e.target.tagName==="BUTTON") ov.remove(); }; document.body.appendChild(ov); };
+  $("#qrBig").onclick=()=>{ const ov=document.createElement("div"); ov.className="qr-ov"; ov.innerHTML=`<div class="qr-pop"><div class="qr-pop-box">${qrSvg(url,8)}<img class="qr-logo" src="${IMG.cube}" alt=""></div><b>에스텍 그룹 용역인력 견적시스템</b><span>${esc(url)}</span><button type="button" class="btn pri">닫기</button></div>`; ov.onclick=e=>{ if(e.target===ov||e.target.tagName==="BUTTON") ov.remove(); }; document.body.appendChild(ov); };
 }
 function recalc(){
   const R=calcAll(state); lastR=R;
@@ -2124,7 +2191,7 @@ function loadSample(k){
       {id:nid(),name:"보행식청소차 (MEDIA75BT)",mode:"new",qty:1,price:6500000,rep:5,months:60},
       {id:nid(),name:"왁스머신기 (BP-16\")",mode:"new",qty:4,price:590000,rep:5,months:60}
     ];
-    st.others=[{id:nid(),name:"재료비(청소 소모품)",amount:1890000,cycle:"월",months:12,note:"에스텍베스트 지급 기준"}];
+    st.others=[{id:nid(),name:"재료비(청소 소모품)",amount:1890000,cycle:"월",months:12,note:"에스텍 그룹 지급 기준"}];
     const s=SITEDB.sites.find(x=>x.name==="울산과학대학교"); if(s){ st.meta.siteId=s.id; st.meta.addr=s.addr; st.meta.lat=s.lat; st.meta.lng=s.lng; st.meta.branch=s.br; }
   }
   st.set.cond=DEFAULT_COND; st.meta.mode="renew";
@@ -2582,18 +2649,17 @@ function growthSvg(pts, w, h, pad, opt={}){
     <g class="g-end"><circle cx="${ex}" cy="${ey}" r="${opt.r||3.5}" fill="#fff"/><circle cx="${ex}" cy="${ey}" r="${(opt.r||3.5)*2.2}" fill="none" stroke="#8ee59f" stroke-opacity=".6"><animate attributeName="r" values="${opt.r||3.5};${(opt.r||3.5)*3}" dur="1.8s" repeatCount="indefinite"/><animate attributeName="stroke-opacity" values=".7;0" dur="1.8s" repeatCount="indefinite"/></circle>
     ${opt.label?`<text x="${ex-6}" y="${ey-9}" font-size="11" font-weight="800" fill="#fff" text-anchor="end">${opt.label}</text>`:""}</g>${ticks}</svg>`;
 }
-const SLOGANS=["사랑과 안전을 생각하는 에스텍","고객의 현장을 지키는 든든한 파트너","정확한 견적, 신뢰받는 서비스","오늘의 견적이 내일의 성장으로","함께 성장하는 에스텍베스트"];
-function renderGrowth(){
+const SLOGANS=["당신 곁에 언제나, 에스텍 그룹","고객의 현장을 지키는 든든한 파트너","정확한 견적, 신뢰받는 서비스","오늘의 견적이 내일의 성장으로","함께 성장하는 에스텍 그룹"];
+/* 에스텍 그룹 연결재무제표 수치 — [에스텍시스템][정정]반기보고서(2026.8.28), 2026.6.30 기준 (단위: 억 원) */
+/* 원 자료(백만원) → 화면 표시는 억 원 */
+const GROUPFIN_M={rev:[[2024,954002],[2025,975224]], h1:[[2025,487181],[2026,541364]], op:[[2025,18314],[2026,24488]], assets:445591, equity:260860};
+const eok=v=>Math.round(v/100);
+const GROUPFIN={src:"[에스텍시스템][정정]반기보고서(2026.8.28) · 연결재무제표", rev:GROUPFIN_M.rev.map(([y,v])=>[y,eok(v)]), h1:GROUPFIN_M.h1.map(([y,v])=>[y,eok(v)]), op:GROUPFIN_M.op.map(([y,v])=>[y,eok(v)]), assets:eok(GROUPFIN_M.assets), equity:eok(GROUPFIN_M.equity), subs:8, affiliates:11};
+const pctM=k=>{ const a=GROUPFIN_M[k]; return ((a[1][1]/a[0][1]-1)*100).toFixed(1); };
+const pctUp=(a,b)=>((b/a-1)*100).toFixed(1);
+function bestCardHTML(){
   const G=growthData(), my=(state&&state.meta&&state.meta.branch)||"동부", maxN=Math.max(...G.br.map(b=>b.n));
-  const gs=$("#gstrip");
-  if(gs){ gs.innerHTML=`${growthSvg(G.pts,96,30,{l:2,r:6,t:4,b:3},{sw:2,r:2.4})}
-      <div class="gs-k"><b>${G.sites}<em>곳 ▲</em></b><small>운영 사업장</small></div><span class="gs-sep"></span>
-      <div class="gs-k"><b>${won(G.people)}<em>명</em></b><small>현장 인력</small></div><span class="gs-sep s2"></span>
-      <div class="gs-slogan">${SLOGANS.map((t,i)=>`<span class="${i?"":"on"}">${t}</span>`).join("")}</div>`;
-    clearInterval(renderGrowth._t); let k=0;
-    renderGrowth._t=setInterval(()=>{ const sp=gs.querySelectorAll(".gs-slogan span"); if(!sp.length) return; sp[k].classList.remove("on"); k=(k+1)%sp.length; sp[k].classList.add("on"); },4200); }
-  const gc=$("#growCard");
-  if(gc){ gc.innerHTML=`<div class="g-hd"><img src="${IMG.figlogo||IMG.cube}" alt=""><div><b>함께 성장하는<br>에스텍베스트</b><small>S-Tec Growth</small></div></div>
+  return `<div class="g-hd"><img src="${IMG.figlogo||IMG.cube}" alt=""><div><b>에스텍베스트<br>운영 현황</b><small>사업장 DB 기준 · S-Tec Growth</small></div></div>
       <div class="g-chart">${growthSvg(G.pts,200,96,{l:6,r:10,t:16,b:14},{grid:true,ticks:true,label:G.sites+"곳"})}</div>
       <div class="g-cap">운영 중인 사업장 · 계약 시작연도 기준 누적</div>
       <div class="g-tiles">
@@ -2601,9 +2667,38 @@ function renderGrowth(){
         <div class="g-tile"><b>${won(G.people)}<small>명</small></b><span>현장 인력</span></div>
         <div class="g-tile"><b>+${G.last5}<small>곳</small></b><span>최근 5년 신규</span></div>
         <div class="g-tile"><b>${G.tenure.toFixed(1)}<small>년</small></b><span>평균 거래기간</span></div></div>
-      <div class="g-br">${G.br.map(b=>`<div class="r ${b.key===my?"me":""}"><span>${b.name}</span><span class="bar"><i data-w="${(b.n/maxN*100).toFixed(1)}"></i></span><span class="n">${b.n}곳</span></div>`).join("")}</div>
+      <div class="g-br">${G.br.map(b=>`<div class="r ${b.key===my?"me":""}"><span>${b.name}</span><span class="bar"><i data-w="${(b.n/maxN*100).toFixed(1)}"></i></span><span class="n">${b.n}곳 · ${won(b.p)}명</span></div>`).join("")}</div>
       <div class="g-ft">↗ 오늘의 견적이 내일의 성장</div>`;
+}
+function openBestPopup(){
+  const ov=document.createElement("div"); ov.className="qr-ov best-ov";
+  ov.innerHTML=`<div class="best-pop" role="dialog" aria-modal="true" aria-label="에스텍베스트 운영 현황"><button type="button" class="best-x" aria-label="닫기">✕</button><section class="grow">${bestCardHTML()}</section></div>`;
+  document.body.appendChild(ov);
+  const close=()=>ov.remove(); ov.onclick=e=>{ if(e.target===ov) close(); }; ov.querySelector(".best-x").onclick=close;
+  document.addEventListener("keydown",function k(e){ if(e.key==="Escape"){ close(); document.removeEventListener("keydown",k); } });
+  requestAnimationFrame(()=>setTimeout(()=>ov.querySelectorAll(".bar i").forEach(i=>i.style.width=i.dataset.w+"%"),80));
+}
+function renderGrowth(){
+  const F=GROUPFIN, gs=$("#gstrip");
+  if(gs){ const pts=[...F.rev.map(([y,v])=>[y,v])];
+    gs.innerHTML=`<div class="gs-k"><b>${won(F.rev[1][1])}<em>억 ▲</em></b><small>2025 연결 매출</small></div><span class="gs-sep"></span>
+      <div class="gs-k"><b>+${pctM("h1")}<em>%</em></b><small>상반기 매출 성장</small></div><span class="gs-sep s2"></span>
+      <div class="gs-slogan">${SLOGANS.map((t,i)=>`<span class="${i?"":"on"}">${t}</span>`).join("")}</div>`;
+    clearInterval(renderGrowth._t); let k=0;
+    renderGrowth._t=setInterval(()=>{ const sp=gs.querySelectorAll(".gs-slogan span"); if(!sp.length) return; sp[k].classList.remove("on"); k=(k+1)%sp.length; sp[k].classList.add("on"); },4200); }
+  const gc=$("#growCard");
+  if(gc){ const bar=(rows,max)=>rows.map(([y,v],i)=>`<div class="r ${i===rows.length-1?"me":""}"><span>${y}</span><span class="bar"><i data-w="${(v/max*100).toFixed(1)}"></i></span><span class="n">${won(v)}억</span></div>`).join("");
+    gc.innerHTML=`<div class="g-hd"><img src="${IMG.figlogo||IMG.cube}" alt=""><div><b>함께 성장하는<br>에스텍 그룹</b><small>연결재무제표 기준</small></div></div>
+      <div class="g-sub">연결 매출 · 연간</div><div class="g-br">${bar(F.rev,F.rev[1][1])}</div>
+      <div class="g-sub">연결 매출 · 상반기 <em>▲${pctM("h1")}%</em></div><div class="g-br">${bar(F.h1,F.h1[1][1])}</div>
+      <div class="g-tiles">
+        <div class="g-tile"><b>${F.op[1][1]}<small>억</small></b><span>상반기 영업이익 ▲${pctM("op")}%</span></div>
+        <div class="g-tile"><b>${won(F.assets)}<small>억</small></b><span>연결 자산총계</span></div>
+        <div class="g-tile"><b>${won(F.equity)}<small>억</small></b><span>연결 자본총계</span></div>
+        <div class="g-tile"><b>${F.affiliates}<small>개사</small></b><span>계열회사 (종속 ${F.subs})</span></div></div>
+      <div class="g-ft">↗ 2026 반기보고서 · 2026.6.30</div>`;
     requestAnimationFrame(()=>setTimeout(()=>gc.querySelectorAll(".bar i").forEach(i=>i.style.width=i.dataset.w+"%"),80)); }
+  const cb=$("#coBest"); if(cb) cb.onclick=openBestPopup;
 }
 
 /* ───────── 원본 견적서 파일 보관 (이 기기 IndexedDB) ───────── */
@@ -2853,18 +2948,18 @@ async function addCustomerSheets(wb, R, prev, Y){
       roleIdx.forEach(i=>{ const r0=state.roles[i], rw=ws.getRow(r); rw.getCell(1).value=roleLabel(r0); rw.getCell(2).value=r0.count;
         rowsDef.forEach(([lbl,fn,bold],k)=>{ const cc=rw.getCell(3+k); const [f,res]=fn(i,null,r0); cc.value={formula:f,result:res}; cc.numFmt='#,##0;[Red]-#,##0;"-"'; cc.font=xFont({size:9.5,bold:!!bold}); cc.border=xBorder("FFD6DAE5"); }); r++; });
     }
-    const n=ws.getRow(r+1).getCell(1); n.value="※ 이 표는 에스텍 견적시스템이 자동으로 붙인 대조표입니다. 고객사 제출 시 행을 숨기거나 지워도 됩니다."+(ws===ws9&&valuesOnly?" 원본이 수식 없이 값으로만 된 파일이라, 인당 단가·시급·인원만 익년도로 연결되고 세부 항목은 당해년 값 그대로입니다.":""); n.font=xFont({size:8.5,color:{argb:XC.muted}});
+    const n=ws.getRow(r+1).getCell(1); n.value="※ 이 표는 에스텍 그룹 견적시스템이 자동으로 붙인 대조표입니다. 고객사 제출 시 행을 숨기거나 지워도 됩니다."+(ws===ws9&&valuesOnly?" 원본이 수식 없이 값으로만 된 파일이라, 인당 단가·시급·인원만 익년도로 연결되고 세부 항목은 당해년 값 그대로입니다.":""); n.font=xFont({size:8.5,color:{argb:XC.muted}});
   };
   const P=M.kind==="detail"&&M.rows.price!=null?M.rows.price+1:null;
   const prevIdx=i=>state.roles.slice(0,i+1).filter(r=>r.prevL).length-1; // 당해년 산출내역서 열 순서
-  box(ws8,`◆ 에스텍 견적시스템 대조 — ${prev.Y}년 당해년 (자동 연동)`,[
+  box(ws8,`◆ 에스텍 그룹 견적시스템 대조 — ${prev.Y}년 당해년 (자동 연동)`,[
     ["원본 견적서 인당 단가",(i,col,r0)=> col?[`${col}${P}`, state.roles[i].prev]:[`${xlCol(M.cPrice)}${r0.srcRow+1}${r0.srcUnit==="month"?`/${r0.prevL?r0.prevL.count:r0.count}`:""}`, r0.prev]],
-    [`에스텍 산출내역서(${prev.Y}) 단가`,(i)=>{ const k=prevIdx(i); return [ref(N6,bdColL(Math.max(0,k)),bdRowOf("price")).replace(/\$/g,""), state.roles[i].prev]; }],
+    [`에스텍 그룹 산출내역서(${prev.Y}) 단가`,(i)=>{ const k=prevIdx(i); return [ref(N6,bdColL(Math.max(0,k)),bdRowOf("price")).replace(/\$/g,""), state.roles[i].prev]; }],
     ["차이",(i,col,r0)=>{ const k=prevIdx(i); const a=col?`${col}${P}`:`${xlCol(M.cPrice)}${r0.srcRow+1}${r0.srcUnit==="month"?`/${r0.prevL?r0.prevL.count:r0.count}`:""}`; return [`${ref(N6,bdColL(Math.max(0,k)),bdRowOf("price")).replace(/\$/g,"")}-${a}`,0]; },true]]);
-  box(ws9,`◆ 에스텍 견적시스템 대조 — ${Y}년 익년도 (자동 연동 · 시급·인원은 '${N3}' 시트와 연결)`,[
+  box(ws9,`◆ 에스텍 그룹 견적시스템 대조 — ${Y}년 익년도 (자동 연동 · 시급·인원은 '${N3}' 시트와 연결)`,[
     ["고객사 양식 인당 단가 (이 시트)",(i,col,r0)=> col?[`${col}${P}`, R.rows[i].L.price]:[`${xlCol(M.cPrice)}${r0.srcRow+1}${r0.srcUnit==="month"?`/${r0.count}`:""}`, R.rows[i].L.price]],
-    [`에스텍 산출내역서(${Y}) 단가`,(i)=>[ref(N3,bdColL(i),bdRowOf("price")).replace(/\$/g,""), R.rows[i].L.price]],
-    ["차이 (에스텍 − 고객사 양식)",(i,col,r0)=>{ const a=col?`${col}${P}`:`${xlCol(M.cPrice)}${r0.srcRow+1}${r0.srcUnit==="month"?`/${r0.count}`:""}`; return [`${ref(N3,bdColL(i),bdRowOf("price")).replace(/\$/g,"")}-${a}`,0]; },true]]);
+    [`에스텍 그룹 산출내역서(${Y}) 단가`,(i)=>[ref(N3,bdColL(i),bdRowOf("price")).replace(/\$/g,""), R.rows[i].L.price]],
+    ["차이 (에스텍 그룹 − 고객사 양식)",(i,col,r0)=>{ const a=col?`${col}${P}`:`${xlCol(M.cPrice)}${r0.srcRow+1}${r0.srcUnit==="month"?`/${r0.count}`:""}`; return [`${ref(N3,bdColL(i),bdRowOf("price")).replace(/\$/g,"")}-${a}`,0]; },true]]);
   state.importSrc.extraFrom=startRow; persistDraft();
   return "ok";
 }
@@ -2911,7 +3006,7 @@ function initVideo(){
 /* ───────── 갱신 견적 : 당해년 견적 불러오기 ───────── */
 const DATA_SHEET="_stec_data", DATA_MARK="STEC-QUOTE";
 /* 예전 표기 "에스텍베스트 동부지사" → "에스텍베스트" (저장된 견적·불러온 견적 모두) */
-function fixBranchName(st){ if(st && st.set && typeof st.set.coBranch==="string" && /동부\s*지사/.test(st.set.coBranch)){ st.set.coBranch=st.set.coBranch.replace(/\s*동부\s*지사/,"").trim()||"에스텍베스트"; } return st; }
+function fixBranchName(st){ const PO=(getProfile()||{}).org||""; if(/동부\s*지사/.test(PO)) return st; if(st && st.set && typeof st.set.coBranch==="string" && /동부\s*지사/.test(st.set.coBranch)){ st.set.coBranch=st.set.coBranch.replace(/\s*동부\s*지사/,"").trim()||"에스텍베스트"; } return st; }
 /* 상호와 담당 지사명을 함께 쓸 때 — 지사명이 상호에 이미 들어 있으면 한 번만 */
 function coLine(S, sep){ const n=S.coName||"", b=(S.coBranch||"").trim(); const nn=n.replace(/[㈜()（）주식회사\s]/g,""); return b && !nn.includes(b.replace(/\s/g,"")) ? n+(sep||" · ")+b : n; }
 function normState(st){
@@ -3769,6 +3864,7 @@ function applyState(st){
   recalc();
 }
 function boot(){
+  applyProfileImg();
   renderCats();
   const draft = LS.get("stec_quote_draft",null);
   state = draft && draft.meta && draft.set ? Object.assign(newState(), draft, {set:Object.assign(defaultSettings(draft.meta.year), draft.set)}) : null;
