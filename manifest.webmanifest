@@ -1,7 +1,7 @@
 {
   "name": "에스텍 용역인력 견적시스템",
   "short_name": "에스텍 견적",
-  "description": "에스텍베스트 동부지사 용역인력 도급비 견적 프로그램",
+  "description": "에스텍베스트 용역인력 도급비 견적 프로그램",
   "start_url": "./",
   "scope": "./",
   "display": "standalone",

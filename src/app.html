@@ -216,6 +216,19 @@ textarea.inp{resize:vertical;min-height:110px;line-height:1.6}
 .stage-ctl{position:absolute;top:14px;right:14px;display:flex;gap:6px;z-index:2}
 .vbtn{border:1px solid rgba(255,255,255,.25);background:rgba(10,16,48,.55);color:#fff;font:inherit;font-size:12px;padding:5px 10px;border-radius:999px;cursor:pointer;backdrop-filter:blur(4px)}
 .vbtn:hover{background:rgba(255,255,255,.18)}
+.vol{display:flex;align-items:center;gap:8px;padding:3px 10px 3px 3px;border-radius:999px;background:rgba(10,16,48,.55);border:1px solid rgba(255,255,255,.25);backdrop-filter:blur(4px);color:#fff;font-size:12px}
+.vol .vbtn{border:0;background:transparent;padding:4px 8px}
+.vol .vbtn:hover{background:rgba(255,255,255,.15)}
+.vol input[type=range]{width:96px;accent-color:#8ee59f;cursor:pointer;margin:0}
+.vol span{min-width:34px;text-align:right;font-variant-numeric:tabular-nums;opacity:.9}
+.vol.off input[type=range],.vol.off span{opacity:.45}
+.stage-hz{position:absolute;left:0;right:0;bottom:0;height:42%;z-index:2;display:flex;align-items:flex-end;justify-content:flex-end;padding:0 16px 16px}
+.vplay{display:flex;align-items:center;gap:8px;border:1px solid rgba(255,255,255,.35);background:rgba(10,16,48,.72);color:#fff;font:inherit;font-size:15px;font-weight:700;padding:10px 20px 10px 14px;border-radius:999px;cursor:pointer;backdrop-filter:blur(6px);box-shadow:0 6px 18px rgba(0,0,0,.35);opacity:0;transform:translateY(8px);transition:opacity .25s,transform .25s;pointer-events:none}
+.vplay i{font-style:normal;display:inline-flex;align-items:center;justify-content:center;width:30px;height:30px;border-radius:50%;background:#2b8a3e;font-size:13px}
+.vplay:hover{background:rgba(27,42,134,.9)}
+.stage-hz:hover .vplay,.vplay:focus-visible{opacity:1;transform:none;pointer-events:auto}
+@media (hover:none){.vplay{opacity:1;transform:none;pointer-events:auto;font-size:13px;padding:7px 14px 7px 9px}.vplay i{width:24px;height:24px}.stage-hz{height:auto;top:auto}}
+@media (max-width:640px){.vol input[type=range]{width:64px}.vol span{display:none}}
 .stage-cap{position:absolute;left:0;right:0;bottom:0;padding:60px 28px 22px;color:#fff;display:flex;flex-direction:column;gap:3px;background:linear-gradient(transparent,rgba(5,8,30,.85))}
 .stage-k{font-size:11.5px;letter-spacing:.22em;color:#8ee59f;font-weight:800}
 .stage-cap b{font-size:30px;letter-spacing:-.02em}
@@ -581,7 +594,7 @@ aside.rail{position:sticky;top:calc(env(safe-area-inset-top,0px) + 82px);align-s
 <script>try{var _t=localStorage.getItem("stec_theme");if(_t==="light"||_t==="dark")document.documentElement.setAttribute("data-theme",_t)}catch(e){}</script>
 <header class="topbar">
   <button type="button" class="logo-fig" id="logoHome" title="메인화면으로" aria-label="메인화면으로"><img src="__FIGLOGO__" alt="S-Tec 에스텍베스트"></button>
-  <div class="brand"><b>S-Tec Quotation System</b><span>에스텍베스트 동부지사 · v3.6</span></div>
+  <div class="brand"><b>S-Tec Quotation System</b><span>에스텍베스트 · v3.7</span></div>
   <div class="sp"><div class="gstrip" id="gstrip" aria-hidden="true"></div></div>
   <div class="tb-home home-only" id="tbHome"></div>
   <div class="tb-actions">
@@ -614,8 +627,9 @@ aside.rail{position:sticky;top:calc(env(safe-area-inset-top,0px) + 82px);align-s
     <!-- HOME -->
     <section class="panel home-p" id="p0" data-panel="0">
       <div class="stage">
-        <video id="introVid" src="__VIDEO__" poster="__POSTER__" autoplay muted loop playsinline preload="auto" aria-label="S-Tec 브랜드 영상"></video>
-        <div class="stage-ctl"><button type="button" id="vidSound" class="vbtn" aria-label="소리 켜기">🔇 소리 켜기</button><button type="button" id="vidReplay" class="vbtn" aria-label="처음부터">↺ 다시 보기</button></div>
+        <video id="introVid" src="__VIDEO__" poster="__POSTER__" muted playsinline preload="auto" aria-label="S-Tec 브랜드 영상"></video>
+        <div class="stage-ctl"><div class="vol"><button type="button" id="vidSound" class="vbtn" aria-label="소리 켜기">🔇 소리 켜기</button><input type="range" id="vidVol" min="0" max="100" step="5" value="70" aria-label="음량"><span id="vidVolN">70%</span></div></div>
+        <div class="stage-hz"><button type="button" id="vidPlay" class="vplay" aria-label="영상 재생"><i>▶</i><span>재생</span></button></div>
         <div class="stage-cap"><span class="stage-k">S-TEC GROUP · 안전 NO.1 기업</span><b>당신 곁에 언제나, 에스텍</b><small>전문성과 우수성을 갖춘 정예인력으로 안전하고 편리한 생활 서비스 환경을 만듭니다</small></div>
       </div>
 
@@ -1001,7 +1015,7 @@ function defaultSettings(year){
     ga:5, profit:2, profitBase:"direct", gaRound:true, priceRound:"down3", vat:10,
     coName:"㈜에스텍베스트", coCeo:"정규상", coBizNo:"607-81-56605",
     coAddr:"부산시 부산진구 중앙대로 920, 2층(설비건설회관)", coType:"서비스", coItem:"경비용역,시설관리,위생관리",
-    coLic:"경찰청 허가 제243호 / 위생관리 신고증 제139호", coBranch:"에스텍베스트 동부지사", coPerson:"최민영", coPersonTitle:"", coPersonTel:"",
+    coLic:"경찰청 허가 제243호 / 위생관리 신고증 제139호", coBranch:"에스텍베스트", coPerson:"최민영", coPersonTitle:"", coPersonTel:"",
     cond: DEFAULT_COND
   };
 }
@@ -1790,7 +1804,7 @@ function docHead(title, en, sub){
 function personLine(S){ return [S.coPerson, S.coPersonTitle].filter(Boolean).join(" ")+(S.coPersonTel?` · ${S.coPersonTel}`:""); }
 function docFoot(){
   const S=state.set;
-  return `<div class="df"><img src="${IMG.logo}" alt=""><div><b>${esc(S.coName)}</b> · ${esc(S.coBranch)}<br><span>${esc(S.coAddr)} · ${esc(S.coLic)}</span></div>
+  return `<div class="df"><img src="${IMG.logo}" alt=""><div><b>${esc(coLine(S))}</b><br><span>${esc(S.coAddr)} · ${esc(S.coLic)}</span></div>
     ${S.coPerson?`<div class="df-person"><img src="${IMG.person}" alt="견적 담당자"><div><small>견적 담당</small><b>${esc([S.coPerson,S.coPersonTitle].filter(Boolean).join(" "))}</b><span>${esc(S.coPersonTel||S.coBranch)}</span></div></div>`:`<span class="df-pg">사람과 안전을 생각하는 에스텍</span>`}</div>`;
 }
 function renderDocs(R){
@@ -1987,7 +2001,7 @@ function persistDraft(){ clearTimeout(draftT); draftT=setTimeout(()=>LS.set("ste
 function go(n){
   $$(".step").forEach(b=>b.setAttribute("aria-selected", b.dataset.step==n));
   $$("[data-panel]").forEach(p=>p.hidden = p.dataset.panel!=n);
-  { const v=$("#introVid"); if(v){ if(n==0) v.play().catch(()=>{}); else v.pause(); } }
+  { const v=$("#introVid"); if(v){ if(n==0){ if(go._last!==0) playIntro(true); } else v.pause(); } go._last=n; }
   document.body.classList.toggle("is-home", n==0);
   if(n==1){ initMap(); setTimeout(()=>map&&map.invalidateSize(),50); }
   if(n==3) renderAddons();
@@ -2805,19 +2819,38 @@ function initTheme(){
   document.querySelectorAll("#themeSeg [data-theme-set]").forEach(b=>b.onclick=()=>{ const v=b.dataset.themeSet; try{ localStorage.setItem("stec_theme",v); }catch(e){} applyTheme(v); });
   try{ matchMedia("(prefers-color-scheme: dark)").addEventListener("change",()=>{ let v="system"; try{ v=localStorage.getItem("stec_theme")||"system"; }catch(e){} if(v==="system") applyTheme(v); }); }catch(e){}
 }
+/* 메인 영상: 처음 실행할 때와 메인화면으로 돌아올 때 한 번 재생 → 마지막 장면에서 정지.
+   영상 아래쪽에 마우스를 올리면 ‘재생’ 버튼, 오른쪽 위에 소리 켜기 + 음량 조절 */
+function playIntro(fromStart){
+  const v=$("#introVid"); if(!v) return;
+  if(fromStart || v.ended) v.currentTime=0;
+  const p=v.play(); if(p&&p.catch) p.catch(()=>{});
+}
 function initVideo(){
   const v=$("#introVid"); if(!v) return;
-  const p=v.play(); if(p&&p.catch) p.catch(()=>{});
-  $("#vidSound").onclick=()=>{ v.muted=!v.muted; if(!v.muted){ v.currentTime=0; v.play().catch(()=>{}); } $("#vidSound").textContent=v.muted?"🔇 소리 켜기":"🔊 소리 끄기"; };
-  $("#vidReplay").onclick=()=>{ v.currentTime=0; v.play().catch(()=>{}); };
-  document.addEventListener("visibilitychange",()=>{ if(document.hidden) v.pause(); else if(!$("#p0").hidden) v.play().catch(()=>{}); });
+  let vol=70; try{ const s=localStorage.getItem("stec_vid_vol"); if(s!=null && !isNaN(+s)) vol=+s; }catch(e){}
+  const btnS=$("#vidSound"), rng=$("#vidVol"), num=$("#vidVolN"), box=btnS.parentElement, btnP=$("#vidPlay");
+  const paint=()=>{ const off=v.muted||v.volume===0; btnS.textContent=off?"🔇 소리 켜기":"🔊 소리 끄기"; btnS.setAttribute("aria-label",off?"소리 켜기":"소리 끄기");
+    rng.value=Math.round(v.volume*100); num.textContent=Math.round(v.volume*100)+"%"; box.classList.toggle("off",off); };
+  const paintP=()=>{ const playing=!v.paused&&!v.ended; btnP.querySelector("i").textContent=playing?"❚❚":"▶"; btnP.querySelector("span").textContent=playing?"일시정지":"재생"; btnP.setAttribute("aria-label",playing?"영상 일시정지":"영상 재생"); };
+  v.volume=Math.max(0,Math.min(1,vol/100)); paint(); paintP();
+  btnS.onclick=()=>{ v.muted=!v.muted; if(!v.muted && v.volume===0){ v.volume=0.5; } if(!v.muted && (v.paused||v.ended)) playIntro(v.ended); paint(); };
+  rng.oninput=()=>{ v.volume=(+rng.value)/100; v.muted=v.volume===0; try{ localStorage.setItem("stec_vid_vol",rng.value); }catch(e){} paint(); };
+  btnP.onclick=()=>{ if(!v.paused&&!v.ended) v.pause(); else playIntro(v.ended); };
+  ["play","pause","ended"].forEach(ev=>v.addEventListener(ev,paintP));
+  v.addEventListener("volumechange",paint);
+  document.addEventListener("visibilitychange",()=>{ if(document.hidden && !v.paused){ v.pause(); v._resume=true; } else if(!document.hidden && v._resume && !$("#p0").hidden){ v._resume=false; playIntro(false); } });
 }
 
 /* ───────── 갱신 견적 : 당해년 견적 불러오기 ───────── */
 const DATA_SHEET="_stec_data", DATA_MARK="STEC-QUOTE";
+/* 예전 표기 "에스텍베스트 동부지사" → "에스텍베스트" (저장된 견적·불러온 견적 모두) */
+function fixBranchName(st){ if(st && st.set && typeof st.set.coBranch==="string" && /동부\s*지사/.test(st.set.coBranch)){ st.set.coBranch=st.set.coBranch.replace(/\s*동부\s*지사/,"").trim()||"에스텍베스트"; } return st; }
+/* 상호와 담당 지사명을 함께 쓸 때 — 지사명이 상호에 이미 들어 있으면 한 번만 */
+function coLine(S, sep){ const n=S.coName||"", b=(S.coBranch||"").trim(); const nn=n.replace(/[㈜()（）주식회사\s]/g,""); return b && !nn.includes(b.replace(/\s/g,"")) ? n+(sep||" · ")+b : n; }
 function normState(st){
   if(!st || !st.meta || !st.set || !Array.isArray(st.roles)) throw new Error("견적 데이터가 아닙니다");
-  return Object.assign(newState(), st, {set:Object.assign(defaultSettings(+st.meta.year), st.set)});
+  return fixBranchName(Object.assign(newState(), st, {set:Object.assign(defaultSettings(+st.meta.year), st.set)}));
 }
 function embedState(wb){
   const ws=wb.addWorksheet(DATA_SHEET,{state:"veryHidden"});
@@ -3305,7 +3338,7 @@ async function buildCover(wb, R, crew, m, S, logoId, logo, prev){
   ws.getRow(r).height=40;
   const lw=170, lh=Math.round(lw*logo.h/logo.w);
   ws.addImage(logoId,{tl:{col:(W/2-lw-10)/CPX,row:r-1+0.1},ext:{width:lw,height:lh}});
-  ws.mergeCells(r,6,r,NC); const co=ws.getRow(r).getCell(6); co.value={richText:[{text:`${S.coName}\n`,font:xFont({size:14,bold:true,color:{argb:XC.navy}})},{text:S.coBranch,font:xFont({size:9.5,color:{argb:XC.muted}})}]}; co.alignment={vertical:"middle",wrapText:true};
+  ws.mergeCells(r,6,r,NC); const co=ws.getRow(r).getCell(6); co.value={richText: coLine(S)===S.coName ? [{text:`${S.coName}`,font:xFont({size:14,bold:true,color:{argb:XC.navy}})}] : [{text:`${S.coName}\n`,font:xFont({size:14,bold:true,color:{argb:XC.navy}})},{text:S.coBranch,font:xFont({size:9.5,color:{argb:XC.muted}})}]}; co.alignment={vertical:"middle",wrapText:true};
   r++; ws.getRow(r).height=Math.max(8,lh*0.75-30); r++;
   text(r,`${S.coAddr}  ·  ${S.coLic}`,xFont({size:8.5,color:{argb:XC.muted}}),16); r++;
   band(r,3,XC.green); band(r+1,10,XC.navy);
@@ -3403,7 +3436,7 @@ async function buildQuoteSheet(wb, sheetName, R, qr, crew, Y, m, S, prevCol, log
   for(let k=1;k<=10;k++) ws.getRow(row).getCell(k).border={top:{style:"medium",color:{argb:XC.navy}}};
   ws.getRow(row+1).height=50; ws.getRow(row+2).height=14;
   ws.addImage(logoId,{tl:{col:0.1,row:row+0.3},ext:logoSm});
-  ws.mergeCells(`C${row+1}:G${row+1}`); const f=ws.getCell(`C${row+1}`); f.value=`${S.coName} · ${S.coBranch}\n${S.coAddr}`; f.font=xFont({size:8.5,color:{argb:XC.muted}}); f.alignment={horizontal:"left",vertical:"middle",wrapText:true,indent:1};
+  ws.mergeCells(`C${row+1}:G${row+1}`); const f=ws.getCell(`C${row+1}`); f.value=`${coLine(S)}\n${S.coAddr}`; f.font=xFont({size:8.5,color:{argb:XC.muted}}); f.alignment={horizontal:"left",vertical:"middle",wrapText:true,indent:1};
   if(S.coPerson && xPerson){ const ph=62, pw=Math.round(ph*xPerson.w/xPerson.h);
     ws.addImage(xPerson.id,{tl:{col:7.15,row:row+0.08},ext:{width:pw,height:ph}});
     ws.mergeCells(`I${row+1}:J${row+1}`); const pc=ws.getCell(`I${row+1}`);
@@ -3556,7 +3589,7 @@ async function buildBdSheet(wb, sheetName, R, Y, m, S, logoId, logoSm, tab){
     const n=rw.getCell(4); n.value=note||""; n.font=xFont({size:8.5,color:{argb:XC.muted}}); });
   r2=pStart+PR.length+2;
   ws.addImage(logoId,{tl:{col:0.1,row:r2-1+0.1},ext:logoSm});
-  ws.mergeCells(r2,3,r2,lastC); const ft=ws.getRow(r2).getCell(3); ft.value=`${S.coName} · ${S.coBranch}   |   ${S.coAddr}`; ft.font=xFont({size:9,color:{argb:XC.muted}}); ft.alignment={horizontal:"right",vertical:"middle"};
+  ws.mergeCells(r2,3,r2,lastC); const ft=ws.getRow(r2).getCell(3); ft.value=`${coLine(S)}   |   ${S.coAddr}`; ft.font=xFont({size:9,color:{argb:XC.muted}}); ft.alignment={horizontal:"right",vertical:"middle"};
   ws.getRow(r2).height=26;
   ws.headerFooter.oddFooter=`&L&8${S.coName} ${sheetName}&R&8&P / &N`;
   // A4 인쇄: 1쪽 = 산출내역 표 전체, 2쪽 = 산출 기준 — 용지 방향·배율 자동
@@ -3622,7 +3655,7 @@ async function exportXlsx(){
 
 /* ───────── 시작 ───────── */
 function applyState(st){
-  state=st; uid = 1000; state.roles.forEach(migrateRole);
+  state=fixBranchName(st); uid = 1000; state.roles.forEach(migrateRole);
   if(!state.meta.mode) state.meta.mode = state.roles.length||state.meta.siteId ? "renew" : "new";
   bindMeta(); renderRoles(); renderSettings(); renderAddons(); renderSiteInfo(); renderMode();
   if(map){ showSel(); if(state.meta.lat==null) map.setView([35.55,128.9],8); }
