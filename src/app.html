@@ -49,6 +49,7 @@ a{color:var(--accent)}
 .brand{display:flex;flex-direction:column;line-height:1.2;min-width:0}
 .brand b{font-size:17px;letter-spacing:-.01em}
 .brand span{font-size:12px;opacity:.75}
+.brand .ver{display:inline-block;margin-top:3px;font-size:11px;font-weight:600;letter-spacing:.02em;opacity:.85;font-family:var(--f-mono)}
 .topbar .sp{flex:1}
 .tb-actions{display:flex;gap:6px;flex-wrap:wrap}
 .tbtn{background:rgba(255,255,255,.12);border:1px solid rgba(255,255,255,.22);color:#fff;border-radius:8px;padding:7px 12px;cursor:pointer;font-weight:500;font-size:13px;white-space:nowrap}
@@ -588,7 +589,7 @@ aside.rail{position:sticky;top:calc(env(safe-area-inset-top,0px) + 82px);align-s
   .paper .dh-no{grid-column:1/-1;flex-direction:row;justify-content:space-between}
   .paper .dh-t h1{font-size:22px}
   .paper .dh-logo img{height:40px}
-  .topbar .brand span{display:none}
+  .topbar .brand span{display:none} .topbar .brand span.ver{display:inline-block;font-size:10px}
 }
 @media (max-width:520px){
   .g2{grid-template-columns:minmax(0,1fr)}
@@ -616,7 +617,7 @@ aside.rail{position:sticky;top:calc(env(safe-area-inset-top,0px) + 82px);align-s
 <script>try{var _t=localStorage.getItem("stec_theme");if(_t==="light"||_t==="dark")document.documentElement.setAttribute("data-theme",_t)}catch(e){}</script>
 <header class="topbar">
   <button type="button" class="logo-fig" id="logoHome" title="메인화면으로" aria-label="메인화면으로"><img src="__FIGLOGO__" alt="S-Tec 에스텍 그룹"></button>
-  <div class="brand" title="에스텍 그룹 용역인력 견적시스템 · v4.3"><b>S-Tec Quotation System</b></div>
+  <div class="brand" title="에스텍 그룹 용역인력 견적시스템"><b>S-Tec Quotation System</b><span class="ver">Ver 4.4 · 2026.10.18</span></div>
   <div class="sp"><div class="gstrip" id="gstrip" aria-hidden="true"></div></div>
   <div class="tb-home home-only" id="tbHome"></div>
   <div class="tb-actions">
@@ -671,6 +672,7 @@ aside.rail{position:sticky;top:calc(env(safe-area-inset-top,0px) + 82px);align-s
             <a class="btn" href="https://www.s-tec.co.kr/main.php" target="_blank" rel="noopener">🏢 에스텍시스템 홈페이지 ↗</a>
             <a class="btn" href="https://sanitec.co.kr/" target="_blank" rel="noopener">🦠 새니텍(SANITEC) 홈페이지 ↗</a>
             <a class="btn" href="https://www.google.com/maps/d/viewer?ll=36.92968992179964%2C127.34281246573065&amp;z=9&amp;mid=1D5OJeSTQ65xdxuSaLLPuKQQBscfOfwsB" target="_blank" rel="noopener">📍 에스텍시스템 전사 사업장 위치 ↗</a>
+            <a class="btn" href="https://sadness500-boop.github.io/S-Tec-Business-Site-Overview/" target="_blank" rel="noopener">🗺️ 에스텍베스트 사업장 위치 ↗</a>
           </div></div>
         <blockquote class="vision">“시큐리티 서비스의 새로운 문화를 창조하는 <b>국내 시큐리티 업계의 선두주자</b>” <span>— 고객만족을 위한 전문성 · 우수성 · 정예인력, 그리고 ‘안전 NO.1 기업’이라는 비전</span></blockquote>
       </div>
