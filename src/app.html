@@ -198,6 +198,7 @@ textarea.inp{resize:vertical;min-height:110px;line-height:1.6}
 .grow .g-br{padding:10px 14px 4px}
 .grow .g-sub{font-size:10.5px;opacity:.75;padding:8px 14px 0;letter-spacing:.02em}.grow .g-sub em{font-style:normal;color:#8ee59f;font-weight:800;margin-left:4px}
 .grow .g-sub+.g-br{padding-top:6px}
+.co-hd{display:flex;align-items:center;justify-content:flex-start;gap:14px;flex-wrap:wrap;margin-bottom:8px}.co-hd h2{margin:0}.co-pick{display:flex;align-items:center;gap:8px;min-width:220px}.co-pick span{font-size:12px;color:var(--muted);white-space:nowrap}.co-pick select{min-width:180px}
 .pf-pop{background:var(--paper);color:var(--ink);border-radius:16px;padding:18px;width:min(640px,100%);max-height:calc(100vh - 40px);overflow:auto;box-shadow:0 20px 60px rgba(0,0,0,.35)}
 .pf-pop h2{margin:0}
 .pf-grid{display:grid;grid-template-columns:130px 1fr;gap:16px;margin-top:12px;align-items:start}
@@ -613,7 +614,7 @@ aside.rail{position:sticky;top:calc(env(safe-area-inset-top,0px) + 82px);align-s
 <script>try{var _t=localStorage.getItem("stec_theme");if(_t==="light"||_t==="dark")document.documentElement.setAttribute("data-theme",_t)}catch(e){}</script>
 <header class="topbar">
   <button type="button" class="logo-fig" id="logoHome" title="메인화면으로" aria-label="메인화면으로"><img src="__FIGLOGO__" alt="S-Tec 에스텍 그룹"></button>
-  <div class="brand" title="에스텍 그룹 용역인력 견적시스템 · v4.0"><b>S-Tec Quotation System</b></div>
+  <div class="brand" title="에스텍 그룹 용역인력 견적시스템 · v4.1"><b>S-Tec Quotation System</b></div>
   <div class="sp"><div class="gstrip" id="gstrip" aria-hidden="true"></div></div>
   <div class="tb-home home-only" id="tbHome"></div>
   <div class="tb-actions">
@@ -820,7 +821,9 @@ aside.rail{position:sticky;top:calc(env(safe-area-inset-top,0px) + 82px);align-s
         <div class="grid g4" id="setMargin"></div>
       </div>
       <div class="card">
-        <h2>공급자 정보 · 견적 조건</h2>
+        <div class="h-row co-hd"><h2>공급자 정보 · 견적 조건</h2>
+          <label class="co-pick"><span>공급자(계열사)</span><select class="inp" id="coPick"></select></label></div>
+        <p class="hint" id="coPickHint" style="margin:-4px 0 10px"></p>
         <div class="grid g3" id="setCo"></div>
         <label class="f" style="margin-top:12px"><span>견적 조건 (견적서 하단 문구, {최저시급}·{연도} 자동 치환)</span><textarea class="inp" id="s_cond"></textarea></label>
       </div>
@@ -1024,23 +1027,35 @@ const DEFAULT_COND =
 
 /* ───────── 내 정보(견적 담당자·공급자) — 이 PC에만 저장 ─────────
    프로그램을 내려받아 쓰는 사람이 자기 사진·이름·소속·공급자(회사) 정보를 등록하면 새 견적과 엑셀에 들어갑니다. */
+/* 계열사별 공급자 정보 — [에스텍시스템][정정]반기보고서(2026.8.28) 상세표(주소·주요사업·법인등록번호) 기준.
+   보고서에 없는 사업자등록번호·대표이사·허가번호는 비워 두었습니다(에스텍베스트는 기존 견적서 정보). */
 const CO_PRESETS={
-  "에스텍베스트":{coName:"㈜에스텍베스트", coCeo:"정규상", coBizNo:"607-81-56605", coAddr:"부산시 부산진구 중앙대로 920, 2층(설비건설회관)", coType:"서비스", coItem:"경비용역,시설관리,위생관리", coLic:"경찰청 허가 제243호 / 위생관리 신고증 제139호"},
-  "에스텍시스템":{coName:"㈜에스텍시스템", coCeo:"이병화", coBizNo:"", coAddr:"서울특별시 강남구 개포로 619", coType:"", coItem:"", coLic:""}
+  "에스텍시스템":{coName:"㈜에스텍시스템", coCeo:"이병화", coBizNo:"", coCorpNo:"", coAddr:"서울특별시 강남구 개포로 619", coType:"", coItem:"시큐리티·인프라·소방·환경", coLic:""},
+  "에스텍에이스":{coName:"㈜에스텍에이스", coCeo:"", coBizNo:"", coCorpNo:"110111-1827819", coAddr:"서울시 강남구 도산대로 307(신사동, 백영신사빌딩 5층)", coType:"", coItem:"용역, 경비", coLic:""},
+  "에스텍퍼스트":{coName:"㈜에스텍퍼스트", coCeo:"", coBizNo:"", coCorpNo:"134111-0090229", coAddr:"경기도 수원시 팔달구 권광로 197(인계동, 남현프라자 406호)", coType:"", coItem:"용역, 경비", coLic:""},
+  "에스텍베스트":{coName:"㈜에스텍베스트", coCeo:"정규상", coBizNo:"607-81-56605", coCorpNo:"180111-0382969", coAddr:"부산시 부산진구 중앙대로 920, 2층(설비건설회관)", coType:"서비스", coItem:"경비용역,시설관리,위생관리", coLic:"경찰청 허가 제243호 / 위생관리 신고증 제139호"},
+  "에스텍세이프":{coName:"㈜에스텍세이프", coCeo:"", coBizNo:"", coCorpNo:"160111-0287254", coAddr:"대전시 중구 계룡로 786, 603호(오류동, 사학연금회관)", coType:"", coItem:"용역, 경비", coLic:""},
+  "에스텍플러스":{coName:"㈜에스텍플러스", coCeo:"", coBizNo:"", coCorpNo:"110111-3359000", coAddr:"서울시 강남구 테헤란로52길 21, 14층(역삼동, 파라다이스벤쳐타워)", coType:"", coItem:"용역경비, 인력파견", coLic:""},
+  "에스텍프라임":{coName:"㈜에스텍프라임", coCeo:"", coBizNo:"", coCorpNo:"110111-8814405", coAddr:"서울시 강남구 개포로 619, 10층", coType:"", coItem:"특수경비업", coLic:""},
+  "어울림에프":{coName:"㈜어울림에프", coCeo:"", coBizNo:"", coCorpNo:"135811-0306671", coAddr:"경기도 수원시 영통구 영통로 331번길 12", coType:"", coItem:"임가공 제조", coLic:""},
+  "에스텍에코":{coName:"㈜에스텍에코", coCeo:"", coBizNo:"", coCorpNo:"130111-1190676", coAddr:"경기도 화성시 향남읍 구문천2길 210-5", coType:"", coItem:"폐기물 재생처리업", coLic:""}
 };
+const CO_KEYS=["coName","coCeo","coBizNo","coCorpNo","coAddr","coType","coItem","coLic"];
+const DEFAULT_CO="에스텍시스템";
+function coKeyOf(S){ if(S.coKey && CO_PRESETS[S.coKey]) return S.coKey; const n=String(S.coName||"").replace(/[㈜()주식회사\s]/g,""); return Object.keys(CO_PRESETS).find(k=>n===k)||""; }
 const GROUP_COS=["에스텍시스템","에스텍에이스","에스텍퍼스트","에스텍베스트","에스텍세이프","에스텍플러스","에스텍프라임","에스텍에코","어울림에프"];
 const AVATAR="data:image/svg+xml,"+encodeURIComponent('<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 120 140"><defs><linearGradient id="g" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#e7eaf8"/><stop offset="1" stop-color="#c9d1f0"/></linearGradient></defs><rect width="120" height="140" fill="url(#g)"/><circle cx="60" cy="52" r="24" fill="#1b2a86" opacity=".85"/><path d="M18 140c4-30 22-46 42-46s38 16 42 46z" fill="#1b2a86" opacity=".85"/><text x="60" y="58" font-family="sans-serif" font-size="13" font-weight="700" fill="#fff" text-anchor="middle">S-Tec</text></svg>');
 function getProfile(){ try{ const p=JSON.parse(localStorage.getItem("stec_profile")||"null"); return p&&typeof p==="object"?p:null; }catch(e){ return null; } }
 function profileSettings(){
-  const P=getProfile()||{}, co=P.co||CO_PRESETS["에스텍베스트"];
-  return {coName:co.coName||"", coCeo:co.coCeo||"", coBizNo:co.coBizNo||"", coAddr:co.coAddr||"", coType:co.coType||"", coItem:co.coItem||"", coLic:co.coLic||"",
+  const P=getProfile()||{}, co=P.co||CO_PRESETS[DEFAULT_CO];
+  return {coKey:(P.co&&P.co.coKey)||(P.co?"":DEFAULT_CO), ...Object.fromEntries(CO_KEYS.map(k=>[k,co[k]||""])),
     coBranch:P.org||"에스텍 그룹", coPerson:P.name||"", coPersonTitle:P.title||"", coPersonTel:P.tel||""};
 }
 function applyProfileImg(){ const P=getProfile(); IMG.person=(P&&P.photo)||AVATAR; Object.keys(imgCache).forEach(k=>{ if(k.startsWith("person@")) delete imgCache[k]; }); }
 function shrinkPhoto(file){ return new Promise((ok,no)=>{ const fr=new FileReader(); fr.onerror=()=>no(fr.error); fr.onload=()=>{ const im=new Image(); im.onload=()=>{ const W=300, H=360, c=document.createElement("canvas"); c.width=W; c.height=H; const x=c.getContext("2d"); x.fillStyle="#fff"; x.fillRect(0,0,W,H);
       const r=Math.max(W/im.naturalWidth,H/im.naturalHeight), w=im.naturalWidth*r, h=im.naturalHeight*r; x.drawImage(im,(W-w)/2,Math.min(0,(H-h)*0.25),w,h); ok(c.toDataURL("image/jpeg",0.86)); }; im.onerror=()=>no(new Error("사진을 읽지 못했습니다")); im.src=fr.result; }; fr.readAsDataURL(file); }); }
 function openProfile(){
-  const P=getProfile()||{}, co={...(P.co||CO_PRESETS["에스텍베스트"])}; let photo=P.photo||"";
+  const P=getProfile()||{}, co={...(P.co||{coKey:DEFAULT_CO,...CO_PRESETS[DEFAULT_CO]})}; let photo=P.photo||"";
   const ov=document.createElement("div"); ov.className="qr-ov pf-ov";
   const f=(id,label,val,ph="")=>`<label class="f"><span>${label}</span><input class="inp" id="${id}" value="${esc(val||"")}" placeholder="${esc(ph)}"></label>`;
   ov.innerHTML=`<div class="pf-pop" role="dialog" aria-modal="true" aria-labelledby="pfT">
@@ -1054,8 +1069,8 @@ function openProfile(){
       </div>
     </div>
     <details class="pf-co" ${P.co?"open":""}><summary>견적서 공급자(회사) 정보 — 상호·대표·사업자등록번호</summary>
-      <div class="row" style="gap:6px;margin:8px 0">${Object.keys(CO_PRESETS).map(k=>`<button type="button" class="btn sm" data-preset="${k}">${k} 정보 넣기</button>`).join("")}</div>
-      <div class="grid g2">${f("pc_coName","상호",co.coName)}${f("pc_coCeo","대표이사",co.coCeo)}${f("pc_coBizNo","사업자등록번호",co.coBizNo)}${f("pc_coType","업태",co.coType)}${f("pc_coItem","종목",co.coItem)}${f("pc_coLic","허가·신고",co.coLic)}</div>
+      <label class="f" style="margin:8px 0"><span>기본 공급자 (계열사) — 새 견적에 들어갈 회사</span><select class="inp" id="pc_coKey">${Object.keys(CO_PRESETS).map(k=>`<option value="${k}" ${co.coKey===k?"selected":""}>${k}</option>`).join("")}<option value="" ${co.coKey?"":"selected"}>직접 입력</option></select></label>
+      <div class="grid g2">${f("pc_coName","상호",co.coName)}${f("pc_coCeo","대표이사",co.coCeo)}${f("pc_coBizNo","사업자등록번호",co.coBizNo)}${f("pc_coCorpNo","법인등록번호",co.coCorpNo)}${f("pc_coType","업태",co.coType)}${f("pc_coItem","종목",co.coItem)}${f("pc_coLic","허가·신고",co.coLic)}</div>
       ${f("pc_coAddr","주소",co.coAddr)}
     </details>
     <div class="row" style="justify-content:space-between;margin-top:12px"><button type="button" class="btn sm ghost" id="pfReset">등록 정보 지우기</button><div class="row" style="gap:8px"><button type="button" class="btn" data-x>취소</button><button type="button" class="btn pri" id="pfSave">저장</button></div></div>
@@ -1064,11 +1079,11 @@ function openProfile(){
   const close=()=>ov.remove(); ov.querySelectorAll("[data-x]").forEach(b=>b.onclick=close); ov.onclick=e=>{ if(e.target===ov) close(); };
   ov.querySelector("#pfFile").onchange=async e=>{ const fl=e.target.files[0]; if(!fl) return; try{ photo=await shrinkPhoto(fl); ov.querySelector("#pfImg").src=photo; }catch(err){ toast(err.message); } };
   ov.querySelector("#pfDel").onclick=()=>{ photo=""; ov.querySelector("#pfImg").src=AVATAR; };
-  ov.querySelectorAll("[data-preset]").forEach(b=>b.onclick=()=>{ const c=CO_PRESETS[b.dataset.preset]; Object.entries(c).forEach(([k,v])=>{ const i=ov.querySelector("#pc_"+k); if(i) i.value=v; }); });
+  ov.querySelector("#pc_coKey").onchange=e=>{ const c=CO_PRESETS[e.target.value]; if(c) Object.entries(c).forEach(([k,v])=>{ const i=ov.querySelector("#pc_"+k); if(i) i.value=v; }); };
   const val=id=>ov.querySelector("#"+id).value.trim();
   ov.querySelector("#pfSave").onclick=()=>{
     const np={name:val("pf_name"), title:val("pf_title"), org:val("pf_org"), tel:val("pf_tel"), photo,
-      co:Object.fromEntries(["coName","coCeo","coBizNo","coAddr","coType","coItem","coLic"].map(k=>[k,val("pc_"+k)]))};
+      co:{coKey:ov.querySelector("#pc_coKey").value, ...Object.fromEntries(CO_KEYS.map(k=>[k,val("pc_"+k)]))}};
     try{ localStorage.setItem("stec_profile",JSON.stringify(np)); }catch(e){ toast("저장 공간이 부족해 사진을 줄여서 다시 저장해 주세요"); return; }
     applyProfileImg(); Object.assign(state.set, profileSettings()); renderPerson(); renderSettings(); recalc(); close(); toast("내 정보를 저장했습니다 · 새 견적과 지금 견적에 반영했습니다"); };
   ov.querySelector("#pfReset").onclick=()=>{ try{ localStorage.removeItem("stec_profile"); }catch(e){} applyProfileImg(); Object.assign(state.set, profileSettings()); renderPerson(); renderSettings(); recalc(); close(); toast("등록 정보를 지웠습니다"); };
@@ -1780,7 +1795,7 @@ const SETF = {
   setLegal:[["specialExam","특수건강검진(연/인)"],["disRate","장애인 의무고용률(%)"],["disBase","부담기초액(원)"],["disRatio","부담금 반영률(%)"]],
   setExp:[["gift","명절선물대(연/인)"],["meeting","직원회의비(월)"],["condol","경조비(월)"],["reliefH","대치근무 기준시간"],["reliefDays","대치근무 일수(연)"],["resTax","주민세 사업소분(연)"],["resSites","주민세 개소 수"],["edu","교육훈련비(노무비 %)"],["eduFix","교육훈련비 고정액"],["risk","위험부담금(노무비 %)"],["riskFix","위험부담금 고정액"]],
   setMargin:[["ga","일반관리비(%)"],["profit","기업이윤(%)"],["vat","부가세(%)"]],
-  setCo:[["coName","상호"],["coCeo","대표이사"],["coBizNo","사업자등록번호"],["coAddr","주소"],["coType","업태"],["coItem","종목"],["coLic","허가·신고"],["coBranch","담당 지사"],["coPerson","견적 담당자"],["coPersonTitle","담당자 직책"],["coPersonTel","담당자 연락처"]]
+  setCo:[["coName","상호"],["coCeo","대표이사"],["coBizNo","사업자등록번호"],["coCorpNo","법인등록번호"],["coAddr","주소"],["coType","업태"],["coItem","종목"],["coLic","허가·신고"],["coBranch","담당 지사"],["coPerson","견적 담당자"],["coPersonTitle","담당자 직책"],["coPersonTel","담당자 연락처"]]
 };
 function renderSettings(){
   const S=state.set;
@@ -1793,9 +1808,15 @@ function renderSettings(){
     $("#"+box).innerHTML=h;
   }
   renderInsTable();
+  { const sel=$("#coPick"), cur=coKeyOf(S);
+    sel.innerHTML=Object.keys(CO_PRESETS).map(k=>`<option value="${k}" ${cur===k?"selected":""}>${k}${k===DEFAULT_CO?" (기본)":""}</option>`).join("")+`<option value="" ${cur?"":"selected"}>직접 입력</option>`;
+    const miss=cur?["coBizNo","coCeo"].filter(k=>!S[k]).map(k=>({coBizNo:"사업자등록번호",coCeo:"대표이사"})[k]):[];
+    $("#coPickHint").innerHTML = cur ? `${esc(cur)} 정보(${cur==="에스텍베스트"?"기존 견적서 정보":"반기보고서 상세표 기준"})를 넣었습니다.${miss.length?` <b>${miss.join("·")}</b>는 보고서에 없어 비어 있으니 직접 입력하세요.`:""}` : "공급자 정보를 직접 입력한 견적입니다.";
+    sel.onchange=()=>{ const k=sel.value; if(CO_PRESETS[k]){ Object.assign(S, CO_PRESETS[k]); S.coKey=k; } else S.coKey=""; renderSettings(); recalc(); toast(k?`공급자를 ${k}(으)로 바꿨습니다`:"공급자 정보를 직접 입력하세요"); }; }
   $("#s_cond").value=S.cond;
   $$("[data-s]").forEach(el=>{ if(el.closest("#insTable")) return; el.addEventListener("change",()=>{ const k=el.dataset.s;
     S[k] = el.type==="checkbox"?el.checked : (el.tagName==="SELECT"||SETF.setCo.some(x=>x[0]===k)) ? el.value : +String(el.value).replace(/,/g,"")||0;
+    if(k==="coName") S.coKey=coKeyOf({coName:S.coName});
     if(k==="minWage"){ state.roles.forEach(r=>{ if(r.wage<S.minWage) r.wage=S.minWage; }); renderRoles(); }
     recalc(); }); });
   $("#s_cond").oninput=()=>{ S.cond=$("#s_cond").value; recalc(); };
@@ -1905,7 +1926,7 @@ function renderDocs(R){
         <p class="q-lead">귀사의 무궁한 발전을 기원하며, 아래와 같이 견적합니다.</p>
       </section>
       <section class="q-sup"><table class="sup"><tbody>
-        <tr><th>등록번호</th><td colspan="3">${esc(S.coBizNo)}</td></tr>
+        <tr><th>등록번호</th><td colspan="3">${esc(regNo(S))}</td></tr>
         <tr><th>상 호</th><td>${esc(S.coName)}</td><th>대 표</th><td class="seal">${esc(S.coCeo)} <span class="stamp">인</span></td></tr>
         <tr><th>주 소</th><td colspan="3">${esc(S.coAddr)}</td></tr>
         <tr><th>업 태</th><td>${esc(S.coType)}</td><th>종 목</th><td>${esc(S.coItem)}</td></tr>
@@ -3008,6 +3029,7 @@ const DATA_SHEET="_stec_data", DATA_MARK="STEC-QUOTE";
 /* 예전 표기 "에스텍베스트 동부지사" → "에스텍베스트" (저장된 견적·불러온 견적 모두) */
 function fixBranchName(st){ const PO=(getProfile()||{}).org||""; if(/동부\s*지사/.test(PO)) return st; if(st && st.set && typeof st.set.coBranch==="string" && /동부\s*지사/.test(st.set.coBranch)){ st.set.coBranch=st.set.coBranch.replace(/\s*동부\s*지사/,"").trim()||"에스텍베스트"; } return st; }
 /* 상호와 담당 지사명을 함께 쓸 때 — 지사명이 상호에 이미 들어 있으면 한 번만 */
+function regNo(S){ return S.coBizNo || (S.coCorpNo?`법인 ${S.coCorpNo}`:""); }
 function coLine(S, sep){ const n=S.coName||"", b=(S.coBranch||"").trim(); const nn=n.replace(/[㈜()（）주식회사\s]/g,""); return b && !nn.includes(b.replace(/\s/g,"")) ? n+(sep||" · ")+b : n; }
 function normState(st){
   if(!st || !st.meta || !st.set || !Array.isArray(st.roles)) throw new Error("견적 데이터가 아닙니다");
@@ -3533,7 +3555,7 @@ async function buildQuoteSheet(wb, sheetName, R, qr, crew, Y, m, S, prevCol, log
   let row=7;
   ws.mergeCells(`A${row}:E${row}`); const cl=ws.getCell(`A${row}`); cl.value={richText:[{text:(m.client||"(사업장 명칭)")+"  ",font:xFont({size:15,bold:true})},{text:"貴中",font:xFont({size:11,color:{argb:XC.muted}})}]}; cl.border={bottom:{style:"medium",color:{argb:"FF111111"}}}; ws.getRow(row).height=26;
   const leftInfo=[["용 역 명",m.svc],["용역기간",`${fmtD(m.from)} ~ ${fmtD(m.to)} (${R.contractMonths}개월)`],["유효기간",m.valid],["사 업 장",m.addr||""],["","귀사의 무궁한 발전을 기원하며, 아래와 같이 견적합니다."]];
-  const sup=[["등록번호",S.coBizNo,"",""],["상 호",S.coName,"대 표",S.coCeo+"  (인)"],["주 소",S.coAddr,"",""],["업 태",S.coType,"종 목",S.coItem],["허가·신고",S.coLic,"",""],["담 당",S.coBranch+(S.coPerson?` · ${personLine(S)}`:""),"",""]];
+  const sup=[["등록번호",regNo(S),"",""],["상 호",S.coName,"대 표",S.coCeo+"  (인)"],["주 소",S.coAddr,"",""],["업 태",S.coType,"종 목",S.coItem],["허가·신고",S.coLic,"",""],["담 당",S.coBranch+(S.coPerson?` · ${personLine(S)}`:""),"",""]];
   sup.forEach((s,i)=>{ const r=row+i; const rw=ws.getRow(r); rw.height=19;
     const a=ws.getCell(`F${r}`); a.value=s[0]; a.font=xFont({bold:true,size:9}); a.fill=xFill("FFEEF1F7"); a.alignment={horizontal:"center",vertical:"middle"}; a.border=xBorder("FF333333");
     if(s[2]){ ws.mergeCells(`G${r}:G${r}`); const b=ws.getCell(`G${r}`); b.value=s[1]; b.font=xFont({size:9}); b.border=xBorder("FF333333"); b.alignment={vertical:"middle",shrinkToFit:true};
