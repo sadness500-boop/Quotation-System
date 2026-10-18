@@ -9,6 +9,8 @@
 
 ## 주요 기능
 
+- **홈 화면**: 가운데 S-Tec 브랜드 영상, 신규 영업 견적·갱신 견적·앱 다운로드 QR 바로가기, 에스텍그룹 소개(사업 분야·그룹사·브랜드 이미지).
+
 | 단계 | 내용 |
 |---|---|
 | 1. 사업장·기본정보 | 신규 영업 견적(당해년·익년도 선택), 신규 영업 사업장 전국 검색(카카오맵 API 키 연결 시 카카오맵 기준), 기존 에스텍 사업장 151곳 현황, 관할 지사 거리, 인근 사업장 |
@@ -27,11 +29,12 @@
 
 ```
 index.html            빌드된 단독 실행 파일 (웹 주소용)
-에스텍_용역인력_견적시스템_v3.2.html  같은 파일 (PC 내려받기용)
+에스텍_용역인력_견적시스템_v3.3.html  같은 파일 (PC 내려받기용)
 manifest.webmanifest, sw.js, icon-*.png  휴대폰 앱 설치(PWA)용
 src/app.html          화면·계산 엔진·엑셀 생성 코드 (템플릿)
 src/leaflet.css       지도 스타일
-assets/img.json       로고·직종 그림·담당자 사진 (base64)
+assets/img.json       로고·직종 그림·담당자 사진·브랜드 이미지 (base64)
+assets/intro.mp4      홈 화면 브랜드 영상 (빌드 시 파일 안에 포함)
 assets/sites.json     에스텍 사업장·지사 위치 데이터
 assets/adm.json       시·도/시·군·구/읍·면·동 경계 데이터
 vendor/               Leaflet 1.9.4, ExcelJS 4.4.0, qrcode-generator 1.4.4, SheetJS 0.18.5 core (Apache-2.0·MIT)

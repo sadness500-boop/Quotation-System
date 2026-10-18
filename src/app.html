@@ -209,6 +209,55 @@ textarea.inp{resize:vertical;min-height:110px;line-height:1.6}
 @media (prefers-reduced-motion:reduce){.g-line,.g-area,.g-end{animation:none;opacity:1;stroke-dasharray:none}}
 @media (min-width:1101px){nav.steps>.step{flex:none}nav.steps{max-height:calc(100vh - 96px);overflow-y:auto;scrollbar-width:none;padding-bottom:8px}nav.steps::-webkit-scrollbar{display:none}}
 @media (max-width:1100px){.grow{display:none}}
+/* HOME */
+.home-p{display:flex;flex-direction:column;gap:16px}
+.stage{position:relative;border-radius:16px;overflow:hidden;background:radial-gradient(ellipse at 50% 40%,#22306e 0%,#0d1230 62%,#070a1c 100%);display:flex;flex-direction:column;align-items:center;padding:22px 16px 18px;box-shadow:0 14px 40px rgba(10,16,48,.35)}
+.stage-glow{position:absolute;inset:auto 10% -40% 10%;height:70%;background:radial-gradient(ellipse,rgba(95,207,122,.28),transparent 70%);pointer-events:none}
+.stage video{position:relative;display:block;width:min(100%,600px);aspect-ratio:608/480;object-fit:cover;border-radius:12px;box-shadow:0 10px 40px rgba(0,0,0,.55),0 0 0 1px rgba(255,255,255,.08);background:#000}
+.stage-ctl{position:absolute;top:14px;right:14px;display:flex;gap:6px;z-index:2}
+.vbtn{border:1px solid rgba(255,255,255,.25);background:rgba(10,16,48,.55);color:#fff;font:inherit;font-size:12px;padding:5px 10px;border-radius:999px;cursor:pointer;backdrop-filter:blur(4px)}
+.vbtn:hover{background:rgba(255,255,255,.18)}
+.stage-cap{position:relative;text-align:center;color:#fff;margin-top:14px;display:flex;flex-direction:column;gap:2px}
+.stage-k{font-size:11px;letter-spacing:.25em;color:#8ee59f;font-weight:700}
+.stage-cap b{font-size:24px;letter-spacing:-.02em}
+.stage-cap small{opacity:.75;font-size:13px}
+.acts{display:grid;grid-template-columns:1fr 1fr 1.25fr;gap:14px}
+.act{position:relative;display:flex;flex-direction:column;gap:6px;text-align:left;border:none;border-radius:14px;padding:18px;cursor:pointer;font:inherit;color:#fff;min-height:150px;overflow:hidden;box-shadow:0 6px 18px rgba(20,32,106,.2);transition:transform .15s,box-shadow .15s}
+.act:hover{transform:translateY(-2px);box-shadow:0 10px 26px rgba(20,32,106,.3)}
+.act b{font-size:19px}.act small{opacity:.85;font-size:12.5px;line-height:1.45}.act em{margin-top:auto;font-style:normal;font-weight:700;font-size:13px}
+.act-ic{width:38px;height:38px;border-radius:10px;display:grid;place-items:center;font-size:22px;font-weight:800;background:rgba(255,255,255,.18)}
+.a-new{background:linear-gradient(135deg,#1b2a86,#3448c5)}
+.a-ren{background:linear-gradient(135deg,#0f6b3a,#2b8a3e)}
+.a-qr{background:var(--paper);color:var(--ink);border:1px solid var(--line);cursor:default;flex-direction:row;align-items:center;gap:14px}
+.a-qr:hover{transform:none}
+.a-qr .qr-box{width:120px;height:120px}
+.a-qr .hq-tx{display:flex;flex-direction:column;gap:4px;min-width:0}
+.a-qr .hq-tx b{font-size:16px}.a-qr .hq-tx span{font-size:12px;color:var(--muted)}.a-qr .hq-tx code{font-size:10.5px;color:var(--accent);overflow-wrap:anywhere}
+.grp-hd{display:flex;gap:14px;justify-content:space-between;align-items:flex-start;flex-wrap:wrap}
+.grp-k{font-size:11px;letter-spacing:.2em;color:var(--ok);font-weight:800}
+.grp-hd h2{margin:4px 0 6px;font-size:20px}
+.grp-body{display:grid;grid-template-columns:minmax(0,1.6fr) minmax(0,1fr);gap:14px;margin-top:12px}
+.grp-biz{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:10px}
+.biz{border:1px solid var(--line-2);border-radius:12px;padding:12px;display:flex;flex-direction:column;gap:3px;background:var(--field)}
+.biz i{font-style:normal;font-size:22px}.biz b{font-size:14px}.biz span{font-size:11.5px;color:var(--muted);line-height:1.4}
+.grp-side{display:flex;flex-direction:column;gap:10px}
+.grp-num{border-radius:12px;padding:12px 14px;background:linear-gradient(135deg,#1b2a86,#14206a);color:#fff;display:flex;flex-direction:column}
+.grp-num b{font-size:26px;letter-spacing:-.02em}.grp-num b small{font-size:13px;margin-left:3px}
+.grp-num span{font-size:11.5px;opacity:.85}.grp-num span em{font-style:normal;opacity:.7}
+.grp-num.g{background:linear-gradient(135deg,#0f6b3a,#2b8a3e)}
+.grp-cos div{display:flex;flex-wrap:wrap;gap:6px;margin-top:6px}
+.grp-cos em{font-style:normal;font-size:12px;padding:4px 10px;border-radius:999px;border:1px solid var(--line);background:var(--paper)}
+.grp-cos em.me{background:var(--accent);color:#fff;border-color:var(--accent);font-weight:700}
+.grp-gal{display:grid;grid-template-columns:1fr 1.7fr 1fr;gap:10px;margin-top:14px}
+.grp-gal figure{margin:0;position:relative;border-radius:12px;overflow:hidden;background:#111;aspect-ratio:4/3}
+.grp-gal figure.w{aspect-ratio:auto}
+.grp-gal img{width:100%;height:100%;object-fit:cover;display:block;transition:transform .5s}
+.grp-gal figure:hover img{transform:scale(1.05)}
+.grp-gal figcaption{position:absolute;left:0;right:0;bottom:0;padding:16px 10px 8px;font-size:11.5px;font-weight:700;color:#fff;background:linear-gradient(transparent,rgba(0,0,0,.65))}
+.step.home .k{font-size:15px}
+.grp-hd a.btn,.a-qr a.btn{text-decoration:none;color:inherit}
+@media (max-width:1100px){.acts{grid-template-columns:1fr 1fr}.a-qr{grid-column:1/-1}.grp-body{grid-template-columns:1fr}}
+@media (max-width:640px){.acts{grid-template-columns:1fr}.grp-biz{grid-template-columns:1fr 1fr}.grp-gal{grid-template-columns:1fr}.grp-gal figure,.grp-gal figure.w{aspect-ratio:16/9}.stage-cap b{font-size:19px}}
 .qr-ov{position:fixed;inset:0;background:rgba(10,16,40,.6);z-index:200;display:grid;place-items:center;padding:20px}
 .qr-pop{background:#fff;color:#16192a;border-radius:16px;padding:24px;display:flex;flex-direction:column;align-items:center;gap:8px;max-width:360px;width:100%;text-align:center}
 .qr-pop-box{position:relative;width:min(280px,70vw);aspect-ratio:1}
@@ -479,7 +528,7 @@ aside.rail{position:sticky;top:calc(env(safe-area-inset-top,0px) + 82px);align-s
 
 <header class="topbar">
   <div class="logo-fig"><img src="__FIGLOGO__" alt="S-Tec 에스텍베스트"></div>
-  <div class="brand"><b>S-Tec Quotation System</b><span>에스텍베스트 동부지사 · v3.2</span></div>
+  <div class="brand"><b>S-Tec Quotation System</b><span>에스텍베스트 동부지사 · v3.3</span></div>
   <div class="sp"><div class="gstrip" id="gstrip" aria-hidden="true"></div></div>
   <div class="tb-actions">
     <button class="tbtn" id="btnBlank">신규 영업 견적</button>
@@ -491,6 +540,7 @@ aside.rail{position:sticky;top:calc(env(safe-area-inset-top,0px) + 82px);align-s
 
 <div class="shell">
   <nav class="steps" role="tablist" aria-label="견적 단계">
+    <button class="step home" role="tab" data-step="0"><span class="k">⌂</span><span><b>홈</b><small>S-Tec Quotation System</small></span></button>
     <button class="step" role="tab" data-step="1"><span class="k">1</span><span><b>사업장·기본정보</b><small>위치 · 현황 · 용역조건</small></span></button>
     <button class="step" role="tab" data-step="2"><span class="k">2</span><span><b>인력 구성</b><small>직종 · 근무형태 · 수당</small></span></button>
     <button class="step" role="tab" data-step="3"><span class="k">3</span><span><b>부대비용</b><small>차량 · 장비 · 기타</small></span></button>
@@ -500,6 +550,49 @@ aside.rail{position:sticky;top:calc(env(safe-area-inset-top,0px) + 82px);align-s
   </nav>
 
   <main>
+    <!-- HOME -->
+    <section class="panel home-p" id="p0" data-panel="0">
+      <div class="stage">
+        <div class="stage-glow"></div>
+        <video id="introVid" src="__VIDEO__" poster="__POSTER__" autoplay muted loop playsinline preload="auto" aria-label="S-Tec 브랜드 영상"></video>
+        <div class="stage-ctl"><button type="button" id="vidSound" class="vbtn" aria-label="소리 켜기">🔇 소리 켜기</button><button type="button" id="vidReplay" class="vbtn" aria-label="처음부터">↺ 다시 보기</button></div>
+        <div class="stage-cap"><span class="stage-k">S-Tec Group</span><b>당신 곁에 언제나, 에스텍</b><small>사람과 안전을 생각하는 종합안전관리서비스</small></div>
+      </div>
+
+      <div class="acts">
+        <button type="button" class="act a-new" id="homeNew"><span class="act-ic">＋</span><b>신규 영업 견적</b><small>전국 사업장 검색 → 당해년·익년도 견적</small><em>시작하기 →</em></button>
+        <button type="button" class="act a-ren" id="homeRenew"><span class="act-ic">↻</span><b>갱신 견적</b><small>당해년 견적서(어떤 양식이든) 불러와 다음 연도 산출</small><em>불러오기 →</em></button>
+        <div class="act a-qr" id="homeQR"></div>
+      </div>
+
+      <div class="card grp">
+        <div class="grp-hd"><div><span class="grp-k">ABOUT S-TEC GROUP</span><h2>국내 최대 종합안전관리서비스 기업, 에스텍그룹</h2>
+          <p class="sub">에스원의 인력경비 부문에서 출발한 에스텍시스템을 중심으로, 시큐리티·환경위생·시설관리 서비스를 함께 제공하는 종합 인력서비스 그룹입니다.</p></div>
+          <a class="btn" href="https://www.s-tec.co.kr/main.php" target="_blank" rel="noopener">에스텍시스템 홈페이지 ↗</a></div>
+        <div class="grp-body">
+          <div class="grp-biz">
+            <div class="biz"><i>🛡️</i><b>시큐리티</b><span>경비·보안, 통합관제·SI, 방재, 보안컨설팅</span></div>
+            <div class="biz"><i>🧹</i><b>환경위생</b><span>미화·위생관리 서비스</span></div>
+            <div class="biz"><i>🛠️</i><b>시설물 유지관리</b><span>건물·설비 운영과 유지보수</span></div>
+            <div class="biz"><i>🦠</i><b>새니텍</b><span>바이러스케어·통합해충방제 브랜드</span></div>
+            <div class="biz"><i>📄</i><b>문서보안</b><span>문서·HDD 파쇄, 문서보안 서비스</span></div>
+            <div class="biz"><i>👥</i><b>인력 서비스</b><span>안전 분야 전문 인력 파견·운영</span></div>
+          </div>
+          <div class="grp-side">
+            <div class="grp-num"><b>8,750<small>억 원</small></b><span>2022년 그룹 매출 · 창사 이래 최대 <em>(2023.1 보도)</em></span></div>
+            <div class="grp-num" id="grpOwn"></div>
+            <div class="grp-cos"><span class="lbl">그룹사</span><div><em>에스텍시스템</em><em>에스텍에이스</em><em>에스텍퍼스트</em><em class="me">에스텍베스트</em><em>에스텍세이프</em></div></div>
+          </div>
+        </div>
+        <div class="grp-gal">
+          <figure><img src="__BRANDSIGN__" alt="S-Tec 사인 조형물"><figcaption>S-Tec Brand</figcaption></figure>
+          <figure class="w"><img src="__BRANDCASE__" alt="S-Tec 산업현장 디오라마"><figcaption>산업현장과 함께하는 에스텍</figcaption></figure>
+          <figure><img src="__BRANDOFFICE__" alt="S-Tec 큐브 피규어"><figcaption>S-Tec Premium</figcaption></figure>
+        </div>
+        <p class="hint" style="margin:8px 0 0">그룹 소개는 에스텍시스템 공개 자료와 언론 보도를 바탕으로 요약했습니다. 정확한 최신 내용은 홈페이지를 확인하세요.</p>
+      </div>
+    </section>
+
     <!-- STEP 1 -->
     <section class="panel" id="p1" data-panel="1">
       <div class="hero">
@@ -1803,6 +1896,7 @@ function persistDraft(){ clearTimeout(draftT); draftT=setTimeout(()=>LS.set("ste
 function go(n){
   $$(".step").forEach(b=>b.setAttribute("aria-selected", b.dataset.step==n));
   $$("[data-panel]").forEach(p=>p.hidden = p.dataset.panel!=n);
+  { const v=$("#introVid"); if(v){ if(n==0) v.play().catch(()=>{}); else v.pause(); } }
   if(n==1){ initMap(); setTimeout(()=>map&&map.invalidateSize(),50); }
   if(n==3) renderAddons();
   if(n==5){ renderDocs(lastR||calcAll(state)); renderCompare(); if(!state.compare && !$("#docCmp").hidden) document.querySelector('[data-doc="quote"]').click(); }
@@ -2585,6 +2679,24 @@ async function addCustomerSheets(wb, R, prev, Y){
     ["차이 (에스텍 − 고객사 양식)",(i,col,r0)=>{ const a=col?`${col}${P}`:`${xlCol(M.cPrice)}${r0.srcRow+1}${r0.srcUnit==="month"?`/${r0.count}`:""}`; return [`${ref(N3,bdColL(i),bdRowOf("price")).replace(/\$/g,"")}-${a}`,0]; },true]]);
   state.importSrc.extraFrom=startRow; persistDraft();
   return "ok";
+}
+
+/* ───────── 홈 화면 ───────── */
+function renderHome(){
+  const q=$("#homeQR"); if(q){ const url=appUrl();
+    q.innerHTML=`<button type="button" class="qr-box" id="hqBig" aria-label="QR 크게 보기">${qrSvg(url,4)}<img class="qr-logo" src="${IMG.cube}" alt=""></button>
+      <div class="hq-tx"><span class="lbl" style="color:var(--ok);font-weight:800;letter-spacing:.08em">앱 다운로드 QR</span><b>휴대폰으로 찍어 바로 설치</b><span>열린 화면에서 ‘홈 화면에 추가’를 누르면 앱처럼 쓸 수 있습니다.</span><code>${esc(url.replace(/^https?:\/\//,""))}</code>
+      <div class="row" style="gap:6px;margin-top:4px"><button type="button" class="btn sm" id="hqCopy">링크 복사</button><a class="btn sm" href="${APP_FILE_URL}" target="_blank" rel="noopener">PC용 파일</a></div></div>`;
+    $("#hqBig").onclick=()=>$("#qrBig")&&$("#qrBig").click();
+    $("#hqCopy").onclick=()=>$("#qrCopy")&&$("#qrCopy").click(); }
+  const G=growthData(), o=$("#grpOwn"); if(o) o.outerHTML=`<div class="grp-num g" id="grpOwn"><b>${G.sites}<small>곳</small> · ${won(G.people)}<small>명</small></b><span>에스텍베스트 운영 사업장 · 현장 인력 (동·서·남·중부 지사)</span></div>`;
+}
+function initVideo(){
+  const v=$("#introVid"); if(!v) return;
+  const p=v.play(); if(p&&p.catch) p.catch(()=>{});
+  $("#vidSound").onclick=()=>{ v.muted=!v.muted; if(!v.muted){ v.currentTime=0; v.play().catch(()=>{}); } $("#vidSound").textContent=v.muted?"🔇 소리 켜기":"🔊 소리 끄기"; };
+  $("#vidReplay").onclick=()=>{ v.currentTime=0; v.play().catch(()=>{}); };
+  document.addEventListener("visibilitychange",()=>{ if(document.hidden) v.pause(); else if(!$("#p0").hidden) v.play().catch(()=>{}); });
 }
 
 /* ───────── 갱신 견적 : 당해년 견적 불러오기 ───────── */
@@ -3454,8 +3566,9 @@ function boot(){
   $("#fileJson").onchange=e=>{ const f=e.target.files[0]; if(!f) return; const rd=new FileReader(); rd.onload=()=>{ try{ applyState(normState(JSON.parse(rd.result))); toast("JSON 견적을 불러왔습니다"); }catch(err){ toast("JSON 형식이 올바르지 않습니다"); } }; rd.readAsText(f); e.target.value=""; };
   renderSaved(); renderQR(); renderGrowth();
   if(location.protocol==="https:" && !inFrame && "serviceWorker" in navigator) navigator.serviceWorker.register("sw.js").catch(()=>{});
-  let st=1; try{ st=+localStorage.getItem("stec_step")||1; }catch(e){}
-  go(st);
+  renderHome(); initVideo();
+  $("#homeNew").onclick=openNewQuote; $("#homeRenew").onclick=openRenew;
+  go(0);
 }
 window.__st = ()=>state;
 window.__calc = { calcAll, calcRole, vehMonthly, defaultSettings, newRole, loadSample: k=>{loadSample(k); return calcAll(state);} };
