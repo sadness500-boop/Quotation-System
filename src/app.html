@@ -325,6 +325,7 @@ body:not(.is-home) .home-only{display:none!important}
 .rb-list .biz{display:grid;grid-template-columns:30px 1fr;column-gap:8px}
 .rb-list .biz i{grid-row:1/3}
 .rate-src{margin:0 0 10px;padding:10px 12px;border-radius:10px;background:var(--accent-soft);color:var(--ink);font-size:13px;line-height:1.5}
+.rb-links{display:flex;flex-direction:column;gap:6px;margin-top:10px}.rb-links .btn{text-decoration:none;color:inherit;justify-content:flex-start;text-align:left}
 .rb-cap{margin:-6px 0 10px;font-size:12px;color:var(--muted)}
 .rb-list .biz i{grid-row:1/5}
 .rb-bar{display:block;height:6px;border-radius:99px;background:var(--line-2);margin-top:7px;overflow:hidden}
@@ -614,7 +615,7 @@ aside.rail{position:sticky;top:calc(env(safe-area-inset-top,0px) + 82px);align-s
 <script>try{var _t=localStorage.getItem("stec_theme");if(_t==="light"||_t==="dark")document.documentElement.setAttribute("data-theme",_t)}catch(e){}</script>
 <header class="topbar">
   <button type="button" class="logo-fig" id="logoHome" title="메인화면으로" aria-label="메인화면으로"><img src="__FIGLOGO__" alt="S-Tec 에스텍 그룹"></button>
-  <div class="brand" title="에스텍 그룹 용역인력 견적시스템 · v4.1"><b>S-Tec Quotation System</b></div>
+  <div class="brand" title="에스텍 그룹 용역인력 견적시스템 · v4.2"><b>S-Tec Quotation System</b></div>
   <div class="sp"><div class="gstrip" id="gstrip" aria-hidden="true"></div></div>
   <div class="tb-home home-only" id="tbHome"></div>
   <div class="tb-actions">
@@ -854,7 +855,11 @@ aside.rail{position:sticky;top:calc(env(safe-area-inset-top,0px) + 82px);align-s
           <div class="biz"><i>♻️</i><b>환경</b><span>문서·저장매체 파쇄(문서보안), 자원순환</span><em class="rb-bar"><s style="width:10.7%"></s></em><small>577억 원 · 10.7%</small></div>
           <div class="biz"><i>🧯</i><b>소방</b><span>청정소화시스템 · 가스식 자동소화장치 생산 (천안 R&amp;D)</span><em class="rb-bar"><s style="width:2.4%"></s></em><small>129억 원 · 2.4%</small></div>
         </div>
-      <a class="btn sm" href="https://www.s-tec.co.kr/main.php" target="_blank" rel="noopener" style="margin-top:10px;text-decoration:none;color:inherit;align-self:flex-start">에스텍시스템 홈페이지 ↗</a></div>
+      <div class="rb-links">
+        <a class="btn sm" href="https://www.s-tec.co.kr/main.php" target="_blank" rel="noopener">🏢 에스텍시스템 홈페이지 ↗</a>
+        <a class="btn sm" href="https://sanitec.co.kr/" target="_blank" rel="noopener">🦠 새니텍(SANITEC) 홈페이지 ↗</a>
+        <a class="btn sm" href="https://www.google.com/maps/d/viewer?ll=36.92968992179964%2C127.34281246573065&amp;z=9&amp;mid=1D5OJeSTQ65xdxuSaLLPuKQQBscfOfwsB" target="_blank" rel="noopener">📍 에스텍시스템 전사 사업장 위치 ↗</a>
+      </div></div>
     <div class="sum est-only">
       <div class="lbl">월 견적금액 · VAT 별도</div>
       <div class="big" id="sumMonth">0<small> 원</small></div>
@@ -1030,7 +1035,8 @@ const DEFAULT_COND =
 /* 계열사별 공급자 정보 — [에스텍시스템][정정]반기보고서(2026.8.28) 상세표(주소·주요사업·법인등록번호) 기준.
    보고서에 없는 사업자등록번호·대표이사·허가번호는 비워 두었습니다(에스텍베스트는 기존 견적서 정보). */
 const CO_PRESETS={
-  "에스텍시스템":{coName:"㈜에스텍시스템", coCeo:"이병화", coBizNo:"", coCorpNo:"", coAddr:"서울특별시 강남구 개포로 619", coType:"", coItem:"시큐리티·인프라·소방·환경", coLic:""},
+  /* 에스텍시스템: 사업자등록증(삼성세무서, 2025.07.02 재발급) 기준 · 사업자단위과세 적용 */
+  "에스텍시스템":{coName:"㈜에스텍시스템", coCeo:"이병화", coBizNo:"202-81-62708", coCorpNo:"110111-1627144", coAddr:"서울특별시 강남구 개포로 619, 8층(개포동, 서울강남우체국청사)", coType:"서비스", coItem:"시설경비·신변보호·기계경비·호송경비, 건물(시설)관리용역, 위생관리, 주차관리", coLic:""},
   "에스텍에이스":{coName:"㈜에스텍에이스", coCeo:"", coBizNo:"", coCorpNo:"110111-1827819", coAddr:"서울시 강남구 도산대로 307(신사동, 백영신사빌딩 5층)", coType:"", coItem:"용역, 경비", coLic:""},
   "에스텍퍼스트":{coName:"㈜에스텍퍼스트", coCeo:"", coBizNo:"", coCorpNo:"134111-0090229", coAddr:"경기도 수원시 팔달구 권광로 197(인계동, 남현프라자 406호)", coType:"", coItem:"용역, 경비", coLic:""},
   "에스텍베스트":{coName:"㈜에스텍베스트", coCeo:"정규상", coBizNo:"607-81-56605", coCorpNo:"180111-0382969", coAddr:"부산시 부산진구 중앙대로 920, 2층(설비건설회관)", coType:"서비스", coItem:"경비용역,시설관리,위생관리", coLic:"경찰청 허가 제243호 / 위생관리 신고증 제139호"},
@@ -1811,7 +1817,7 @@ function renderSettings(){
   { const sel=$("#coPick"), cur=coKeyOf(S);
     sel.innerHTML=Object.keys(CO_PRESETS).map(k=>`<option value="${k}" ${cur===k?"selected":""}>${k}${k===DEFAULT_CO?" (기본)":""}</option>`).join("")+`<option value="" ${cur?"":"selected"}>직접 입력</option>`;
     const miss=cur?["coBizNo","coCeo"].filter(k=>!S[k]).map(k=>({coBizNo:"사업자등록번호",coCeo:"대표이사"})[k]):[];
-    $("#coPickHint").innerHTML = cur ? `${esc(cur)} 정보(${cur==="에스텍베스트"?"기존 견적서 정보":"반기보고서 상세표 기준"})를 넣었습니다.${miss.length?` <b>${miss.join("·")}</b>는 보고서에 없어 비어 있으니 직접 입력하세요.`:""}` : "공급자 정보를 직접 입력한 견적입니다.";
+    $("#coPickHint").innerHTML = cur ? `${esc(cur)} 정보(${cur==="에스텍베스트"?"기존 견적서 정보":cur==="에스텍시스템"?"사업자등록증 2025.07.02 기준":"반기보고서 상세표 기준"})를 넣었습니다.${miss.length?` <b>${miss.join("·")}</b>는 보고서에 없어 비어 있으니 직접 입력하세요.`:""}` : "공급자 정보를 직접 입력한 견적입니다.";
     sel.onchange=()=>{ const k=sel.value; if(CO_PRESETS[k]){ Object.assign(S, CO_PRESETS[k]); S.coKey=k; } else S.coKey=""; renderSettings(); recalc(); toast(k?`공급자를 ${k}(으)로 바꿨습니다`:"공급자 정보를 직접 입력하세요"); }; }
   $("#s_cond").value=S.cond;
   $$("[data-s]").forEach(el=>{ if(el.closest("#insTable")) return; el.addEventListener("change",()=>{ const k=el.dataset.s;
