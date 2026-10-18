@@ -1,0 +1,7 @@
+{
+  "appId": "kr.co.stecbest.quotation",
+  "appName": "S-Tec 견적",
+  "webDir": "www",
+  "android": { "allowMixedContent": false },
+  "server": { "androidScheme": "https" }
+}

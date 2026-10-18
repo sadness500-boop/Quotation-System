@@ -59,3 +59,13 @@ python3 tools/build.py
 1. 저장소 **Settings → Pages**에서 Source를 `Deploy from a branch`, Branch를 `main` / `/(root)`로 저장합니다(최초 1회).
 2. 몇 분 뒤 `https://sadness500-boop.github.io/Quotation-System/` 주소가 열립니다. 메인 화면 오른쪽 **앱 다운로드 QR**이 이 주소를 가리킵니다.
 3. 휴대폰 카메라로 QR을 찍어 연 뒤 브라우저 메뉴의 **홈 화면에 추가**(아이폰 Safari: 공유 → 홈 화면에 추가)를 누르면 앱처럼 설치됩니다.
+
+## 휴대폰 앱
+
+- **설치 안내 페이지:** https://sadness500-boop.github.io/Quotation-System/install.html (메인화면 ‘앱 다운로드 QR’이 이 페이지를 엽니다)
+- **안드로이드 앱(APK):** https://github.com/sadness500-boop/Quotation-System/releases/download/android-latest/S-Tec-Quotation.apk
+  - `index.html`이나 `mobile/` 폴더가 바뀌면 GitHub Actions(‘Android 앱 만들기’)가 자동으로 새 APK를 만들어 위 주소에 올립니다.
+  - 앱 안에서 엑셀 내보내기·JSON 백업은 휴대폰 ‘공유’ 창으로 저장하고, 인쇄는 안드로이드 인쇄(프린터·PDF로 저장)로 연결됩니다.
+  - 서명 키는 저장소에 넣지 않습니다. GitHub 비밀값 `STEC_KEYSTORE_B64`·`STEC_KEYSTORE_PASSWORD`·`STEC_KEY_ALIAS`·`STEC_KEY_PASSWORD`가 있으면 그 키를, 없으면 빌드 캐시에 보관한 키를 씁니다.
+- **아이폰·아이패드:** 사파리로 열어 ‘공유 → 홈 화면에 추가’(PWA). 앱스토어 등록은 애플 개발자 계정(유료)이 필요합니다.
+- 앱 프로젝트: `mobile/` (Capacitor 8). 직접 만들 때: `cd mobile && npm ci && npm run sync && cd android && ./gradlew assembleRelease`
