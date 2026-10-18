@@ -1,4 +1,4 @@
 {
-  "kakaoJsKey": "",
+  "kakaoJsKey": "8453c0a68310133484b3b92ed0f0a1f7",
   "_설명": "카카오 디벨로퍼스 JavaScript 키를 kakaoJsKey에 넣으면 웹 주소로 접속한 모든 직원의 사업장 검색이 카카오맵으로 자동 연결됩니다. 앱 설정에서 카카오맵 사용 ON, Web 플랫폼에 https://sadness500-boop.github.io 등록 필요."
 }
