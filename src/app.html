@@ -479,7 +479,7 @@ aside.rail{position:sticky;top:calc(env(safe-area-inset-top,0px) + 82px);align-s
 
 <header class="topbar">
   <div class="logo-fig"><img src="__FIGLOGO__" alt="S-Tec 에스텍베스트"></div>
-  <div class="brand"><b>S-Tec Quotation System</b><span>에스텍베스트 동부지사 · v3.1</span></div>
+  <div class="brand"><b>S-Tec Quotation System</b><span>에스텍베스트 동부지사 · v3.2</span></div>
   <div class="sp"><div class="gstrip" id="gstrip" aria-hidden="true"></div></div>
   <div class="tb-actions">
     <button class="tbtn" id="btnBlank">신규 영업 견적</button>
@@ -2239,12 +2239,14 @@ function fxBuildState(A, idx, opts={}){
   const c=A.cands[idx], M=A.meta, Y=+(opts.year||c.year);
   const st=newState();
   const titleClient=()=>{ try{ const g=fxGrid(A.wb.Sheets[c.sheet]); const t=g.G.slice(0,3).flat().find(v=>typeof v==="string" && v.length>4)||"";
-      return t.replace(/20\d{2}\s*년도?/g,"").replace(/[_\[].*$/,"").replace(/(도급\s*)?(비용|비)?\s*산\s*출\s*내\s*역\s*서?|견\s*적\s*서|도급\s*비용?|용역비|도급료/g,"").replace(/\s{2,}/g," ").trim(); }catch(e){ return ""; } };
+      return t.replace(/20\d{2}\s*년도?/g,"").replace(/[_\[].*$/,"").replace(/(도급\s*)?(비용|비)?\s*산\s*출\s*내\s*역\s*서?|견\s*적\s*서|도급\s*비용?|용역비|도급료/g,"").replace(/\s*(미화|경비|보안|청소|시설|주차|위생|사내수거)?\s*(관리)?\s*용역\s*$/,"").replace(/\s{2,}/g," ").trim(); }catch(e){ return ""; } };
   const client=(opts.client ?? M.client ?? titleClient() ?? "").trim();
   Object.assign(st.meta,{client, svc:M.svc||st.meta.svc, year:Y, date:today(), mode:"renew"});
   if(M.period && M.period[0]===Y){ const p=M.period, z=n=>String(n).padStart(2,"0"); st.meta.from=`${p[0]}-${z(p[1])}-${z(p[2])}`; st.meta.to=`${p[3]}-${z(p[4])}-${z(p[5])}`; if(p[3]>p[0]) st.meta.to=`${p[0]}-12-31`; }
   else { st.meta.from=`${Y}-01-01`; st.meta.to=`${Y}-12-31`; }
   st.set=Object.assign(defaultSettings(Y), c.set); st.set.cond=DEFAULT_COND;
+  { const RY=RATES[Y]; if(RY){ if(c.set.ind!=null) st.set.indBase=r3(Math.max(0,c.set.ind-(RY.indCom||0)));
+      if(c.set.emp!=null){ const prem=c.set.emp-RY.ui; st.set.empSize=Object.entries(EMP_SIZE).sort((a,b)=>Math.abs(a[1][1]-prem)-Math.abs(b[1][1]-prem))[0][0]; } } }
   const fps=c.roles.map(x=>x.opt.filePrice).filter(Boolean);
   if(fps.length && fps.some(v=>v%1000)) st.set.priceRound = fps.some(v=>v%100) ? "none" : "down2";
   const s=fxSite(client); if(s){ Object.assign(st.meta,{siteId:s.id, addr:s.addr, lat:s.lat, lng:s.lng, branch:s.br}); }
@@ -2330,8 +2332,142 @@ async function idbGet(id){ if(FILEMEM[id]) return FILEMEM[id]; try{ const db=awa
 async function keepSource(st, buf, sheet){ if(!st.importSrc || !buf) return; const id="src_"+Date.now()+"_"+Math.random().toString(36).slice(2,6); await idbPut(id, buf); st.importSrc.id=id; if(sheet) st.importSrc.sheet=sheet; }
 const SH9_PREFIX="익년 견적서(";
 
+/* ───────── 구형 엑셀(.xls, BIFF8) 서식·그림 읽기 → ExcelJS 시트로 그대로 옮기기 ───────── */
+const BIFF_PAL=["000000","FFFFFF","FF0000","00FF00","0000FF","FFFF00","FF00FF","00FFFF","000000","FFFFFF","FF0000","00FF00","0000FF","FFFF00","FF00FF","00FFFF","800000","008000","000080","808000","800080","008080","C0C0C0","808080","9999FF","993366","FFFFCC","CCFFFF","660066","FF8080","0066CC","CCCCFF","000080","FF00FF","FFFF00","00FFFF","800080","800000","008080","0000FF","00CCFF","CCFFFF","CCFFCC","FFFF99","99CCFF","FF99CC","CC99FF","FFCC99","3366FF","33CCCC","99CC00","FFCC00","FF9900","FF6600","666699","969696","003366","339966","003300","333300","993300","993366","333399","333333"];
+const BIFF_NUMFMT={0:"General",1:"0",2:"0.00",3:"#,##0",4:"#,##0.00",5:'"₩"#,##0;\\-"₩"#,##0',9:"0%",10:"0.00%",11:"0.00E+00",12:"# ?/?",13:"# ??/??",14:"yyyy-mm-dd",15:"d-mmm-yy",16:"d-mmm",17:"mmm-yy",18:"h:mm AM/PM",19:"h:mm:ss AM/PM",20:"h:mm",21:"h:mm:ss",22:"yyyy-mm-dd h:mm",37:"#,##0 ;(#,##0)",38:"#,##0 ;[Red](#,##0)",39:"#,##0.00;(#,##0.00)",40:"#,##0.00;[Red](#,##0.00)",41:'_-* #,##0_-;-* #,##0_-;_-* "-"_-;_-@_-',42:'_-"₩"* #,##0_-;-"₩"* #,##0_-;_-"₩"* "-"_-;_-@_-',43:'_-* #,##0.00_-;-* #,##0.00_-;_-* "-"??_-;_-@_-',44:'_-"₩"* #,##0.00_-;-"₩"* #,##0.00_-;_-"₩"* "-"??_-;_-@_-',45:"mm:ss",46:"[h]:mm:ss",47:"mm:ss.0",48:"##0.0E+0",49:"@"};
+const BIFF_BORDER=[null,"thin","medium","dashed","dotted","thick","double","hair","mediumDashed","dashDot","mediumDashDot","dashDotDot","mediumDashDotDot","slantDashDot"];
+const BIFF_FILL=[null,"solid","mediumGray","darkGray","lightGray","darkHorizontal","darkVertical","darkDown","darkUp","darkGrid","darkTrellis","lightHorizontal","lightVertical","lightDown","lightUp","lightGrid","lightTrellis","gray125","gray0625"];
+const BIFF_HALIGN=[undefined,"left","center","right","fill","justify","centerContinuous","distributed"];
+const BIFF_VALIGN=["top","middle","bottom","justify","distributed"];
+function biffRead(buf){
+  const cfb=XLSX.CFB.read(new Uint8Array(buf),{type:"array"});
+  const ent=XLSX.CFB.find(cfb,"Workbook")||XLSX.CFB.find(cfb,"Book"); if(!ent) throw new Error("no workbook stream");
+  const d=ent.content instanceof Uint8Array?ent.content:Uint8Array.from(ent.content);
+  const dv=new DataView(d.buffer,d.byteOffset,d.byteLength);
+  const u16=o=>dv.getUint16(o,true), u32=o=>dv.getUint32(o,true), f64=o=>dv.getFloat64(o,true);
+  const recs=[]; for(let o=0;o+4<=d.length;){ const t=u16(o), l=u16(o+2); recs.push({t,o:o+4,l}); o+=4+l; }
+  const str8=(o)=>{ const n=d[o], hi=d[o+1]&1; let s=""; for(let i=0;i<n;i++) s+=String.fromCharCode(hi?u16(o+2+i*2):d[o+2+i]); return s; };
+  const str16=(o)=>{ const n=u16(o), hi=d[o+2]&1; let s=""; for(let i=0;i<n;i++) s+=String.fromCharCode(hi?u16(o+3+i*2):d[o+3+i]); return s; };
+  const W={fonts:[],xfs:[],fmts:{},pal:BIFF_PAL.slice(),sheets:[],dgg:[]};
+  let i=0;
+  // 전역 영역
+  for(;i<recs.length;i++){ const r=recs[i], o=r.o;
+    if(r.t===0x0031){ W.fonts.push({h:u16(o)/20, it:!!(u16(o+2)&2), st:!!(u16(o+2)&8), icv:u16(o+4), b:u16(o+6)>=700, ss:u16(o+8), ul:d[o+10], name:str8(o+14)}); }
+    else if(r.t===0x041E){ W.fmts[u16(o)]=str16(o+2); }
+    else if(r.t===0x00E0){ const b1=u32(o+10), b2=u32(o+14), c=u16(o+18), al=d[o+6];
+      W.xfs.push({fnt:u16(o), fmt:u16(o+2), h:al&7, wrap:!!(al&8), v:(al>>4)&7, rot:d[o+7], ind:d[o+8]&15, shrink:!!(d[o+8]&16),
+        bl:b1&15, br:(b1>>4)&15, bt:(b1>>8)&15, bb:(b1>>12)&15, cl:(b1>>16)&127, cr:(b1>>23)&127, ct:b2&127, cb:(b2>>7)&127, fls:(b2>>>26)&63, fg:c&127, bg:(c>>7)&127}); }
+    else if(r.t===0x0092){ const n=u16(o); for(let k=0;k<n;k++){ const p=o+2+k*4; W.pal[8+k]=[d[p],d[p+1],d[p+2]].map(x=>x.toString(16).padStart(2,"0")).join("").toUpperCase(); } }
+    else if(r.t===0x0085){ W.sheets.push({pos:u32(o), hidden:d[o+4]&3, type:d[o+5], name:str8(o+6)}); }
+    else if(r.t===0x0018){ try{ const gb=u16(o), cch=d[o+3], cce=u16(o+4), itab=u16(o+8);
+        if(gb&0x20){ const hi=d[o+14]&1, code=hi?u16(o+15):d[o+15], fe=o+15+cch*(hi?2:1); if(code===6 && cce>=11){ const pt=d[fe]; if(pt===0x3B||pt===0x5B||pt===0x7B){ (W.printArea=W.printArea||{})[itab]={r1:u16(fe+3),r2:u16(fe+5),c1:u16(fe+7)&0x3FFF,c2:u16(fe+9)&0x3FFF}; } } } }catch(e){} }
+    else if(r.t===0x00EB){ W.dgg.push(d.subarray(o,o+r.l)); let k=i+1; while(k<recs.length&&recs[k].t===0x003C){ W.dgg.push(d.subarray(recs[k].o,recs[k].o+recs[k].l)); k++; } }
+    else if(r.t===0x000A) break; // EOF of globals
+  }
+  // 그림 저장소(BLIP)
+  W.blips=[]; if(W.dgg.length){ const g=concatU8(W.dgg); blipScan(g,0,g.length,W.blips); }
+  // 시트 영역
+  const byPos=new Map(); recs.forEach((r,idx)=>byPos.set(r.o-4,idx));
+  W.sheets.forEach(sh=>{
+    let k=byPos.get(sh.pos); if(k==null) return; sh.cells=new Map(); sh.rows={}; sh.cols=[]; sh.merges=[]; sh.dg=[]; sh.setup={};
+    for(k=k+1;k<recs.length;k++){ const r=recs[k], o=r.o, t=r.t;
+      if(t===0x000A) break;
+      if(t===0x00FD||t===0x0204||t===0x0203||t===0x027E||t===0x0201||t===0x0006||t===0x0205) sh.cells.set(u16(o)+","+u16(o+2),u16(o+4));
+      else if(t===0x00BD||t===0x00BE){ const rw=u16(o), c0=u16(o+2), step=t===0x00BD?6:2, n=(r.l-6)/step; for(let j=0;j<n;j++) sh.cells.set(rw+","+(c0+j),u16(o+4+j*step)); }
+      else if(t===0x0208){ const h=u16(o+6); sh.rows[u16(o)]={h:(h&0x7FFF)/20, custom:!!(u32(o+12)&0x40), hidden:!!(u32(o+12)&0x20), xf:(u32(o+12)&0x80)?(u16(o+14)&0xFFF):null}; }
+      else if(t===0x007D){ sh.cols.push({a:u16(o), b:u16(o+2), w:u16(o+4)/256, xf:u16(o+6), hidden:!!(u16(o+8)&1)}); }
+      else if(t===0x0055){ sh.defColW=u16(o); }
+      else if(t===0x0099){ sh.stdW=u16(o)/256; }
+      else if(t===0x0225){ sh.defRowH=u16(o+2)/20; }
+      else if(t===0x00E5){ const n=u16(o); for(let j=0;j<n;j++){ const p=o+2+j*8; sh.merges.push([u16(p),u16(p+2),u16(p+4),u16(p+6)]); } }
+      else if(t===0x00EC){ sh.dg.push(d.subarray(o,o+r.l)); }
+      else if(t===0x00A1){ sh.setup.paper=u16(o); sh.setup.scale=u16(o+2); sh.setup.fitW=u16(o+6); sh.setup.fitH=u16(o+8); const gb=u16(o+10); sh.setup.portrait=!!(gb&2); sh.setup.noPls=!!(gb&4); }
+      else if(t===0x0026) sh.setup.ml=f64(o); else if(t===0x0027) sh.setup.mr=f64(o); else if(t===0x0028) sh.setup.mt=f64(o); else if(t===0x0029) sh.setup.mb=f64(o);
+      else if(t===0x0081){ sh.setup.fit=!!(u16(o)&0x100); }
+      else if(t===0x0083){ sh.setup.hc=!!u16(o); } else if(t===0x0084){ sh.setup.vc=!!u16(o); }
+      else if(t===0x023E){ sh.gridOff=!(u16(o)&2); sh.zoom=null; }
+      else if(t===0x00A0){ sh.zoom=Math.round(u16(o)/Math.max(1,u16(o+2))*100); }
+    }
+    sh.pics=[]; if(sh.dg.length){ const g=concatU8(sh.dg); spScan(g,0,g.length,sh.pics); }
+  });
+  return W;
+}
+function concatU8(arr){ const n=arr.reduce((s,a)=>s+a.length,0), out=new Uint8Array(n); let p=0; arr.forEach(a=>{ out.set(a,p); p+=a.length; }); return out; }
+function oaHdr(g,o){ const dv=new DataView(g.buffer,g.byteOffset,g.byteLength); return {ver:dv.getUint16(o,true)&15, inst:dv.getUint16(o,true)>>4, type:dv.getUint16(o+2,true), len:dv.getUint32(o+4,true)}; }
+function blipScan(g,o,end,out){
+  while(o+8<=end){ const h=oaHdr(g,o), b=o+8, e=Math.min(end,b+h.len);
+    if(h.type===0xF007){ // BSE
+      const seg=g.subarray(b,e); let png=-1, jpg=-1;
+      for(let k=0;k<seg.length-4;k++){ if(png<0&&seg[k]===0x89&&seg[k+1]===0x50&&seg[k+2]===0x4E&&seg[k+3]===0x47){ png=k; break; } if(jpg<0&&seg[k]===0xFF&&seg[k+1]===0xD8&&seg[k+2]===0xFF){ jpg=k; break; } }
+      out.push(png>=0?{ext:"png",data:seg.subarray(png)}:jpg>=0?{ext:"jpeg",data:seg.subarray(jpg)}:null);
+    } else if(h.ver===15) blipScan(g,b,e,out);
+    o=b+h.len;
+  }
+}
+function spScan(g,o,end,out){
+  while(o+8<=end){ const h=oaHdr(g,o), b=o+8, e=Math.min(end,b+h.len);
+    if(h.type===0xF004){ // SpContainer
+      const sp={}; let p=b; while(p+8<=e){ const c=oaHdr(g,p), cb=p+8; const dv=new DataView(g.buffer,g.byteOffset,g.byteLength);
+        if(c.type===0xF00B||c.type===0xF121||c.type===0xF122){ for(let k=0;k<c.inst;k++){ const q=cb+k*6; if(q+6>e) break; const id=dv.getUint16(q,true)&0x3FFF, val=dv.getUint32(q+2,true); if(id===0x0104) sp.pib=val; } }
+        else if(c.type===0xF010 && c.len>=18){ const a=[]; for(let k=0;k<9;k++) a.push(dv.getUint16(cb+k*2,true)); sp.anchor={c1:a[1],dx1:a[2],r1:a[3],dy1:a[4],c2:a[5],dx2:a[6],r2:a[7],dy2:a[8]}; }
+        p=cb+c.len; }
+      if(sp.pib && sp.anchor) out.push(sp);
+    } else if(h.ver===15) spScan(g,b,e,out);
+    o=b+h.len;
+  }
+}
+function biffColor(W,icv){ if(icv==null||icv>=64) return null; const hex=W.pal[icv]; return hex?{argb:"FF"+hex}:null; }
+function biffStyle(W,xi){
+  const x=W.xfs[xi]; if(!x) return null;
+  const fi=x.fnt>=4?x.fnt-1:x.fnt, f=W.fonts[fi]||{};
+  const st={};
+  st.font={name:f.name||"맑은 고딕", size:f.h||10}; if(f.b) st.font.bold=true; if(f.it) st.font.italic=true; if(f.st) st.font.strike=true; if(f.ul) st.font.underline=f.ul===2?"double":true;
+  const fc=f.icv===0x7FFF?null:biffColor(W,f.icv); if(fc) st.font.color=fc;
+  if(f.ss===1) st.font.vertAlign="superscript"; else if(f.ss===2) st.font.vertAlign="subscript";
+  const nf=W.fmts[x.fmt]??BIFF_NUMFMT[x.fmt]; if(nf && nf!=="General") st.numFmt=nf;
+  const al={}; if(BIFF_HALIGN[x.h]) al.horizontal=BIFF_HALIGN[x.h]; al.vertical=BIFF_VALIGN[x.v]||"bottom"; if(x.wrap) al.wrapText=true; if(x.shrink) al.shrinkToFit=true; if(x.ind) al.indent=x.ind;
+  if(x.rot===255) al.textRotation="vertical"; else if(x.rot>0&&x.rot<=90) al.textRotation=x.rot; else if(x.rot>90&&x.rot<=180) al.textRotation=90-x.rot;
+  st.alignment=al;
+  const bd={}; [["left","bl","cl"],["right","br","cr"],["top","bt","ct"],["bottom","bb","cb"]].forEach(([k,s,c])=>{ const sty=BIFF_BORDER[x[s]]; if(sty){ bd[k]={style:sty}; const col=biffColor(W,x[c]); if(col) bd[k].color=col; } });
+  if(Object.keys(bd).length) st.border=bd;
+  if(x.fls){ const pat=BIFF_FILL[x.fls]||"solid", fg=biffColor(W,x.fg)||{argb:"FFFFFFFF"}, bg=biffColor(W,x.bg); st.fill={type:"pattern",pattern:pat,fgColor:fg}; if(bg) st.fill.bgColor=bg; }
+  return st;
+}
+/* SheetJS(값·수식) + BIFF(서식·그림·크기) → ExcelJS 시트 */
+function xlsToWs(buf, sheetName, wb, ws, stopRow){
+  const W=biffRead(buf), sh=W.sheets.find(s=>s.name===sheetName); if(!sh) throw new Error("sheet not found");
+  const X=XLSX.read(new Uint8Array(buf),{type:"array",cellFormula:true,cellNF:true}), xs=X.Sheets[sheetName];
+  const ref=xs&&xs["!ref"]?XLSX.utils.decode_range(xs["!ref"]):{e:{r:0,c:0}};
+  let maxR=ref.e.r, maxC=ref.e.c; sh.cells.forEach((_,k)=>{ const [r,c]=k.split(",").map(Number); if(r>maxR) maxR=r; if(c>maxC) maxC=c; });
+  maxR=Math.min(maxR, stopRow?stopRow-2:599, 599); maxC=Math.min(maxC,80);
+  // 열 너비
+  const stdW=sh.stdW || (sh.defColW? sh.defColW+0.7 : 8.43);
+  for(let c=0;c<=maxC;c++){ const ci=sh.cols.find(x=>c>=x.a&&c<=x.b); const col=ws.getColumn(c+1); col.width=ci?Math.max(0.5,ci.w):stdW; if(ci&&ci.hidden) col.hidden=true; }
+  // 행 높이·셀
+  for(let r=0;r<=maxR;r++){ const ri=sh.rows[r], row=ws.getRow(r+1); row.height=ri?ri.h:(sh.defRowH||13.5); if(ri&&ri.hidden) row.hidden=true;
+    for(let c=0;c<=maxC;c++){ const key=r+","+c; let xi=sh.cells.get(key);
+      if(xi==null){ if(ri&&ri.xf!=null) xi=ri.xf; else { const ci=sh.cols.find(x=>c>=x.a&&c<=x.b); if(ci && ci.xf>15) xi=ci.xf; } }
+      const x=xs?xs[XLSX.utils.encode_cell({r,c})]:null; const cell=row.getCell(c+1);
+      if(x && x.t!=="z"){ if(x.f && !/!/.test(x.f) && !/#REF/.test(x.f)) cell.value={formula:x.f, result:x.t==="e"?undefined:x.v}; else if(x.t==="e") cell.value=null; else cell.value=x.v; }
+      if(xi!=null){ const st=biffStyle(W,xi); if(st) cell.style=st; }
+    } }
+  sh.merges.forEach(([r1,r2,c1,c2])=>{ if(r1>maxR) return; try{ ws.mergeCells(r1+1,c1+1,Math.min(r2,maxR)+1,c2+1); }catch(e){} });
+  // 그림
+  sh.pics.forEach(p=>{ const b=W.blips[p.pib-1]; if(!b || p.anchor.r1>maxR) return; try{
+    const id=wb.addImage({buffer:b.data.slice().buffer, extension:b.ext}), a=p.anchor;
+    ws.addImage(id,{tl:{col:a.c1+a.dx1/1024,row:a.r1+a.dy1/256}, br:{col:a.c2+a.dx2/1024,row:a.r2+a.dy2/256}, editAs:"oneCell"}); }catch(e){ console.warn("pic",e); } });
+  // 화면·인쇄
+  ws.views=[{showGridLines: sh.gridOff?false:true, zoomScale: sh.zoom||100}];
+  const pa=(W.printArea||{})[W.sheets.indexOf(sh)+1]; if(pa) ws.pageSetup.printArea=paFix(`${xlCol(pa.c1)}${pa.r1+1}:${xlCol(pa.c2)}${pa.r2+1}`);
+  const S=sh.setup; Object.assign(ws.pageSetup,{paperSize:S.paper||9, orientation:S.portrait===false?"landscape":"portrait", horizontalCentered:!!S.hc, verticalCentered:!!S.vc,
+    margins:{left:S.ml??0.7,right:S.mr??0.7,top:S.mt??0.75,bottom:S.mb??0.75,header:0.3,footer:0.3}});
+  if(S.fit){ ws.pageSetup.fitToPage=true; ws.pageSetup.fitToWidth=S.fitW??1; ws.pageSetup.fitToHeight=S.fitH??1; } else if(S.scale) ws.pageSetup.scale=S.scale;
+  return maxR+1;
+}
+
 /* ───────── 고객사 양식 시트 (8: 당해년 원본, 9: 같은 양식 익년도) ───────── */
 const xlCol=n=>{ let s=""; n=n+1; while(n>0){ const m=(n-1)%26; s=String.fromCharCode(65+m)+s; n=Math.floor((n-1)/26); } return s; }; // 0-based → A
+const paFix=a=>String(a||"").split("&&").map(r=>r.replace(/\$/g,"").replace(/([A-Z]+)(\d+)/g,"$1$$$2")).join("&&"); // ExcelJS 인쇄영역 표기 보정 (A$1:M$67)
 function cloneStyle(st){ try{ return JSON.parse(JSON.stringify(st||{})); }catch(e){ return {}; } }
 function copyWs(src, dst, stopRow){
   const maxC=Math.min(src.columnCount||0, 80);
@@ -2354,7 +2490,7 @@ function copyWs(src, dst, stopRow){
   }
   (src.model.merges||[]).forEach(m=>{ const mm=String(m).match(/^([A-Z]+)(\d+):([A-Z]+)(\d+)$/); if(!mm) return; if(+mm[2]>lastR||+mm[4]>lastR) return; try{ dst.mergeCells(m); }catch(e){} });
   try{ const v=(src.views||[])[0]; dst.views=[{showGridLines: v?v.showGridLines!==false:true, zoomScale: v&&v.zoomScale||100}]; }catch(e){}
-  try{ const ps=src.pageSetup||{}; Object.assign(dst.pageSetup,{orientation:ps.orientation||"portrait", paperSize:ps.paperSize||9, fitToPage:!!ps.fitToPage, fitToWidth:ps.fitToWidth??1, fitToHeight:ps.fitToHeight??0}); }catch(e){}
+  try{ const ps=src.pageSetup||{}; Object.assign(dst.pageSetup,{orientation:ps.orientation||"portrait", paperSize:ps.paperSize||9, fitToPage:!!ps.fitToPage, fitToWidth:ps.fitToWidth??1, fitToHeight:ps.fitToHeight??0, scale:ps.scale||100, horizontalCentered:!!ps.horizontalCentered, verticalCentered:!!ps.verticalCentered}); if(ps.margins) dst.pageSetup.margins={...ps.margins}; if(ps.printArea) dst.pageSetup.printArea=paFix(String(ps.printArea).replace(/^.*!/,"")); }catch(e){}
   return lastR;
 }
 function gridToWs(ws, sheet){ // xls 등 서식 없는 파일
@@ -2384,7 +2520,10 @@ async function addCustomerSheets(wb, R, prev, Y){
   if(!src.xls){ try{ const w=new ExcelJS.Workbook(); await w.xlsx.load(buf); sw=w.getWorksheet(src.sheet); }catch(e){ console.warn("exceljs load",e); } }
   let last;
   if(sw){ last=copyWs(sw, ws8, src.extraFrom); copyWs(sw, ws9, src.extraFrom); }
-  else { let x; try{ x=XLSX.read(new Uint8Array(buf),{type:"array"}); }catch(e){ return "error"; } const sh=x.Sheets[src.sheet]; if(!sh) return "error"; last=gridToWs(ws8,sh); gridToWs(ws9,sh); }
+  else {
+    let ok=false;
+    if(!/\.csv$/i.test(src.name||"")){ try{ last=xlsToWs(buf, src.sheet, wb, ws8, src.extraFrom); xlsToWs(buf, src.sheet, wb, ws9, src.extraFrom); ok=true; }catch(e){ console.warn("biff",e); } }
+    if(!ok){ let x; try{ x=XLSX.read(new Uint8Array(buf),{type:"array"}); }catch(e){ return "error"; } const sh=x.Sheets[src.sheet]; if(!sh) return "error"; last=gridToWs(ws8,sh); gridToWs(ws9,sh); } }
   const M=src.map, old=(state.compare&&state.compare.set)||{}, S=state.set;
   let valuesOnly=false;
   const roleIdx=[]; state.roles.forEach((r,i)=>{ if(M.kind==="detail" ? r.srcCol!=null : r.srcRow!=null) roleIdx.push(i); });
@@ -2402,7 +2541,7 @@ async function addCustomerSheets(wb, R, prev, Y){
       const loc=(M.rateLoc||{})[k];
       if(loc && loc.kind==="num"){ const cc=ws9.getRow(loc.r+1).getCell(loc.c+1); const v=cc.value; if(typeof v==="number") cc.value=+(n/100).toFixed(8); }
       const rw=ws9.getRow(row+1);
-      for(let c=1;c<=Math.min(ws9.columnCount,80);c++){ const cc=rw.getCell(c), v=cc.value;
+      for(let c=1;c<=Math.min(ws9.columnCount,80);c++){ const cc=rw.getCell(c); if(cc.type===ExcelJS.ValueType.Merge) continue; const v=cc.value;
         if(v && typeof v==="object" && v.formula){ const f2=replaceRateInFormula(v.formula,o,n); if(f2!==v.formula) cc.value={formula:f2, result:v.result}; }
         else if(typeof v==="string" && v.includes("%")){ const t2=pctLiterals(o).filter(x=>x.endsWith("%")).reduce((t,lit)=>t.split(lit).join(`${+(+n).toFixed(4)}%`),v); if(t2!==v) cc.value=t2; } }
     });
@@ -2412,9 +2551,11 @@ async function addCustomerSheets(wb, R, prev, Y){
       rr.getCell(M.cCount+1).value={formula:ref(N3,L,bdRowOf("count")).replace(/\$/g,""), result:+r.count};
       const pf=ref(N3,L,bdRowOf("price")).replace(/\$/g,""); rr.getCell(M.cPrice+1).value={formula: r.srcUnit==="month" ? `${pf}*${ref(N3,L,bdRowOf("count")).replace(/\$/g,"")}` : pf, result:R.rows[i].L.price*(r.srcUnit==="month"?r.count:1)}; });
   }
+  // 9번 시트: 원본의 당해년 계산값(캐시)을 지워 열 때 새로 계산되도록 (엑셀·LibreOffice 공통)
+  for(let r=1;r<=last;r++){ const rw=ws9.getRow(r); for(let c=1;c<=Math.min(ws9.columnCount,80);c++){ const cc=rw.getCell(c); if(cc.type===ExcelJS.ValueType.Formula){ const v=cc.value; if(v && v.formula && !/!/.test(v.formula)) cc.value={formula:v.formula}; } } }
   // 연도 글자 +1 (다른 연도 블록 열은 제외)
   const skip=new Set((M.otherCols||[]).map(c=>c+1));
-  for(let r=1;r<=last;r++){ const rw=ws9.getRow(r); for(let c=1;c<=Math.min(ws9.columnCount,80);c++){ if(skip.has(c)) continue; const cc=rw.getCell(c), v=cc.value;
+  for(let r=1;r<=last;r++){ const rw=ws9.getRow(r); for(let c=1;c<=Math.min(ws9.columnCount,80);c++){ if(skip.has(c)) continue; const cc=rw.getCell(c); if(cc.type===ExcelJS.ValueType.Merge) continue; const v=cc.value;
     if(typeof v==="string"){ const t=shiftYearText(v); if(t!==v) cc.value=t; }
     else if(v && v.richText){ const j=v.richText.map(x=>x.text).join(""), t=shiftYearText(j); if(t!==j) cc.value={richText:[{...v.richText[0], text:t}]}; } } }
   // 대조표 (자동 연동)
@@ -2578,7 +2719,7 @@ function rnDrawForeign(){
     <div class="rn-kv" style="margin:10px 0 6px"><span>직책 <b>${R.rows.length}개</b></span><span>인원 <b>${R.heads}명</b></span><span>원본 월 합계 <b>${fileMonth?won(fileMonth)+"원":"-"}</b></span><span>프로그램 재계산 <b>${won(calcMonth)}원</b></span>${st.others.length?`<span>부대비용 <b>${st.others.length}건</b></span>`:""}</div>
     <div class="tscroll" style="max-height:260px"><table class="t rn-tbl"><thead><tr><th>직종·직책</th><th class="n">인원</th><th class="n">시급</th><th class="n">기본/연장/야간(h)</th><th class="n">원본 단가</th><th class="n">재계산 단가</th><th class="n">차이</th><th class="n">보정 조정수당</th></tr></thead><tbody>${rowsH}</tbody></table></div>
     <p class="hint" style="margin:8px 0 0">${c.kind==="summary"?"요약 견적서(인원·단가)만 있어 시급·근무시간은 해당 연도 최저시급·근무형태 기본값으로 채웠습니다. ":""}${rateTxt?`찾은 요율: ${rateTxt}. `:""}갱신 견적의 <b>전년 단가는 원본 견적서 단가</b>를 그대로 씁니다. 재계산 단가와 차이가 큰 직책은 ‘견적으로 열어 확인’에서 수당·시간을 맞춰 보세요.</p>
-    <p class="hint" style="margin:6px 0 0">📎 엑셀 내보내기에 <b>8번 시트: 이 원본 견적서(당해년)</b>와 <b>9번 시트: 같은 양식의 익년도 견적서</b>가 함께 들어갑니다. 9번 시트의 시급·인원은 산출내역서와 연결되고 보험요율은 익년도 요율로 바뀌며, 원본 수식대로 다시 계산됩니다.${A.fileName&&/\.(xls|csv)$/i.test(A.fileName)?" (xls·csv 원본은 서식 없이 값과 수식만 옮겨집니다)":""}</p>
+    <p class="hint" style="margin:6px 0 0">📎 엑셀 내보내기에 <b>8번 시트: 이 원본 견적서(당해년)</b>와 <b>9번 시트: 같은 양식의 익년도 견적서</b>가 함께 들어갑니다. 9번 시트의 시급·인원은 산출내역서와 연결되고 보험요율은 익년도 요율로 바뀌며, 원본 수식대로 다시 계산됩니다.${A.fileName&&/\.csv$/i.test(A.fileName)?" (csv 원본은 서식 없이 값과 수식만 옮겨집니다)":""}</p>
     ${missing?`<p class="rn-err" style="margin-top:4px">${missing}개 직책은 원본 단가를 찾지 못해 재계산 단가를 전년 단가로 씁니다.</p>`:""}
     <label class="chk" style="margin-top:8px"><input type="checkbox" id="fxCalib" ${o.calib!==false?"checked":""}> 원본 단가에 맞춰 직책별 조정수당 자동 보정 (권장 · 다음 연도 인상분이 최저시급·요율 변화만 반영되도록)</label>
     <div class="row" style="gap:8px;margin-top:10px">
@@ -2942,7 +3083,7 @@ async function buildCover(wb, R, crew, m, S, logoId, logo, prev){
   r++; ws.getRow(r).height=Math.max(8,lh*0.75-30); r++;
   text(r,`${S.coAddr}  ·  ${S.coLic}`,xFont({size:8.5,color:{argb:XC.muted}}),16); r++;
   band(r,3,XC.green); band(r+1,10,XC.navy);
-  ws.pageSetup.printArea=`A1:J${r+1}`;
+  ws.pageSetup.printArea=paFix(`A1:J${r+1}`);
 }
 
 async function buildQuoteSheet(wb, sheetName, R, qr, crew, Y, m, S, prevCol, logoId, logoBig, logoSm, condTxt, tab, enLabel, bdLink){
@@ -3072,7 +3213,8 @@ async function buildBdSheet(wb, sheetName, R, Y, m, S, logoId, logoSm, tab){
   const nc=R.rows.length, lastC=2+nc+3+1; // +산출근거 열
   const ws=wb.addWorksheet(sheetName,{properties:{tabColor:{argb:tab}},views:[{showGridLines:false,state:"frozen",xSplit:2,ySplit:9}],pageSetup:{paperSize:9,orientation:"landscape",fitToPage:true,fitToWidth:1,fitToHeight:0,margins:{left:.3,right:.3,top:.4,bottom:.4,header:.2,footer:.2}}});
   ws.columns=[{width:11},{width:20},...R.rows.map(()=>({width:13})),{width:15},{width:13},{width:16},{width:44}];
-  xHeader(ws,wb,logoId,`${Y}년 ${m.client||""} 산출내역서`,`${m.svc} · 용역기간 ${fmtD(m.from)} ~ ${fmtD(m.to)} · 단위: 원, VAT 별도 · 노란 칸 = 입력값(수정 시 자동 재계산)`,Math.max(lastC,7),logoSm);
+  if(!wb._cubeId){ try{ const cb=await imgPng("figcube",220); wb._cubeId=wb.addImage({base64:cb.base64,extension:"png"}); wb._cubeSz={w:Math.round(70*cb.w/cb.h),h:70}; }catch(e){ wb._cubeId=logoId; wb._cubeSz=logoSm; } }
+  xHeader(ws,wb,wb._cubeId,`${Y}년 ${m.client||""} 산출내역서`,`${m.svc} · 용역기간 ${fmtD(m.from)} ~ ${fmtD(m.to)} · 단위: 원, VAT 별도 · 노란 칸 = 입력값(수정 시 자동 재계산)`,Math.max(lastC,7),wb._cubeSz);
   const cT=nc+3, cA=nc+4, cY=nc+5, cD=nc+6, LT=bdColL(nc), LA=bdColL(nc+1), LY=bdColL(nc+2), Lfirst=bdColL(0), Llast=bdColL(nc-1);
   // 헤더
   const r0=7, hh=ws.getRow(r0), hh2=ws.getRow(r0+1), hh3=ws.getRow(r0+2);
@@ -3191,6 +3333,17 @@ async function buildBdSheet(wb, sheetName, R, Y, m, S, logoId, logoSm, tab){
   ws.mergeCells(r2,3,r2,lastC); const ft=ws.getRow(r2).getCell(3); ft.value=`${S.coName} · ${S.coBranch}   |   ${S.coAddr}`; ft.font=xFont({size:9,color:{argb:XC.muted}}); ft.alignment={horizontal:"right",vertical:"middle"};
   ws.getRow(r2).height=26;
   ws.headerFooter.oddFooter=`&L&8${S.coName} ${sheetName}&R&8&P / &N`;
+  // A4 인쇄: 1쪽 = 산출내역 표 전체, 2쪽 = 산출 기준 — 용지 방향·배율 자동
+  const lastMain=BD_TOP+BD_ROWS.length-1;
+  const colPt=ws.columns.slice(0,lastC).reduce((a,c)=>a+(Math.trunc((c.width||9)*8+5))*0.75,0)*1.04;
+  let mainH=0; for(let r=1;r<=lastMain;r++){ mainH+=ws.getRow(r).height||15; }
+  const mg={left:0.25,right:0.25,top:0.45,bottom:0.5,header:0.2,footer:0.25};
+  const fit=(W,H)=>Math.min(1,(W-(mg.left+mg.right)*72)/colPt,(H-(mg.top+mg.bottom)*72)/mainH);
+  const sP=fit(595,842), sL=fit(842,595), land=sL>=sP;
+  ws.pageSetup.fitToPage=false; ws.pageSetup.orientation=land?"landscape":"portrait"; ws.pageSetup.scale=Math.max(10,Math.floor((land?sL:sP)*100));
+  ws.pageSetup.margins=mg; ws.pageSetup.horizontalCentered=true; ws.pageSetup.paperSize=9;
+  ws.pageSetup.printArea=paFix(`A1:${xlCol(lastC-1)}${r2}`);
+  ws.getRow(lastMain).addPageBreak();
   return {sheet:sheetName, col:bdColL, priceRow:bdRowOf("price"), countRow:bdRowOf("count")};
 }
 
