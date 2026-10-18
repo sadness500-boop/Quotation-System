@@ -260,6 +260,8 @@ body:not(.is-home) .home-only{display:none!important}
 .grp-cos div{display:flex;flex-wrap:wrap;gap:6px;margin-top:6px}
 .grp-cos em{font-style:normal;font-size:12px;padding:4px 10px;border-radius:999px;border:1px solid var(--line);background:var(--paper)}
 .grp-cos em.me{background:var(--accent);color:#fff;border-color:var(--accent);font-weight:700}
+:root[data-theme="dark"] .grp-cos em.me{color:#0f1426}
+@media (prefers-color-scheme: dark){:root:not([data-theme="light"]) .grp-cos em.me{color:#0f1426}}
 .grp-gal{display:grid;grid-template-columns:1fr 1.7fr 1fr;gap:10px;margin-top:14px}
 .grp-gal figure{margin:0;position:relative;border-radius:12px;overflow:hidden;background:#111;aspect-ratio:4/3}
 .grp-gal figure.w{aspect-ratio:auto}
@@ -290,6 +292,21 @@ body:not(.is-home) .home-only{display:none!important}
 .rb-list .biz b{display:block}
 .rb-list .biz{display:grid;grid-template-columns:30px 1fr;column-gap:8px}
 .rb-list .biz i{grid-row:1/3}
+.rb-cap{margin:-6px 0 10px;font-size:12px;color:var(--muted)}
+.rb-list .biz i{grid-row:1/5}
+.rb-bar{display:block;height:6px;border-radius:99px;background:var(--line-2);margin-top:7px;overflow:hidden}
+.rb-bar s{display:block;height:100%;border-radius:99px;background:linear-gradient(90deg,var(--accent),var(--ok));text-decoration:none}
+.rb-list .biz small{display:block;margin-top:3px;font-size:12px;font-weight:700;color:var(--accent);font-variant-numeric:tabular-nums}
+.kpi{grid-template-columns:repeat(6,minmax(0,1fr))}
+@media (max-width:1500px){.kpi{grid-template-columns:repeat(3,minmax(0,1fr))}}
+@media (max-width:640px){.kpi{grid-template-columns:repeat(2,minmax(0,1fr))}}
+.themeseg{display:flex;gap:2px;padding:3px;border-radius:999px;background:rgba(255,255,255,.1);border:1px solid rgba(255,255,255,.22);flex:none;margin-left:10px}
+.themeseg button{display:flex;align-items:center;gap:4px;border:0;background:transparent;color:#fff;font:inherit;font-size:12px;font-weight:600;padding:5px 10px;border-radius:999px;cursor:pointer;opacity:.75;white-space:nowrap}
+.themeseg button i{font-style:normal;font-size:13px}
+.themeseg button:hover{opacity:1;background:rgba(255,255,255,.12)}
+.themeseg button[aria-checked="true"]{background:#fff;color:#1b2a86;opacity:1;box-shadow:0 1px 4px rgba(0,0,0,.2)}
+@media (max-width:1280px){.themeseg button span{display:none}.themeseg button{padding:5px 8px}}
+@media (max-width:640px){.themeseg{margin-left:4px}.themeseg button{padding:4px 6px}}
 @media (max-width:1280px){.tbq>span:not(.qb){display:none}}
 @media (max-width:640px){.stage-cap{position:static;padding:14px 16px 16px;background:#070a1c}}
 @media (max-width:900px){.tb-home .tbp span{display:none}}
@@ -561,9 +578,10 @@ aside.rail{position:sticky;top:calc(env(safe-area-inset-top,0px) + 82px);align-s
 }
 </style>
 
+<script>try{var _t=localStorage.getItem("stec_theme");if(_t==="light"||_t==="dark")document.documentElement.setAttribute("data-theme",_t)}catch(e){}</script>
 <header class="topbar">
   <button type="button" class="logo-fig" id="logoHome" title="메인화면으로" aria-label="메인화면으로"><img src="__FIGLOGO__" alt="S-Tec 에스텍베스트"></button>
-  <div class="brand"><b>S-Tec Quotation System</b><span>에스텍베스트 동부지사 · v3.5</span></div>
+  <div class="brand"><b>S-Tec Quotation System</b><span>에스텍베스트 동부지사 · v3.6</span></div>
   <div class="sp"><div class="gstrip" id="gstrip" aria-hidden="true"></div></div>
   <div class="tb-home home-only" id="tbHome"></div>
   <div class="tb-actions">
@@ -571,6 +589,11 @@ aside.rail{position:sticky;top:calc(env(safe-area-inset-top,0px) + 82px);align-s
     <button class="tbtn est-only" id="btnNew">갱신 견적</button>
     <button class="tbtn est-only" id="btnSave">저장</button>
     <button class="tbtn pri est-only" id="btnXlsx">엑셀 내보내기</button>
+  </div>
+  <div class="themeseg" id="themeSeg" role="radiogroup" aria-label="화면 모드">
+    <button type="button" role="radio" data-theme-set="light" title="주간 모드 (밝은 화면)"><i>☀️</i><span>주간</span></button>
+    <button type="button" role="radio" data-theme-set="dark" title="야간 모드 (어두운 화면)"><i>🌙</i><span>야간</span></button>
+    <button type="button" role="radio" data-theme-set="system" title="시스템 설정 따르기 (기기의 밝게/어둡게 설정)"><i>🖥️</i><span>시스템</span></button>
   </div>
 </header>
 
@@ -597,15 +620,17 @@ aside.rail{position:sticky;top:calc(env(safe-area-inset-top,0px) + 82px);align-s
       </div>
 
       <div class="kpi">
-        <div><b>1999<small>년</small></b><span>에스텍시스템 설립</span></div>
-        <div><b>8,750<small>억 원</small></b><span>2022년 매출 · 창사 이래 최대</span></div>
-        <div><b>16,000<small>여 명</small></b><span>임직원 (기업정보 기준)</span></div>
-        <div><b>5<small>개사</small></b><span>에스텍그룹 계열사</span></div>
+        <div><b>1998<small>.12 설립</small></b><span>에스원 인력경비 부문에서 분사</span></div>
+        <div><b>9,752<small>억 원</small></b><span>2025년 연결 매출 · 전년 대비 +2.2%</span></div>
+        <div><b>5,414<small>억 원</small></b><span>2026년 상반기 매출 · 전년 동기 +11.1%</span></div>
+        <div><b>11,982<small>명</small></b><span>에스텍시스템 직원 · 2026.6.30</span></div>
+        <div><b>AA+</b><span>기업신용등급 · 나이스디앤비 2026.4</span></div>
+        <div><b>11<small>개사</small></b><span>에스텍시스템 기업집단 계열회사</span></div>
       </div>
 
       <div class="card grp">
         <div class="grp-hd"><div><span class="grp-k">ABOUT S-TEC GROUP</span><h2>국내 최대 종합안전관리서비스 기업, 에스텍그룹</h2>
-          <p class="sub">에스텍시스템은 1999년 설립 이후 국내 유수 기업의 종합안전을 담당해 온 시큐리티 업계의 선두주자입니다. 종합안전을 기본으로 시큐리티·환경위생·시설관리부터 방재, 문서보안, 보안컨설팅까지 안전 분야 전반의 인력 서비스를 제공합니다.</p></div>
+          <p class="sub">에스텍시스템은 1998년 에스원의 인력경비 부문에서 분사한 이후 삼성 그룹사를 비롯한 대형 사업장에서 운영 경험을 쌓아 온 시큐리티 업계의 선두주자입니다. 시큐리티·인프라(시설관리·방역)·소방·환경(파쇄·자원순환) 4개 사업부문에서 사람과 기계경비를 결합한 토털 서비스를 제공하며, 상표권 114건을 보유하고 있습니다.</p></div>
           <a class="btn" href="https://www.s-tec.co.kr/main.php" target="_blank" rel="noopener">에스텍시스템 홈페이지 ↗</a></div>
         <blockquote class="vision">“시큐리티 서비스의 새로운 문화를 창조하는 <b>국내 시큐리티 업계의 선두주자</b>” <span>— 고객만족을 위한 전문성 · 우수성 · 정예인력, 그리고 ‘안전 NO.1 기업’이라는 비전</span></blockquote>
       </div>
@@ -614,22 +639,23 @@ aside.rail{position:sticky;top:calc(env(safe-area-inset-top,0px) + 82px);align-s
         <div class="card">
           <div class="sec-h"><span class="grp-k">HISTORY</span><h2>에스텍이 걸어온 길</h2></div>
           <ol class="tl">
-            <li><b>1999</b><span>에스텍시스템 설립 — 인력경비에서 종합안전관리로</span></li>
+            <li><b>1998</b><span>12월 30일 에스텍시스템 설립 — 에스원 인력경비 부문 분사</span></li>
             <li><b>2015</b><span>통합관제시스템 GS 품질인증 획득</span></li>
-            <li><b>2016</b><span>계열사 서비스품질인증 획득 (에스텍에이스·퍼스트·베스트·세이프)</span></li>
             <li><b>2017</b><span>자회사형 장애인표준사업장 ‘어울림에프’ 설립</span></li>
-            <li><b>2022</b><span>매출 8,750억 원, 창사 이래 최대 실적</span></li>
-            <li><b>2023</b><span>창사 첫 TV 광고 ‘당신 곁에 언제나’ 공개</span></li>
+            <li><b>2023</b><span>(주)에스텍프라임 지분 100% 인수 · 첫 TV 광고 ‘당신 곁에 언제나’</span></li>
+            <li><b>2024</b><span>연결 매출 9,540억 원 · 베트남 S-TEC SYSTEM VINA 지분 인수</span></li>
+            <li><b>2025</b><span>연결 매출 9,752억 원 · K-IFRS 도입 · (주)에스닥스 흡수합병 · (주)에스텍에코 지분 65% 인수</span></li>
+            <li><b>2026</b><span>상반기 매출 5,414억 원(+11.1%) · 영업이익 245억 원 · 신용등급 AA+</span></li>
           </ol>
         </div>
         <div class="card">
           <div class="sec-h"><span class="grp-k">WITH YOU</span><h2>함께 성장하는 에스텍</h2></div>
           <div class="csr">
-            <div><b>🤝 어울림에프</b><span>발달장애인 약 130명이 함께 일하는 자회사형 장애인표준사업장. 매년 20여 명을 새로 채용하며 새니텍 제품을 직접 생산합니다.</span></div>
+            <div><b>🤝 어울림에프</b><span>발달장애인과 함께 일하는 자회사형 장애인표준사업장. 에스텍그룹이 지분 100%(에스텍시스템 80%)를 보유하며 새니텍 제품을 직접 생산합니다.</span></div>
             <div><b>🌿 새니텍 생활케어</b><span>바이러스케어·해충방제 노하우를 생활 서비스로 넓혀 고객 곁의 안전을 지킵니다.</span></div>
             <div><b>📺 당신 곁에 언제나</b><span>고객의 현장 가장 가까이에서 안전을 책임지는 친근한 에스텍을 약속합니다.</span></div>
           </div>
-          <div class="grp-cos"><span class="lbl">에스텍그룹</span><div><em>에스텍시스템</em><em>에스텍에이스</em><em>에스텍퍼스트</em><em class="me">에스텍베스트</em><em>에스텍세이프</em></div></div>
+          <div class="grp-cos"><span class="lbl">에스텍그룹 계열회사 11개사 (2026.6.30)</span><div><em>에스텍시스템</em><em>에스텍에이스</em><em>에스텍퍼스트</em><em class="me">에스텍베스트</em><em>에스텍세이프</em><em>에스텍플러스</em><em>에스텍프라임</em><em>에스텍에코</em><em>어울림에프</em><em>S-TEC SYSTEM VINA</em><em>S-TEC VINA</em><em>SANITEC VIETNAM</em></div></div>
         </div>
       </div>
 
@@ -638,7 +664,7 @@ aside.rail{position:sticky;top:calc(env(safe-area-inset-top,0px) + 82px);align-s
         <figure class="w"><img src="__BRANDCASE__" alt="S-Tec 산업현장 디오라마"><figcaption>산업현장과 함께하는 에스텍</figcaption></figure>
         <figure><img src="__BRANDOFFICE__" alt="S-Tec 큐브 피규어"><figcaption>S-Tec Premium</figcaption></figure>
       </div>
-      <p class="hint" style="margin:0">에스텍그룹 소개는 에스텍시스템 공개 기업정보와 언론 보도(파이낸셜뉴스 2022.12·2023.1)를 바탕으로 정리했습니다. 최신 내용은 에스텍시스템 홈페이지에서 확인하세요.</p>
+      <p class="hint" style="margin:0">숫자는 (주)에스텍시스템 2026년 반기보고서(2026.6.30 기준, 2026.8.27 제출·정정)를 기준으로 했습니다. 매출은 연결 기준, 직원 수는 에스텍시스템 별도 기준입니다. 최신 내용은 에스텍시스템 홈페이지에서 확인하세요.</p>
     </section>
 
     <!-- STEP 1 -->
@@ -784,14 +810,13 @@ aside.rail{position:sticky;top:calc(env(safe-area-inset-top,0px) + 82px);align-s
   <aside class="rail" aria-label="견적 요약">
     <div class="sum person-card est-only" id="personCard"></div>
     <div class="sum qr-card est-only" id="qrCard"></div>
-    <div class="sum rail-biz home-only" id="railBiz"><span class="grp-k">BUSINESS</span><h3>에스텍그룹 사업 분야</h3>
+    <div class="sum rail-biz home-only" id="railBiz"><span class="grp-k">BUSINESS</span><h3>에스텍시스템 사업 분야</h3>
+      <p class="rb-cap">2026년 상반기 매출 5,414억 원 · 사업부문별 비중</p>
       <div class="rb-list">
-          <div class="biz"><i>🛡️</i><b>시큐리티시스템</b><span>인력 경비·보안, 통합관제·SI, 방재, 보안컨설팅</span></div>
-          <div class="biz"><i>🧹</i><b>환경위생서비스</b><span>사업장·건물 미화와 위생관리</span></div>
-          <div class="biz"><i>🛠️</i><b>시설물유지관리</b><span>건물·설비의 운영과 유지보수</span></div>
-          <div class="biz"><i>🦠</i><b>새니텍 SANITECH</b><span>바이러스케어·통합해충방제, 공기청정살균기 ‘새니에어 V1’</span></div>
-          <div class="biz"><i>📄</i><b>문서보안</b><span>문서·HDD 파쇄 등 정보보안 서비스</span></div>
-          <div class="biz"><i>👥</i><b>전문 인력 서비스</b><span>안전 분야 정예인력의 파견·운영</span></div>
+          <div class="biz"><i>🛡️</i><b>시큐리티</b><span>관공서·공장·빌딩·공동주택 경비, 개인·행사 경호, 전자보안 원격감시·SI</span><em class="rb-bar"><s style="width:60.7%"></s></em><small>3,283억 원 · 60.7%</small></div>
+          <div class="biz"><i>🛠️</i><b>인프라</b><span>시설물 유지관리(FM·PM), 미화, 방역·해충방제 — 새니텍 SANITECH</span><em class="rb-bar"><s style="width:26.3%"></s></em><small>1,422억 원 · 26.3%</small></div>
+          <div class="biz"><i>♻️</i><b>환경</b><span>문서·저장매체 파쇄(문서보안), 자원순환</span><em class="rb-bar"><s style="width:10.7%"></s></em><small>577억 원 · 10.7%</small></div>
+          <div class="biz"><i>🧯</i><b>소방</b><span>청정소화시스템 · 가스식 자동소화장치 생산 (천안 R&amp;D)</span><em class="rb-bar"><s style="width:2.4%"></s></em><small>129억 원 · 2.4%</small></div>
         </div>
       <a class="btn sm" href="https://www.s-tec.co.kr/main.php" target="_blank" rel="noopener" style="margin-top:10px;text-decoration:none;color:inherit;align-self:flex-start">에스텍시스템 홈페이지 ↗</a></div>
     <div class="sum est-only">
@@ -2750,6 +2775,20 @@ async function addCustomerSheets(wb, R, prev, Y){
 
 /* ───────── 홈 화면 ───────── */
 function renderHome(){}
+/* 화면 모드: 주간(밝게) · 야간(어둡게) · 시스템 설정 — 이 기기에 기억 */
+function applyTheme(m){
+  const r=document.documentElement;
+  if(m==="light"||m==="dark") r.setAttribute("data-theme",m); else r.removeAttribute("data-theme");
+  document.querySelectorAll("#themeSeg [data-theme-set]").forEach(b=>b.setAttribute("aria-checked", String(b.dataset.themeSet===m)));
+  const dark = m==="dark" || (m!=="light" && window.matchMedia && matchMedia("(prefers-color-scheme: dark)").matches);
+  const mc=document.querySelector('meta[name="theme-color"]'); if(mc) mc.setAttribute("content", dark?"#121a4a":"#1b2a86");
+}
+function initTheme(){
+  let m="system"; try{ m=localStorage.getItem("stec_theme")||"system"; }catch(e){}
+  applyTheme(m);
+  document.querySelectorAll("#themeSeg [data-theme-set]").forEach(b=>b.onclick=()=>{ const v=b.dataset.themeSet; try{ localStorage.setItem("stec_theme",v); }catch(e){} applyTheme(v); });
+  try{ matchMedia("(prefers-color-scheme: dark)").addEventListener("change",()=>{ let v="system"; try{ v=localStorage.getItem("stec_theme")||"system"; }catch(e){} if(v==="system") applyTheme(v); }); }catch(e){}
+}
 function initVideo(){
   const v=$("#introVid"); if(!v) return;
   const p=v.play(); if(p&&p.catch) p.catch(()=>{});
@@ -3625,7 +3664,7 @@ function boot(){
   $("#fileJson").onchange=e=>{ const f=e.target.files[0]; if(!f) return; const rd=new FileReader(); rd.onload=()=>{ try{ applyState(normState(JSON.parse(rd.result))); toast("JSON 견적을 불러왔습니다"); }catch(err){ toast("JSON 형식이 올바르지 않습니다"); } }; rd.readAsText(f); e.target.value=""; };
   renderSaved(); renderQR(); renderGrowth();
   if(location.protocol==="https:" && !inFrame && "serviceWorker" in navigator) navigator.serviceWorker.register("sw.js").catch(()=>{});
-  renderHome(); initVideo();
+  initTheme(); renderHome(); initVideo();
   $("#navNew").onclick=openNewQuote; $("#navRenew").onclick=openRenew; $("#logoHome").onclick=()=>go(0);
   go(0);
 }
