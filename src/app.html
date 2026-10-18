@@ -303,6 +303,16 @@ body:not(.is-home) .home-only{display:none!important}
 .grp-gal figcaption{position:absolute;left:0;right:0;bottom:0;padding:16px 10px 8px;font-size:11.5px;font-weight:700;color:#fff;background:linear-gradient(transparent,rgba(0,0,0,.65))}
 .step.home .k{font-size:15px}
 .grp-hd a.btn,.a-qr a.btn{text-decoration:none;color:inherit}
+@font-face{font-family:"StecSig";src:url(__SIGFONT__) format("woff2");font-display:swap}
+.script{font-family:"StecSig","Great Vibes","Segoe Script","Brush Script MT",cursive;font-weight:400}
+.enjoy h2.script{font-size:34px;margin:2px 0 4px;color:var(--accent);letter-spacing:.01em}
+.enjoy-grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:12px;margin-top:8px}
+.enjoy-card{display:grid;grid-template-columns:44px 1fr;column-gap:12px;align-items:center;padding:14px 16px;border-radius:14px;border:1px solid var(--line);background:var(--field);color:inherit;text-decoration:none;transition:transform .15s,box-shadow .15s,border-color .15s}
+.enjoy-card:hover{transform:translateY(-2px);box-shadow:0 8px 20px rgba(20,32,106,.12);border-color:var(--accent)}
+.enjoy-card i{grid-row:1/4;font-style:normal;font-size:30px;width:44px;height:44px;display:flex;align-items:center;justify-content:center;border-radius:12px;background:var(--accent-soft)}
+.enjoy-card b{font-size:15px}.enjoy-card span{font-size:12px;color:var(--muted)}.enjoy-card em{font-style:normal;font-size:12px;font-weight:700;color:var(--accent);margin-top:2px}
+@media (max-width:900px){.enjoy-grid{grid-template-columns:1fr}}
+.sig{margin:6px 4px 0;text-align:right;font-family:"StecSig","Great Vibes","Segoe Script","Brush Script MT",cursive;font-size:30px;line-height:1.2;color:var(--accent);opacity:.9;user-select:none}
 .grp-links{display:flex;flex-wrap:wrap;gap:8px;align-items:center}
 @media (max-width:1100px){.grp-row{grid-template-columns:1fr}.kpi{grid-template-columns:1fr 1fr}}
 @media (max-width:640px){.grp-biz{grid-template-columns:1fr 1fr}.grp-gal{grid-template-columns:1fr}.grp-gal figure,.grp-gal figure.w{aspect-ratio:16/9}.stage-cap b{font-size:20px}.stage-cap{padding:40px 16px 14px}.stage-cap small{font-size:12px}.kpi b{font-size:22px}}
@@ -617,7 +627,7 @@ aside.rail{position:sticky;top:calc(env(safe-area-inset-top,0px) + 82px);align-s
 <script>try{var _t=localStorage.getItem("stec_theme");if(_t==="light"||_t==="dark")document.documentElement.setAttribute("data-theme",_t)}catch(e){}</script>
 <header class="topbar">
   <button type="button" class="logo-fig" id="logoHome" title="메인화면으로" aria-label="메인화면으로"><img src="__FIGLOGO__" alt="S-Tec 에스텍 그룹"></button>
-  <div class="brand" title="에스텍 그룹 용역인력 견적시스템"><b>S-Tec Quotation System</b><span class="ver">Ver 4.4 · 2026.10.18</span></div>
+  <div class="brand" title="에스텍 그룹 용역인력 견적시스템"><b>S-Tec Quotation System</b><span class="ver">Ver 4.5 · 2026.10.18</span></div>
   <div class="sp"><div class="gstrip" id="gstrip" aria-hidden="true"></div></div>
   <div class="tb-home home-only" id="tbHome"></div>
   <div class="tb-actions">
@@ -707,6 +717,16 @@ aside.rail{position:sticky;top:calc(env(safe-area-inset-top,0px) + 82px);align-s
         <figure><img src="__BRANDOFFICE__" alt="S-Tec 큐브 피규어"><figcaption>S-Tec Premium</figcaption></figure>
       </div>
       <p class="hint" style="margin:0">숫자는 [에스텍시스템][정정]반기보고서(2026.8.28) — 2026.6.30 기준 <b>연결재무제표</b>를 기준으로 했습니다. 최신 내용은 에스텍시스템 홈페이지에서 확인하세요.</p>
+
+      <section class="card enjoy" aria-labelledby="enjoyT">
+        <div class="sec-h"><span class="grp-k">THINGS TO ENJOY</span><h2 id="enjoyT" class="script">Things to enjoy</h2></div>
+        <div class="enjoy-grid">
+          <a class="enjoy-card" href="https://sadness500-boop.github.io/ppopgi/#ladder" target="_blank" rel="noopener"><i>🎲</i><b>오늘의 뽑기판</b><span>모임에서 쓰는 사다리·뽑기 미니게임</span><em>바로 가기 ↗</em></a>
+          <a class="enjoy-card" href="https://sadness500-boop.github.io/jecheolmatgil/#map" target="_blank" rel="noopener"><i>🍲</i><b>팔도 제철맛길</b><span>전국 제철음식·맛집 지도</span><em>바로 가기 ↗</em></a>
+          <a class="enjoy-card" href="https://sadness500-boop.github.io/Festival/" target="_blank" rel="noopener"><i>🎉</i><b>팔도 축제길</b><span>지역·계절·월별 전국 축제 지도</span><em>바로 가기 ↗</em></a>
+        </div>
+      </section>
+      <p class="sig" aria-label="Produced by Rat Rae Choi">Produced by Rat Rae Choi</p>
     </section>
 
     <!-- STEP 1 -->

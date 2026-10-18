@@ -9,7 +9,7 @@ rd = lambda f: open(p(f), encoding="utf-8").read()
 t = rd("src/app.html")
 img = json.load(open(p("assets/img.json"), encoding="utf-8"))
 t = t.replace("/*__LEAFLET_CSS__*/", rd("src/leaflet.css"))
-t = t.replace("__CUBE__", img["cube"]).replace("__LOGO__", img["logo"]).replace("__TEAM__", img["team"]).replace("__FIGLOGO__", img["figlogo"]).replace("__POSTER__", img["videoPoster"]).replace("__BRANDSIGN__", img["brandSign"]).replace("__BRANDCASE__", img["brandCase"]).replace("__BRANDOFFICE__", img["brandOffice"])
+t = t.replace("__CUBE__", img["cube"]).replace("__LOGO__", img["logo"]).replace("__TEAM__", img["team"]).replace("__FIGLOGO__", img["figlogo"]).replace("__POSTER__", img["videoPoster"]).replace("__BRANDSIGN__", img["brandSign"]).replace("__BRANDCASE__", img["brandCase"]).replace("__BRANDOFFICE__", img["brandOffice"]).replace("__SIGFONT__", img["sigFont"])
 import base64
 t = t.replace("__VIDEO__", "data:video/mp4;base64," + base64.b64encode(open(p("assets/intro.mp4"),"rb").read()).decode())
 t = t.replace("/*__LEAFLET_JS__*/", rd("vendor/leaflet-1.9.4.min.js"))
