@@ -595,7 +595,7 @@ aside.rail{position:sticky;top:calc(env(safe-area-inset-top,0px) + 82px);align-s
 <script>try{var _t=localStorage.getItem("stec_theme");if(_t==="light"||_t==="dark")document.documentElement.setAttribute("data-theme",_t)}catch(e){}</script>
 <header class="topbar">
   <button type="button" class="logo-fig" id="logoHome" title="메인화면으로" aria-label="메인화면으로"><img src="__FIGLOGO__" alt="S-Tec 에스텍베스트"></button>
-  <div class="brand"><b>S-Tec Quotation System</b><span>에스텍베스트 · v3.8</span></div>
+  <div class="brand"><b>S-Tec Quotation System</b><span>에스텍베스트 · v3.9</span></div>
   <div class="sp"><div class="gstrip" id="gstrip" aria-hidden="true"></div></div>
   <div class="tb-home home-only" id="tbHome"></div>
   <div class="tb-actions">
@@ -1789,6 +1789,14 @@ function quoteRows(R){
     const inc = r.prev ? ((L.price-r.prev)/r.prev*100) : null;
     return {catKey:r.cat, cat:CATS[r.cat].short, img:roleImg(r), rank:r.rank, detail:r.detail||"", title:roleLabel(r), shift:shiftLabel(r), n:L.count, prev:r.prev||0, price:L.price, months:L.months, sum:L.monthTotal, inc, note:r.note||""};
   });
+}
+const xq = t => String(t).replace(/"/g,'""');
+/* 금액 → 한글(일금 …원정) 엑셀 수식 — 일반 함수만 써서 엑셀·구글시트·리브레오피스 어디서나 다시 계산됨 (9,999억까지) */
+function xKrWonFormula(ref){
+  const T=`TEXT(ROUND(ABS(N(${ref})),0),"000000000000")`, D=`"","일","이","삼","사","오","육","칠","팔","구"`, U=["천","백","십",""];
+  const dig=i=>`CHOOSE(VALUE(MID(${T},${i},1))+1,${D})&IF(MID(${T},${i},1)="0","","${U[(i-1)%4]}")`;
+  const grp=(g,big)=>{ const a=g*4+1; return [0,1,2,3].map(k=>dig(a+k)).join("&")+(big?`&IF(MID(${T},${a},4)="0000","","${big}")`:""); };
+  return `"일금 "&IF(ROUND(ABS(N(${ref})),0)=0,"영",${grp(0,"억")}&${grp(1,"만")}&${grp(2,"")})&"원정"`;
 }
 function krWon(n){
   n=Math.round(n); if(!n) return "영원";
@@ -3373,9 +3381,10 @@ async function buildCover(wb, R, crew, m, S, logoId, logo, prev){
     ["견적금액",`월 ${won(R.monthAll)}원 (VAT 별도)  ·  ${R.heads}명`],
     ...(prev?[["전년 대비",`${prev.Y}년 월 ${won(prev.R.monthAll)}원 → ${m.year}년 월 ${won(R.monthAll)}원 (${R.monthAll>=prev.R.monthAll?"▲":"▼"} ${Math.abs((R.monthAll/prev.R.monthAll-1)*100).toFixed(1)}%)`]]:[]),
     ["견적기준",`${m.year}년 최저임금 ${won(S.minWage)}원 · 4대보험 법정요율`]];
+  const coverRefs={crewCell:cpc, crew, R, prev, Y:m.year};
   info.forEach(([k,v],i)=>{ const rw=ws.getRow(r); rw.height=22;
     ws.mergeCells(r,2,r,3); const a=rw.getCell(2); a.value=k; a.font=xFont({size:10,bold:true,color:{argb:XC.white}}); a.fill=xFill(i===3?XC.green:XC.navy); a.alignment={horizontal:"center",vertical:"middle"};
-    ws.mergeCells(r,4,r,9); const b=rw.getCell(4); b.value=v; b.font=xFont({size:i===3?12:10.5,bold:i===3,color:{argb:i===3?"FF14532D":"FF16192A"}}); b.fill=xFill(i===3?XC.greenSoft:"FFF5F7FC"); b.alignment={horizontal:"left",vertical:"middle",indent:1,shrinkToFit:true};
+    ws.mergeCells(r,4,r,9); const b=rw.getCell(4); b.value=v; if(k==="견적금액") coverRefs.amt=b; if(k==="전년 대비") coverRefs.cmp=b; b.font=xFont({size:i===3?12:10.5,bold:i===3,color:{argb:i===3?"FF14532D":"FF16192A"}}); b.fill=xFill(i===3?XC.greenSoft:"FFF5F7FC"); b.alignment={horizontal:"left",vertical:"middle",indent:1,shrinkToFit:true};
     for(let c=2;c<=9;c++) rw.getCell(c).border={top:{style:"thin",color:{argb:"FFFFFFFF"}},bottom:{style:"thin",color:{argb:"FFFFFFFF"}}};
     r++; });
   r++;
@@ -3401,6 +3410,24 @@ async function buildCover(wb, R, crew, m, S, logoId, logo, prev){
   text(r,`${S.coAddr}  ·  ${S.coLic}`,xFont({size:8.5,color:{argb:XC.muted}}),16); r++;
   band(r,3,XC.green); band(r+1,10,XC.navy);
   ws.pageSetup.printArea=paFix(`A1:J${r+1}`);
+  return coverRefs;
+}
+/* 표지 숫자 → 견적서 시트 합계 칸을 가리키는 수식 (엑셀에서 견적서·산출내역서를 고치면 함께 바뀜) */
+function linkCover(C, Q, QP){
+  if(!C || !Q) return;
+  const sh=n=>`'${n.replace(/'/g,"''")}'!`, q=sh(Q.sheet), R=C.R;
+  if(C.amt) C.amt.value={formula:`"월 "&TEXT(${q}${Q.month},"#,##0")&"원 (VAT 별도)  ·  "&${q}${Q.heads}&"명"`, result:`월 ${won(R.monthAll)}원 (VAT 별도)  ·  ${R.heads}명`};
+  if(C.cmp && C.prev && QP){ const p=sh(QP.sheet), cur=`${q}${Q.month}`, pv=`${p}${QP.month}`, P=C.prev;
+    C.cmp.value={formula:`"${P.Y}년 월 "&TEXT(${pv},"#,##0")&"원 → ${C.Y}년 월 "&TEXT(${cur},"#,##0")&"원 ("&IF(${cur}>=${pv},"▲ ","▼ ")&TEXT(IF(N(${pv})=0,0,ABS(${cur}/${pv}-1))*100,"0.0")&"%)"`,
+      result:`${P.Y}년 월 ${won(P.R.monthAll)}원 → ${C.Y}년 월 ${won(R.monthAll)}원 (${R.monthAll>=P.R.monthAll?"▲":"▼"} ${Math.abs((R.monthAll/P.R.monthAll-1)*100).toFixed(1)}%)`}; }
+  if(C.crewCell && C.crew.length){
+    const parts=C.crew.map(cc=>{ const rs=Q.rowsOf(cc.cat), n=rs.map(r=>`N(${q}F${r})`).join("+")||"0";
+      const rk=rankList(cc.cat).filter(k=>cc.ranks[k]).map(k=>`"${xq(k)} "&(${Q.rowsOf(cc.cat,k).map(r=>`N(${q}F${r})`).join("+")||"0"})`).join(`&" · "&`);
+      return `"${xq(CATS[cc.cat].label)} "&(${n})&"명"${rk?`&" ("&${rk}&")"`:""}`; });
+    const txt=C.crew.map(cc=>`${CATS[cc.cat].label} ${cc.n}명${cc.rankText?` (${cc.rankText})`:""}`).join("     ");
+    C.crewCell.value={formula:parts.join(`&"     "&`), result:txt};
+    C.crewCell.font=xFont({size:9.5,bold:true,color:{argb:XC.navy}});
+  }
 }
 
 async function buildQuoteSheet(wb, sheetName, R, qr, crew, Y, m, S, prevCol, logoId, logoBig, logoSm, condTxt, tab, enLabel, bdLink){
@@ -3424,12 +3451,15 @@ async function buildQuoteSheet(wb, sheetName, R, qr, crew, Y, m, S, prevCol, log
     ws.mergeCells(`${x[0]?"C":"A"}${r}:E${r}`); const b=ws.getCell(`${x[0]?"C":"A"}${r}`); b.value=x[1]; b.font=xFont({size:x[0]?10:9,color:{argb:x[0]?"FF111111":XC.muted}}); b.alignment={vertical:"middle",shrinkToFit:true}; });
   row+=7;
   // 금액 박스
-  ws.mergeCells(`A${row}:F${row+1}`); const am=ws.getCell(`A${row}`);
-  am.value={richText:[{text:"견적금액 · 월 (VAT 별도)\n",font:xFont({size:9,color:{argb:"FFDDE3FF"}})},{text:`₩ ${won(R.monthAll)}`,font:xFont({size:18,bold:true,color:{argb:XC.white}})},{text:`   일금 ${krWon(R.monthAll)}정`,font:xFont({size:9,color:{argb:"FFDDE3FF"}})}]};
-  am.fill=xFill(XC.navy); am.alignment={vertical:"middle",indent:1,wrapText:true};
-  ws.mergeCells(`G${row}:J${row}`); const s1=ws.getCell(`G${row}`); s1.value=`부가세 포함 월  ${won(R.monthAll+R.vat)}원   ·   ${R.heads}명 / 평균 ${won(R.avg)}원`; s1.font=xFont({size:9.5,bold:true}); s1.fill=xFill(XC.greenSoft); s1.alignment={vertical:"middle",indent:1};
-  ws.mergeCells(`G${row+1}:J${row+1}`); const s2=ws.getCell(`G${row+1}`); s2.value=`계약기간 ${R.contractMonths}개월 총액  ${won(R.yearAll)}원 (VAT 별도)`; s2.font=xFont({size:9.5}); s2.fill=xFill(XC.greenSoft); s2.alignment={vertical:"middle",indent:1};
-  ws.getRow(row).height=24; ws.getRow(row+1).height=24;
+  // 금액 박스 — 아래 견적 내역 표의 합계 칸을 가리키는 수식으로 (엑셀에서 고치면 함께 바뀜). 값은 표를 만든 뒤 채웁니다.
+  ws.mergeCells(`A${row}:F${row}`); const amL=ws.getCell(`A${row}`); amL.value="견적금액 · 월 (VAT 별도)"; amL.font=xFont({size:9,color:{argb:"FFDDE3FF"}}); amL.alignment={vertical:"bottom",indent:1};
+  ws.mergeCells(`A${row+1}:C${row+1}`); const am=ws.getCell(`A${row+1}`); am.font=xFont({size:18,bold:true,color:{argb:XC.white}}); am.alignment={vertical:"middle",indent:1,shrinkToFit:true}; am.numFmt='"₩ "#,##0';
+  ws.mergeCells(`D${row+1}:F${row+1}`); const amK=ws.getCell(`D${row+1}`); amK.font=xFont({size:9,color:{argb:"FFDDE3FF"}}); amK.alignment={vertical:"middle",shrinkToFit:true};
+  for(const rr of [row,row+1]) for(let k=1;k<=6;k++) ws.getRow(rr).getCell(k).fill=xFill(XC.navy);
+  ws.mergeCells(`G${row}:J${row}`); const s1=ws.getCell(`G${row}`); s1.font=xFont({size:9.5,bold:true}); s1.fill=xFill(XC.greenSoft); s1.alignment={vertical:"middle",indent:1,shrinkToFit:true};
+  ws.mergeCells(`G${row+1}:J${row+1}`); const s2=ws.getCell(`G${row+1}`); s2.font=xFont({size:9.5}); s2.fill=xFill(XC.greenSoft); s2.alignment={vertical:"middle",indent:1,shrinkToFit:true};
+  ws.getRow(row).height=18; ws.getRow(row+1).height=30;
+  const capCells=[];
   row+=3;
   // 투입 인력 구성 (그림)
   const h1=ws.getCell(`A${row}`); h1.value="■ 투입 인력 구성"; h1.font=xFont({size:11,bold:true,color:{argb:XC.navy}}); row++;
@@ -3450,8 +3480,8 @@ async function buildQuoteSheet(wb, sheetName, R, qr, crew, Y, m, S, prevCol, log
         ws.addImage(id,{tl:{col: col + (startX-acc)/colPx[col], row: top-1+(imgs.length>1?0.45:0.08)},ext:{width:iw,height:ih}});
       }
       const capR=top+4; const L1=String.fromCharCode(65+sl[0]), L2=String.fromCharCode(64+sl[1]);
-      [[capR,`${CATS[c.cat].label}  ${c.n}명`,xFont({bold:true,size:10,color:{argb:"FF"+CATS[c.cat].color.slice(1).toUpperCase()}})],[capR+1,c.rankText,xFont({size:8.5,color:{argb:XC.muted}})],[capR+2,`월 ${won(c.sum)}원`,xFont({size:9,bold:true})]].forEach(([rr,v,f])=>{
-        if(L1!==L2) ws.mergeCells(`${L1}${rr}:${L2}${rr}`); const cc=ws.getCell(`${L1}${rr}`); cc.value=v; cc.font=f; cc.alignment={horizontal:"center",vertical:"middle",shrinkToFit:true}; });
+      [[capR,`${CATS[c.cat].label}  ${c.n}명`,xFont({bold:true,size:10,color:{argb:"FF"+CATS[c.cat].color.slice(1).toUpperCase()}}),"n"],[capR+1,c.rankText,xFont({size:8.5,color:{argb:XC.muted}}),"rank"],[capR+2,`월 ${won(c.sum)}원`,xFont({size:9,bold:true}),"sum"]].forEach(([rr,v,f,kind])=>{
+        if(L1!==L2) ws.mergeCells(`${L1}${rr}:${L2}${rr}`); const cc=ws.getCell(`${L1}${rr}`); cc.value=v; cc.font=f; cc.alignment={horizontal:"center",vertical:"middle",shrinkToFit:true}; capCells.push({cell:cc,kind,c,v}); });
     }
     for(let r=top+4;r<top+7;r++) ws.getRow(r).height=15;
     row=top+7;
@@ -3464,7 +3494,8 @@ async function buildQuoteSheet(wb, sheetName, R, qr, crew, Y, m, S, prevCol, log
   const hr=ws.getRow(row); head.forEach((h,i)=>{ const c=hr.getCell(i+1); c.value=h; c.font=xFont({bold:true,color:{argb:XC.white},size:9.5}); c.fill=xFill(XC.navy); c.alignment={horizontal:"center",vertical:"middle"}; c.border=xBorder(XC.navy); }); hr.height=22;
   const first=row+1;
   qr.forEach((x,i)=>{ row++; const r=ws.getRow(row); r.height=19;
-    const vals=[i+1,x.cat,x.rank,x.detail,x.shift,bdLink?{formula:`'${bdLink.sheet}'!${bdLink.col(i)}${bdLink.countRow}`,result:x.n}:x.n,x.prev||null,bdLink?{formula:`'${bdLink.sheet}'!${bdLink.col(i)}${bdLink.priceRow}`,result:x.price}:x.price,{formula:`F${row}*H${row}`,result:x.sum},(x.inc!=null?`${x.inc>=0?"▲":"▼"} ${Math.abs(x.inc).toFixed(1)}%`:"")+(x.months!==12?` ${x.months}개월`:"")+(x.note?` ${x.note}`:"")];
+    const vals=[i+1,x.cat,x.rank,x.detail,x.shift,bdLink?{formula:`'${bdLink.sheet}'!${bdLink.col(i)}${bdLink.countRow}`,result:x.n}:x.n,x.prev||null,bdLink?{formula:`'${bdLink.sheet}'!${bdLink.col(i)}${bdLink.priceRow}`,result:x.price}:x.price,{formula:`F${row}*H${row}`,result:x.sum},(()=>{ const tail=(x.months!==12?` ${x.months}개월`:"")+(x.note?` ${x.note}`:""), txt=(x.inc!=null?`${x.inc>=0?"▲":"▼"} ${Math.abs(x.inc).toFixed(1)}%`:"")+tail;
+      return prevCol ? {formula:`IF(N(G${row})>0,IF(H${row}>=G${row},"▲ ","▼ ")&TEXT(ABS(H${row}/G${row}-1)*100,"0.0")&"%","")${tail?`&"${xq(tail)}"`:""}`,result:txt} : txt; })()];
     vals.forEach((v,k)=>{ const c=r.getCell(k+1); c.value=v; c.font=xFont({size:9.5,bold:k===2||k===8,color:k===1?{argb:"FF"+CATS[x.catKey].color.slice(1).toUpperCase()}:undefined}); c.border=xBorder(); c.alignment={vertical:"middle",horizontal:k<=2?"center":k>=5&&k<=8?"right":"left",shrinkToFit:k===3||k===4||k===9}; if(k>=5&&k<=8) c.numFmt="#,##0"; if(i%2) c.fill=xFill("FFF8F9FC");
       if(k===1){ const hex=CATS[x.catKey].color.slice(1); const tint="FF"+[0,2,4].map(o=>Math.round(parseInt(hex.substr(o,2),16)*0.14+255*0.86).toString(16).padStart(2,"0")).join("").toUpperCase(); c.fill=xFill(tint); }
       if(i===0){ c.border={...c.border,top:XMED(XC.navy)}; } });
@@ -3474,7 +3505,7 @@ async function buildQuoteSheet(wb, sheetName, R, qr, crew, Y, m, S, prevCol, log
   const tot=[["월 합계",{formula:`SUM(F${first}:F${last})`,result:R.heads},{formula:`SUM(I${first}:I${last})`,result:R.monthAll},XC.soft,true],
     [`부가가치세 (${S.vat}%)`,null,{formula:`ROUND(I${last+1}*${S.vat/100},0)`,result:R.vat},null,false],
     ["월 총계 (VAT 포함)",null,{formula:`I${last+1}+I${last+2}`,result:R.monthAll+R.vat},XC.greenSoft,true],
-    [`계약기간 총액 (VAT 별도 · ${R.contractMonths}개월)`,null,R.yearAll,null,false]];
+    [`계약기간 총액 (VAT 별도 · ${R.contractMonths}개월)`,null,{formula: Math.abs(R.yearAll-R.monthAll*R.contractMonths)<1 ? `I${last+1}*${R.contractMonths}` : `ROUND(I${last+1}*${R.monthAll?R.yearAll/R.monthAll:R.contractMonths},0)`, result:R.yearAll},null,false]];
   const prevRows=qr.filter(x=>x.prev>0), prevTot=prevRows.reduce((s,x)=>s+x.prev*x.n,0), curTot=prevRows.reduce((s,x)=>s+x.price*x.n,0);
   tot.forEach(([lbl,f,i,fill,b],ti)=>{ row++; ws.mergeCells(`A${row}:E${row}`); const r=ws.getRow(row); r.height=20;
     if(ti===0 && prevCol){ const g=r.getCell(7); g.value={formula:`SUMPRODUCT(F${first}:F${last},G${first}:G${last})`,result:prevTot}; g.numFmt="#,##0";
@@ -3487,6 +3518,20 @@ async function buildQuoteSheet(wb, sheetName, R, qr, crew, Y, m, S, prevCol, log
       c.font=xFont({bold:b||TS.white,size:ti===2||ti===3?10:9.5,color:TS.white?{argb:XC.white}:ti===0&&k===10?{argb:"FFC8323A"}:undefined});
       if(k===6||k===9||k===7) c.alignment={horizontal:"right",vertical:"middle"}; if(k===10) c.alignment={horizontal:"center",vertical:"middle"}; if(k===1) c.alignment={horizontal:"center",vertical:"middle"}; }
     r.height=ti===1?18:22; });
+  // 금액 박스·인력 그림 설명 → 합계 칸 수식
+  { const T=last+1, H=`F${T}`, M=`I${T}`, VT=`I${T+2}`, YR=`I${T+3}`, roleLast=first+qr.length-1;
+    am.value={formula:M,result:R.monthAll};
+    amK.value={formula:xKrWonFormula(M),result:`일금 ${krWon(R.monthAll)}정`};
+    s1.value={formula:`"부가세 포함 월  "&TEXT(${VT},"#,##0")&"원   ·   "&${H}&"명 / 평균 "&TEXT(IF(N(${H})=0,0,SUM(I${first}:I${roleLast})/${H}),"#,##0")&"원"`,result:`부가세 포함 월  ${won(R.monthAll+R.vat)}원   ·   ${R.heads}명 / 평균 ${won(R.avg)}원`};
+    s2.value={formula:`"계약기간 ${R.contractMonths}개월 총액  "&TEXT(${YR},"#,##0")&"원 (VAT 별도)"`,result:`계약기간 ${R.contractMonths}개월 총액  ${won(R.yearAll)}원 (VAT 별도)`};
+    const rowsOf=(cat,rank)=>qr.map((x,i)=>x.catKey===cat&&(!rank||x.rank===rank)?first+i:0).filter(Boolean);
+    const sumOf=(col,rs)=>rs.length?rs.map(r=>`N(${col}${r})`).join("+"):"0";
+    capCells.forEach(({cell,kind,c,v})=>{ const rs=rowsOf(c.cat);
+      if(kind==="n") cell.value={formula:`"${xq(CATS[c.cat].label)}  "&(${sumOf("F",rs)})&"명"`,result:v};
+      else if(kind==="sum") cell.value={formula:`"월 "&TEXT(${sumOf("I",rs)},"#,##0")&"원"`,result:v};
+      else if(kind==="rank"){ const parts=rankList(c.cat).filter(k=>c.ranks[k]).map(k=>`"${xq(k)} "&(${sumOf("F",rowsOf(c.cat,k))})`); if(parts.length) cell.value={formula:parts.join(`&" · "&`),result:v}; } });
+    ws._stecRefs={sheet:sheetName, heads:H, month:M, prev:prevCol?`G${T}`:null, vatTotal:VT, year:YR, rowsOf, sumOf, first, roleLast};
+  }
   row+=2;
   const h3=ws.getCell(`A${row}`); h3.value="■ 견적 조건"; h3.font=xFont({size:11,bold:true,color:{argb:XC.navy}});
   condTxt.split("\n").forEach(l=>{ row++; ws.mergeCells(`A${row}:J${row}`); const c=ws.getCell(`A${row}`); c.value=l; c.font=xFont({size:9}); c.alignment={wrapText:true,vertical:"middle"}; ws.getRow(row).height=l.length>70?28:16; });
@@ -3501,7 +3546,7 @@ async function buildQuoteSheet(wb, sheetName, R, qr, crew, Y, m, S, prevCol, log
     pc.value={richText:[{text:"견적 담당\n",font:xFont({size:8,color:{argb:XC.muted}})},{text:[S.coPerson,S.coPersonTitle].filter(Boolean).join(" ")+"\n",font:xFont({size:11,bold:true,color:{argb:XC.navy}})},{text:S.coPersonTel||S.coBranch,font:xFont({size:8.5,color:{argb:XC.muted}})}]};
     pc.alignment={vertical:"middle",wrapText:true}; }
   ws.headerFooter.oddFooter=`&L&8${S.coName} ${sheetName}&R&8&P / &N`;
-
+  return ws._stecRefs;
 }
 /* ───────── 산출내역서 (엑셀 수식 연결) ───────── */
 const BD_ROWS=[
@@ -3680,15 +3725,16 @@ async function exportXlsx(){
   const qr=quoteRows(R), prevCol=qr.some(x=>x.prev>0), crew=crewByCat(R.rows);
 
   const prev=prevDataset(), tagC=prev?`(${Y})`:"";
-  await buildCover(wb, R, crew, m, S, logoId, logo, prev);
+  const coverRefs=await buildCover(wb, R, crew, m, S, logoId, logo, prev);
   const link=nm=>({sheet:nm, col:bdColL, priceRow:bdRowOf("price"), countRow:bdRowOf("count")});
-  await buildQuoteSheet(wb, `견적서${tagC}`, R, qr, crew, Y, m, S, prevCol, logoId, logoBig, logoSm, condText(), XC.navy, prev?`Q U O T A T I O N  ·  ${Y}년 견적`:"Q U O T A T I O N", link(`산출내역서${tagC}`));
+  const qRefs=await buildQuoteSheet(wb, `견적서${tagC}`, R, qr, crew, Y, m, S, prevCol, logoId, logoBig, logoSm, condText(), XC.navy, prev?`Q U O T A T I O N  ·  ${Y}년 견적`:"Q U O T A T I O N", link(`산출내역서${tagC}`));
   await buildBdSheet(wb, `산출내역서${tagC}`, R, Y, m, S, logoId, logoSm, XC.navy);
   if(prev){
     await addCompareSheet(wb, logoId, logoSm);
-    await buildQuoteSheet(wb, `견적서(${prev.Y})`, prev.R, prev.qr, prev.crew, prev.Y, prev.m, prev.S, false, logoId, logoBig, logoSm, prev.cond, "FF8A93AD", `Q U O T A T I O N  ·  ${prev.Y}년 현행(당해년) 견적`, link(`산출내역서(${prev.Y})`));
+    var qRefsPrev=await buildQuoteSheet(wb, `견적서(${prev.Y})`, prev.R, prev.qr, prev.crew, prev.Y, prev.m, prev.S, false, logoId, logoBig, logoSm, prev.cond, "FF8A93AD", `Q U O T A T I O N  ·  ${prev.Y}년 현행(당해년) 견적`, link(`산출내역서(${prev.Y})`));
     await buildBdSheet(wb, `산출내역서(${prev.Y})`, prev.R, prev.Y, prev.m, prev.S, logoId, logoSm, "FF8A93AD");
   }
+  linkCover(coverRefs, qRefs, typeof qRefsPrev!=="undefined"?qRefsPrev:null);
   /* ── 부대비용 ── */
   const w3=wb.addWorksheet("부대비용",{views:[{showGridLines:false}],pageSetup:{paperSize:9,orientation:"portrait",fitToPage:true,fitToWidth:1,fitToHeight:0}});
   w3.columns=[{width:11},{width:26},{width:7},{width:14},{width:62}];

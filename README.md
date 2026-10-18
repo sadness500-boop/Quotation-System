@@ -29,7 +29,7 @@
 
 ```
 index.html            빌드된 단독 실행 파일 (웹 주소용)
-에스텍_용역인력_견적시스템_v3.8.html  같은 파일 (PC 내려받기용)
+에스텍_용역인력_견적시스템_v3.9.html  같은 파일 (PC 내려받기용)
 manifest.webmanifest, sw.js, icon-*.png  휴대폰 앱 설치(PWA)용
 src/app.html          화면·계산 엔진·엑셀 생성 코드 (템플릿)
 src/leaflet.css       지도 스타일
