@@ -156,6 +156,9 @@ textarea.inp{resize:vertical;min-height:110px;line-height:1.6}
 .rn-sel h3{margin:6px 0;font-size:17px}.rn-sel h3 small{font-weight:400;color:var(--muted);font-size:12.5px}
 .rn-kv{display:flex;gap:16px;flex-wrap:wrap;font-size:13px}
 .rn-err{color:#b42318;font-size:13px;margin:0}
+.sg-links{display:flex;gap:8px;padding:8px 10px;border-top:1px solid var(--line-2);background:var(--field);position:sticky;bottom:0}
+.maplink{flex:1;text-align:center;font-size:12px;font-weight:700;text-decoration:none;padding:6px 8px;border-radius:7px}
+.maplink.kk{background:#fee500;color:#191600}.maplink.nv{background:#03c75a;color:#fff}
 .nq-grid{display:grid;grid-template-columns:1fr 1fr;gap:12px}
 .nq-card{display:flex;flex-direction:column;gap:4px;text-align:left;border:2px solid var(--line);border-radius:12px;padding:14px;background:var(--paper);color:var(--ink);cursor:pointer;font:inherit}
 .nq-card:hover{border-color:var(--accent)}.nq-card.on{border-color:var(--accent);background:var(--accent-soft);box-shadow:0 0 0 3px rgba(27,42,134,.12)}
@@ -476,7 +479,7 @@ aside.rail{position:sticky;top:calc(env(safe-area-inset-top,0px) + 82px);align-s
 
 <header class="topbar">
   <div class="logo-fig"><img src="__FIGLOGO__" alt="S-Tec 에스텍베스트"></div>
-  <div class="brand"><b>S-Tec Quotation System</b><span>에스텍베스트 동부지사 · v2.9</span></div>
+  <div class="brand"><b>S-Tec Quotation System</b><span>에스텍베스트 동부지사 · v3.0</span></div>
   <div class="sp"><div class="gstrip" id="gstrip" aria-hidden="true"></div></div>
   <div class="tb-actions">
     <button class="tbtn" id="btnBlank">신규 영업 견적</button>
@@ -512,8 +515,8 @@ aside.rail{position:sticky;top:calc(env(safe-area-inset-top,0px) + 82px);align-s
         <div class="h-row"><div><h2>사업장</h2><p class="sub" id="modeSub"></p></div><div class="row"><div class="seg" role="radiogroup" aria-label="검색 대상"><button type="button" data-mode="new">신규 영업 사업장</button><button type="button" data-mode="renew">기존 에스텍 사업장</button></div><span id="siteBadge"></span></div></div>
         <div class="row" style="margin:-4px 0 10px" id="kakaoState"></div>
         <div class="kakao-box" id="kakaoBox" hidden>
-          <p class="hint" style="margin:0 0 8px">카카오맵과 같은 장소 검색 결과(업종·전화·도로명주소)를 쓰려면 <b>카카오 REST API 키</b>가 필요합니다. 카카오 디벨로퍼스(developers.kakao.com) → 내 애플리케이션 → 앱 추가 → <b>앱 키의 ‘REST API 키’</b>를 복사하고, 앱 설정의 <b>‘카카오맵’ 사용 설정을 ON</b>으로 켜 주세요. 키는 이 PC 브라우저에만 저장됩니다.</p>
-          <div class="row"><input class="inp" id="kk_key" placeholder="REST API 키 (32자리)" style="max-width:340px" autocomplete="off"><button type="button" class="btn pri sm" id="kk_save">저장·테스트</button><button type="button" class="btn sm ghost" id="kk_del">키 삭제</button><span class="hint" id="kk_msg"></span></div>
+          <p class="hint" style="margin:0 0 8px"><b>한 번만 설정하면 모든 직원이 자동 연결</b>됩니다: 카카오 디벨로퍼스(developers.kakao.com) → 내 애플리케이션 → 앱 추가 → 앱 설정 ‘카카오맵’ 사용 ON → 플랫폼 ‘Web’에 <code>https://sadness500-boop.github.io</code> 등록 → <b>JavaScript 키</b>를 GitHub 저장소의 <code>app-config.json</code> 파일 <code>kakaoJsKey</code>에 넣으세요. (JavaScript 키는 등록한 주소에서만 동작해 공개돼도 안전합니다)<br>이 기기에서만 쓰려면 아래에 넣으세요. PC에 내려받은 HTML 파일로 열 때는 <b>REST API 키</b>가 필요합니다.</p>
+          <div class="row" style="gap:6px;flex-wrap:wrap"><input class="inp" id="kk_js" placeholder="JavaScript 키 (웹 주소용)" style="max-width:280px" autocomplete="off"><input class="inp" id="kk_key" placeholder="REST API 키 (PC 파일용)" style="max-width:280px" autocomplete="off"><button type="button" class="btn pri sm" id="kk_save">저장·테스트</button><button type="button" class="btn sm ghost" id="kk_del">키 삭제</button><span class="hint" id="kk_msg"></span></div>
         </div>
         <div class="grid g3">
           <label class="f site-search" style="grid-column:span 2"><span>사업장 명칭 <em>*</em></span>
@@ -1135,7 +1138,7 @@ async function lookupOnline(){
   const m=state.meta, msg=$("#lookupMsg");
   if(!m.client && !m.addr){ msg.textContent="사업장 명칭이나 주소를 먼저 입력하세요."; return; }
   msg.textContent="조회 중…"; lastGeo=null; lastWiki=null;
-  if(kakaoKey()){ try{ const res=await kakaoSearch((m.client||m.addr).trim(),kakaoKey(),10); if(res.length){ sgOnline=res; sgSource="kakao"; sgState="done"; msg.textContent=`카카오맵 검색 ${res.length}건 — 목록에서 선택하세요.`; paintSugg([]); $("#m_client").focus(); return; } }catch(e){ msg.textContent=(e&&e.kakao)||"카카오 검색 실패 · OSM으로 검색합니다"; } }
+  if(kakaoReady()){ try{ const res=await kakaoAny((m.client||m.addr).trim(),10); if(res.length){ sgOnline=res; sgSource="kakao"; sgState="done"; msg.textContent=`카카오맵 검색 ${res.length}건 — 목록에서 선택하세요.`; paintSugg([]); $("#m_client").focus(); return; } }catch(e){ msg.textContent=(e&&e.kakao)||"카카오 검색 실패 · OSM으로 검색합니다"; } }
   const q=(m.addr||m.client).trim();
   const ctl=new AbortController(); const tm=setTimeout(()=>ctl.abort(),9000);
   let geo=[], ok=true;
@@ -1178,11 +1181,64 @@ const osmKo=(k,v)=>OSM_TYPE[v]||OSM_TYPE[k]||v||k||"";
 let sgTimer=null, sgSeq=0, sgOnline=[], sgState="idle";
 function krAddr(p){ return [p.state,p.city,p.county,p.district,p.locality,p.street,p.housenumber].filter((x,i,arr)=>x&&arr.indexOf(x)===i).join(" "); }
 function kakaoKey(){ try{ return localStorage.getItem("stec_kakao_key")||""; }catch(e){ return ""; } }
+function kakaoJsLocal(){ try{ return localStorage.getItem("stec_kakao_js")||""; }catch(e){ return ""; } }
+/* 회사 공용 설정(app-config.json, 웹 주소에서만) → 모든 직원 자동 연결 */
+let APPCFG={}, kkSdk=null, kkMode="none", kkInfo="";
+async function loadAppConfig(){
+  if(!/^https?:$/.test(location.protocol) || inFrame) return;
+  try{ const r=await fetch("app-config.json",{cache:"no-store"}); if(r.ok) APPCFG=await r.json()||{}; }catch(e){}
+}
+function kakaoJsKey(){ return kakaoJsLocal() || APPCFG.kakaoJsKey || ""; }
+function loadKakaoSdk(key){
+  if(kkSdk) return kkSdk;
+  kkSdk=new Promise((ok,no)=>{
+    if(window.kakao&&kakao.maps&&kakao.maps.services) return ok();
+    const sc=document.createElement("script"); sc.src=`https://dapi.kakao.com/v2/maps/sdk.js?appkey=${encodeURIComponent(key)}&libraries=services&autoload=false`;
+    const tm=setTimeout(()=>no(new Error("timeout")),8000);
+    sc.onload=()=>{ try{ kakao.maps.load(()=>{ clearTimeout(tm); ok(); }); }catch(e){ clearTimeout(tm); no(e); } };
+    sc.onerror=()=>{ clearTimeout(tm); no(new Error("load")); };
+    document.head.appendChild(sc);
+  }).catch(e=>{ kkSdk=null; throw e; });
+  return kkSdk;
+}
+function kakaoSdkSearch(q,size=15){
+  return new Promise((ok,no)=>{
+    const ps=new kakao.maps.services.Places();
+    ps.keywordSearch(q,(data,status)=>{
+      if(status===kakao.maps.services.Status.OK || status===kakao.maps.services.Status.ZERO_RESULT){
+        ok((data||[]).map(d=>({src:"kakao", kid:d.id, name:d.place_name, typeKo:(d.category_name||"").split(" > ").pop()||d.category_group_name||"",
+          category:d.category_name||"", group:d.category_group_name||"", addr:d.road_address_name||d.address_name, jibun:d.address_name, road:d.road_address_name,
+          phone:d.phone||"", url:d.place_url||"", region:(d.address_name||"").split(" ").slice(0,3).join(" "), lat:+d.y, lng:+d.x})));
+      } else no({kakao:"카카오 장소검색 오류"});
+    },{size:Math.min(15,size)});
+  });
+}
+/* 카카오 연결 자동 판별: REST 키 → JavaScript 키(개인/회사 공용) → 없으면 OSM */
+async function kakaoAuto(){
+  kkMode="none"; kkInfo="";
+  if(inFrame){ kkInfo="frame"; renderKakao(); return; }
+  if(kakaoKey()){ kkMode="rest"; renderKakao(); return; }
+  const jk=kakaoJsKey();
+  if(jk && location.protocol==="https:"){
+    try{ await loadKakaoSdk(jk); kkMode="js"; }catch(e){ kkInfo="jsfail"; }
+  } else if(jk) kkInfo="needhttps";
+  renderKakao();
+}
+function kakaoReady(){ return kkMode==="rest"||kkMode==="js"; }
+async function kakaoAny(q,size=15){
+  if(kkMode==="rest") return kakaoSearch(q,kakaoKey(),size);
+  if(kkMode==="js") return kakaoSdkSearch(q,size);
+  throw {kakao:"카카오맵 미연결"};
+}
+function mapLinks(q){ const e=encodeURIComponent(q||""); return `<a class="maplink kk" href="https://map.kakao.com/?q=${e}" target="_blank" rel="noopener">카카오맵에서 검색 ↗</a><a class="maplink nv" href="https://map.naver.com/p/search/${e}" target="_blank" rel="noopener">네이버지도에서 검색 ↗</a>`; }
 function renderKakao(){
-  const k=kakaoKey(), st=$("#kakaoState"); if(!st) return;
-  st.innerHTML = k ? `<span class="pill g">카카오맵 검색 연결됨</span> <button type="button" class="btn sm ghost" id="kkEdit">키 변경</button>`
-                   : `<span class="pill w">카카오맵 미연결 · OSM 지도로 검색</span> <button type="button" class="btn sm" id="kkEdit">카카오맵 연결</button>`;
-  $("#kkEdit").onclick=()=>{ const box=$("#kakaoBox"); box.hidden=!box.hidden; if(!box.hidden){ $("#kk_key").value=kakaoKey(); $("#kk_key").focus(); } };
+  const st=$("#kakaoState"); if(!st) return;
+  const shared = kkMode==="js" && !kakaoJsLocal() && APPCFG.kakaoJsKey;
+  const why = {frame:"이 미리보기 화면에서는 외부 지도 연결이 막혀 있습니다", jsfail:"카카오 키 확인 실패(도메인 등록 확인)", needhttps:"카카오 JavaScript 키는 웹 주소(https)에서만 동작"}[kkInfo]||"";
+  st.innerHTML = kakaoReady()
+    ? `<span class="pill g">카카오맵 검색 자동 연결됨${shared?" · 회사 공용":kkMode==="rest"?" · REST 키":""}</span> <button type="button" class="btn sm ghost" id="kkEdit">연결 설정</button> <span class="hint">검색 목록 아래 ‘네이버지도에서 검색’으로 네이버지도도 바로 열립니다</span>`
+    : `<span class="pill w">카카오맵 미연결 · OSM 지도로 검색</span> <button type="button" class="btn sm" id="kkEdit">카카오맵 연결</button> <span class="hint">${why?esc(why)+" · ":""}검색 목록에서 카카오맵·네이버지도로 바로 열 수 있습니다</span>`;
+  $("#kkEdit").onclick=()=>{ const box=$("#kakaoBox"); box.hidden=!box.hidden; if(!box.hidden){ $("#kk_key").value=kakaoKey(); $("#kk_js").value=kakaoJsLocal(); $("#kk_js").focus(); } };
 }
 function siteMode(){ return state.meta.mode==="renew"?"renew":"new"; }
 function renderMode(){
@@ -1223,6 +1279,8 @@ function paintSugg(hit){
   } else {
     h=own + (sgState!=="short"?net:"");
   }
+  const qv=$("#m_client").value.trim();
+  if(qv.length>=2 && !(md==="renew"&&!qv)) h+=`<div class="sg-links">${mapLinks(qv)}</div>`;
   box.innerHTML=h; box.hidden=false;
   box.querySelectorAll("[data-sid]").forEach(b=>b.onmousedown=e=>{ e.preventDefault(); selectSite(+b.dataset.sid); });
   box.querySelectorAll("[data-oid]").forEach(b=>b.onmousedown=e=>{ e.preventDefault(); selectOnline(sgOnline[+b.dataset.oid]); });
@@ -1240,9 +1298,9 @@ async function kakaoSearch(q,key,size=15){
 }
 let sgSource="osm", sgErr="";
 async function onlineSuggest(q,hit){
-  const seq=++sgSeq, key=kakaoKey();
-  if(key){
-    try{ const res=await kakaoSearch(q,key); if(seq!==sgSeq) return; sgOnline=res; sgSource="kakao"; sgState="done"; sgErr=""; if(!$("#sugg").hidden) paintSugg(hit); return; }
+  const seq=++sgSeq;
+  if(kakaoReady()){
+    try{ const res=await kakaoAny(q); if(seq!==sgSeq) return; sgOnline=res; sgSource="kakao"; sgState="done"; sgErr=""; if(!$("#sugg").hidden) paintSugg(hit); return; }
     catch(e){ if(seq!==sgSeq) return; sgErr=e&&e.kakao?e.kakao:"카카오 검색에 연결할 수 없습니다"; }
   }
   sgSource="osm";
@@ -3065,13 +3123,17 @@ function boot(){
   $("#btnLookup").onclick=lookupOnline;
   $("#btnPick").onclick=()=>{ pickMode=!pickMode; $("#btnPick").classList.toggle("pri",pickMode); $("#lookupMsg").textContent=pickMode?"지도에서 사업장 위치를 클릭하세요.":""; };
   $("#btnFromSite").onclick=draftFromSite;
-  renderKakao();
-  $("#kk_save").onclick=async()=>{ const k=$("#kk_key").value.trim(); const msg=$("#kk_msg"); if(!k){ msg.textContent="키를 입력하세요"; return; }
+  renderKakao(); loadAppConfig().then(kakaoAuto);
+  $("#kk_save").onclick=async()=>{ const k=$("#kk_key").value.trim(), jk=$("#kk_js").value.trim(); const msg=$("#kk_msg"); if(!k&&!jk){ msg.textContent="키를 하나 이상 입력하세요"; return; }
     msg.textContent="확인 중…";
-    try{ const res=await kakaoSearch("울산시청",k,1); try{ localStorage.setItem("stec_kakao_key",k); }catch(e){}
-      msg.textContent=res.length?"연결되었습니다 ✓":"연결되었습니다 (테스트 결과 0건)"; renderKakao(); setTimeout(()=>$("#kakaoBox").hidden=true,900); }
-    catch(e){ msg.textContent=(e&&e.kakao)||(inFrame?"이 화면에서는 외부 연결이 차단됩니다. PC용 HTML 파일에서 설정하세요.":"카카오 서버에 연결할 수 없습니다."); } };
-  $("#kk_del").onclick=()=>{ try{ localStorage.removeItem("stec_kakao_key"); }catch(e){} $("#kk_key").value=""; $("#kk_msg").textContent="삭제했습니다"; renderKakao(); };
+    try{
+      if(k){ await kakaoSearch("울산시청",k,1); try{ localStorage.setItem("stec_kakao_key",k); }catch(e){} }
+      if(jk){ try{ localStorage.setItem("stec_kakao_js",jk); }catch(e){} kkSdk=null; }
+      await kakaoAuto();
+      if(!kakaoReady()) throw {kakao: location.protocol!=="https:"&&!k ? "JavaScript 키는 웹 주소(https)에서만 동작합니다. PC 파일에서는 REST 키를 넣으세요." : "카카오 키 확인에 실패했습니다 (Web 플랫폼 도메인 등록을 확인하세요)"};
+      msg.textContent="연결되었습니다 ✓"; setTimeout(()=>$("#kakaoBox").hidden=true,900); }
+    catch(e){ msg.textContent=(e&&e.kakao)||(inFrame?"이 화면에서는 외부 연결이 차단됩니다. 웹 주소나 PC용 HTML 파일에서 설정하세요.":"카카오 서버에 연결할 수 없습니다."); } };
+  $("#kk_del").onclick=()=>{ try{ localStorage.removeItem("stec_kakao_key"); localStorage.removeItem("stec_kakao_js"); }catch(e){} $("#kk_key").value=""; $("#kk_js").value=""; $("#kk_msg").textContent="삭제했습니다"; kkSdk=null; kakaoAuto(); };
   $$(".seg [data-mode]").forEach(b=>b.onclick=()=>{ state.meta.mode=b.dataset.mode; renderMode(); persistDraft(); if($("#m_client").value.trim()) suggest(); $("#m_client").focus(); });
   $("#btnNew").onclick=openRenew;
   $("#btnBlank").onclick=openNewQuote;
