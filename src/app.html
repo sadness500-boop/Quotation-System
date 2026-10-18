@@ -270,6 +270,29 @@ body:not(.is-home) .home-only{display:none!important}
 .grp-hd a.btn,.a-qr a.btn{text-decoration:none;color:inherit}
 @media (max-width:1100px){.grp-row{grid-template-columns:1fr}.kpi{grid-template-columns:1fr 1fr}}
 @media (max-width:640px){.grp-biz{grid-template-columns:1fr 1fr}.grp-gal{grid-template-columns:1fr}.grp-gal figure,.grp-gal figure.w{aspect-ratio:16/9}.stage-cap b{font-size:20px}.stage-cap{padding:40px 16px 14px}.stage-cap small{font-size:12px}.kpi b{font-size:22px}}
+/* 홈: 상단 담당자·QR, 오른쪽 사업 분야 */
+.tb-home{display:flex;gap:10px;align-items:center}
+.tbp{display:flex;align-items:center;gap:9px;padding:4px 12px 4px 4px;border-radius:12px;background:rgba(255,255,255,.1);border:1px solid rgba(255,255,255,.2);color:#fff;cursor:pointer;font:inherit;text-align:left}
+.tbp img{width:42px;height:46px;object-fit:cover;object-position:top;border-radius:8px}
+.tbp span{display:flex;flex-direction:column;line-height:1.25;font-size:11px;opacity:.85}
+.tbp b{font-size:14px;opacity:1}
+.tbq{display:flex;align-items:center;gap:9px;padding:4px 12px 4px 4px;border-radius:12px;background:rgba(255,255,255,.1);border:1px solid rgba(255,255,255,.2);color:#fff;cursor:zoom-in;font:inherit;text-align:left}
+.tbq .qb{position:relative;width:50px;height:50px;background:#fff;border-radius:7px;overflow:hidden;flex:none}
+.tbq .qb svg{width:100%;height:100%;display:block}
+.tbq .qb img{position:absolute;left:50%;top:50%;width:26%;height:26%;transform:translate(-50%,-50%);background:#fff;border-radius:3px}
+.tbq>span:not(.qb){display:flex;flex-direction:column;line-height:1.25;font-size:11px;opacity:.85}.tbq b{font-size:13px;opacity:1}
+.tbp:hover,.tbq:hover{background:rgba(255,255,255,.18)}
+.rail-biz{display:flex;flex-direction:column}
+.rail-biz h3{margin:2px 0 10px;font-size:16px}
+.rb-list{display:flex;flex-direction:column;gap:8px}
+.rb-list .biz{flex-direction:row;align-items:flex-start;gap:10px;padding:10px 12px}
+.rb-list .biz i{font-size:22px;line-height:1.2}
+.rb-list .biz b{display:block}
+.rb-list .biz{display:grid;grid-template-columns:30px 1fr;column-gap:8px}
+.rb-list .biz i{grid-row:1/3}
+@media (max-width:1280px){.tbq>span:not(.qb){display:none}}
+@media (max-width:640px){.stage-cap{position:static;padding:14px 16px 16px;background:#070a1c}}
+@media (max-width:900px){.tb-home .tbp span{display:none}}
 .qr-ov{position:fixed;inset:0;background:rgba(10,16,40,.6);z-index:200;display:grid;place-items:center;padding:20px}
 .qr-pop{background:#fff;color:#16192a;border-radius:16px;padding:24px;display:flex;flex-direction:column;align-items:center;gap:8px;max-width:360px;width:100%;text-align:center}
 .qr-pop-box{position:relative;width:min(280px,70vw);aspect-ratio:1}
@@ -540,8 +563,9 @@ aside.rail{position:sticky;top:calc(env(safe-area-inset-top,0px) + 82px);align-s
 
 <header class="topbar">
   <button type="button" class="logo-fig" id="logoHome" title="메인화면으로" aria-label="메인화면으로"><img src="__FIGLOGO__" alt="S-Tec 에스텍베스트"></button>
-  <div class="brand"><b>S-Tec Quotation System</b><span>에스텍베스트 동부지사 · v3.4</span></div>
+  <div class="brand"><b>S-Tec Quotation System</b><span>에스텍베스트 동부지사 · v3.5</span></div>
   <div class="sp"><div class="gstrip" id="gstrip" aria-hidden="true"></div></div>
+  <div class="tb-home home-only" id="tbHome"></div>
   <div class="tb-actions">
     <button class="tbtn est-only" id="btnBlank">신규 영업 견적</button>
     <button class="tbtn est-only" id="btnNew">갱신 견적</button>
@@ -584,18 +608,6 @@ aside.rail{position:sticky;top:calc(env(safe-area-inset-top,0px) + 82px);align-s
           <p class="sub">에스텍시스템은 1999년 설립 이후 국내 유수 기업의 종합안전을 담당해 온 시큐리티 업계의 선두주자입니다. 종합안전을 기본으로 시큐리티·환경위생·시설관리부터 방재, 문서보안, 보안컨설팅까지 안전 분야 전반의 인력 서비스를 제공합니다.</p></div>
           <a class="btn" href="https://www.s-tec.co.kr/main.php" target="_blank" rel="noopener">에스텍시스템 홈페이지 ↗</a></div>
         <blockquote class="vision">“시큐리티 서비스의 새로운 문화를 창조하는 <b>국내 시큐리티 업계의 선두주자</b>” <span>— 고객만족을 위한 전문성 · 우수성 · 정예인력, 그리고 ‘안전 NO.1 기업’이라는 비전</span></blockquote>
-      </div>
-
-      <div class="card">
-        <div class="sec-h"><span class="grp-k">BUSINESS</span><h2>사업 분야</h2></div>
-        <div class="grp-biz">
-          <div class="biz"><i>🛡️</i><b>시큐리티시스템</b><span>인력 경비·보안, 통합관제·SI, 방재, 보안컨설팅</span></div>
-          <div class="biz"><i>🧹</i><b>환경위생서비스</b><span>사업장·건물 미화와 위생관리</span></div>
-          <div class="biz"><i>🛠️</i><b>시설물유지관리</b><span>건물·설비의 운영과 유지보수</span></div>
-          <div class="biz"><i>🦠</i><b>새니텍 SANITECH</b><span>바이러스케어·통합해충방제, 공기청정살균기 ‘새니에어 V1’</span></div>
-          <div class="biz"><i>📄</i><b>문서보안</b><span>문서·HDD 파쇄 등 정보보안 서비스</span></div>
-          <div class="biz"><i>👥</i><b>전문 인력 서비스</b><span>안전 분야 정예인력의 파견·운영</span></div>
-        </div>
       </div>
 
       <div class="grp-row">
@@ -770,8 +782,18 @@ aside.rail{position:sticky;top:calc(env(safe-area-inset-top,0px) + 82px);align-s
   </main>
 
   <aside class="rail" aria-label="견적 요약">
-    <div class="sum person-card" id="personCard"></div>
-    <div class="sum qr-card" id="qrCard"></div>
+    <div class="sum person-card est-only" id="personCard"></div>
+    <div class="sum qr-card est-only" id="qrCard"></div>
+    <div class="sum rail-biz home-only" id="railBiz"><span class="grp-k">BUSINESS</span><h3>에스텍그룹 사업 분야</h3>
+      <div class="rb-list">
+          <div class="biz"><i>🛡️</i><b>시큐리티시스템</b><span>인력 경비·보안, 통합관제·SI, 방재, 보안컨설팅</span></div>
+          <div class="biz"><i>🧹</i><b>환경위생서비스</b><span>사업장·건물 미화와 위생관리</span></div>
+          <div class="biz"><i>🛠️</i><b>시설물유지관리</b><span>건물·설비의 운영과 유지보수</span></div>
+          <div class="biz"><i>🦠</i><b>새니텍 SANITECH</b><span>바이러스케어·통합해충방제, 공기청정살균기 ‘새니에어 V1’</span></div>
+          <div class="biz"><i>📄</i><b>문서보안</b><span>문서·HDD 파쇄 등 정보보안 서비스</span></div>
+          <div class="biz"><i>👥</i><b>전문 인력 서비스</b><span>안전 분야 정예인력의 파견·운영</span></div>
+        </div>
+      <a class="btn sm" href="https://www.s-tec.co.kr/main.php" target="_blank" rel="noopener" style="margin-top:10px;text-decoration:none;color:inherit;align-self:flex-start">에스텍시스템 홈페이지 ↗</a></div>
     <div class="sum est-only">
       <div class="lbl">월 견적금액 · VAT 별도</div>
       <div class="big" id="sumMonth">0<small> 원</small></div>
@@ -1872,7 +1894,14 @@ function renderDocs(R){
 
 /* ───────── 요약 레일 & 재계산 ───────── */
 let lastR=null;
-function renderPerson(){
+function renderTbHome(){
+  const el=$("#tbHome"); if(!el||!state) return; const S=state.set, url=appUrl();
+  el.innerHTML=`<button type="button" class="tbp" id="tbPerson" title="담당자 정보 수정"><img src="${IMG.person}" alt=""><span>견적 담당<b>${esc(S.coPerson||"담당자 미지정")}${S.coPersonTitle?` ${esc(S.coPersonTitle)}`:""}</b>${esc(S.coBranch||"")}</span></button>
+    <button type="button" class="tbq" id="tbQR" title="QR 크게 보기"><span class="qb">${qrSvg(url,3)}<img src="${IMG.cube}" alt=""></span><span>앱 다운로드 QR<b>휴대폰으로 찍기</b>누르면 크게 보기</span></button>`;
+  $("#tbPerson").onclick=()=>{ go(4); setTimeout(()=>{ const x=document.querySelector('[data-s="coPerson"]'); if(x){ x.scrollIntoView({block:"center"}); x.focus(); } },250); };
+  $("#tbQR").onclick=()=>$("#qrBig")&&$("#qrBig").click();
+}
+function renderPerson(){ renderTbHome();
   const S=state.set, el=$("#personCard"); if(!el) return;
   el.innerHTML=`<img src="${IMG.person}" alt="견적 담당자"><div class="pc-tx"><span class="lbl">견적 담당</span><b>${esc(S.coPerson||"담당자 미지정")}${S.coPersonTitle?` <small>${esc(S.coPersonTitle)}</small>`:""}</b><span>${esc(S.coBranch)}</span>${S.coPersonTel?`<span class="num">${esc(S.coPersonTel)}</span>`:""}<button type="button" class="btn sm ghost" id="pcEdit">담당자 정보 수정</button></div>`;
   $("#pcEdit").onclick=()=>{ go(4); setTimeout(()=>{ const x=document.querySelector('[data-s="coPerson"]'); if(x){ x.scrollIntoView({block:"center"}); x.focus(); } },250); };
@@ -1900,6 +1929,7 @@ function renderQR(){
   $("#qrCopy").onclick=async()=>{ try{ await navigator.clipboard.writeText(url); toast("링크를 복사했습니다"); }catch(e){ const r=document.createRange(); r.selectNodeContents($("#qrUrl")); const s=getSelection(); s.removeAllRanges(); s.addRange(r); toast("링크를 선택했습니다 · Ctrl+C로 복사하세요"); } };
   $("#qrInstall").onclick=async()=>{ if(!installEvt) return; installEvt.prompt(); try{ await installEvt.userChoice; }catch(e){} installEvt=null; $("#qrInstall").hidden=true; };
   $("#qrEdit").onclick=()=>{ $("#qrEditBox").hidden=!$("#qrEditBox").hidden; };
+  renderTbHome();
   $("#qrSave").onclick=()=>{ const v=$("#qrUrlIn").value.trim(); try{ if(v&&v!==APP_URL_DEFAULT) localStorage.setItem("stec_app_url",v); else localStorage.removeItem("stec_app_url"); }catch(e){} renderQR(); toast("QR 주소를 바꿨습니다"); };
   $("#qrBig").onclick=()=>{ const ov=document.createElement("div"); ov.className="qr-ov"; ov.innerHTML=`<div class="qr-pop"><div class="qr-pop-box">${qrSvg(url,8)}<img class="qr-logo" src="${IMG.cube}" alt=""></div><b>에스텍 용역인력 견적시스템</b><span>${esc(url)}</span><button type="button" class="btn pri">닫기</button></div>`; ov.onclick=e=>{ if(e.target===ov||e.target.tagName==="BUTTON") ov.remove(); }; document.body.appendChild(ov); };
 }
