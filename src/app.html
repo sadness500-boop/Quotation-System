@@ -215,7 +215,21 @@ textarea.inp{resize:vertical;min-height:110px;line-height:1.6}
 .eq-thumb{border:0;padding:0;background:none;cursor:zoom-in;border-radius:10px;line-height:0}.eq-thumb:hover .eq-pic{box-shadow:0 0 0 2px var(--accent)}
 .eq-namecell{display:flex;align-items:center;gap:8px}
 .eq-ov{display:flex;align-items:center;justify-content:center;padding:16px}
-.eq-pop{position:relative;display:grid;grid-template-columns:260px 1fr;gap:20px;align-items:center;background:var(--paper);color:var(--ink);border-radius:18px;padding:20px;width:min(640px,100%);box-shadow:0 24px 70px rgba(0,0,0,.4)}
+.eq-pop{position:relative;display:grid;grid-template-columns:260px 1fr;gap:20px;align-items:start;background:var(--paper);color:var(--ink);border-radius:18px;padding:20px;width:min(780px,100%);max-height:calc(100vh - 32px);overflow:auto;box-shadow:0 24px 70px rgba(0,0,0,.4)}
+.eq-stage .eq-fb{display:none}.eq-stage.noimg .eq-web{display:none}.eq-stage.noimg .eq-fb{display:inline-flex}.eq-stage.noimg .eq-note{display:none}
+.eq-web{background:#fff}.eq-web img{object-fit:contain!important}
+.eq-refs{margin-top:12px;border-top:1px solid var(--line);padding-top:10px}
+.eq-refs-h{font-size:13px;font-weight:700;margin-bottom:6px}.eq-refs-h small{font-weight:500;color:var(--muted);margin-left:4px}
+.eq-ref-list{display:flex;flex-direction:column;gap:5px;max-height:260px;overflow:auto}
+.eq-ref{display:grid;grid-template-columns:44px 1fr auto 24px;align-items:center;gap:8px;border:1px solid var(--line);border-radius:10px;padding:5px 8px;background:var(--field)}
+.eq-ref[data-ri]{cursor:pointer}.eq-ref[data-ri]:hover{border-color:var(--accent)}
+.eq-ref.on{border-color:var(--accent);box-shadow:0 0 0 2px var(--accent-soft);background:var(--paper)}
+.eq-ref.link{opacity:.92}
+.er-img{width:44px;height:34px;border-radius:6px;background:#fff;overflow:hidden;display:flex;align-items:center;justify-content:center}
+.er-img img{width:100%;height:100%;object-fit:contain}.er-img.x img{display:none}.er-img.x::after{content:"🏷️";font-size:16px}
+.er-tx{min-width:0}.er-tx b{display:block;font-size:13px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}.er-tx small{font-size:12px;color:var(--muted)}
+.er-pr{font-size:13px;font-weight:700;white-space:nowrap}.eq-ref.link .er-pr{font-weight:500;color:var(--muted)}
+.eq-ref a{text-decoration:none;font-weight:700;color:var(--accent);text-align:center}
 .eq-x{background:var(--field)!important;color:var(--ink)!important}
 .eq-stage{display:flex;flex-direction:column;align-items:center;gap:8px;padding:10px;border-radius:14px;background:linear-gradient(160deg,var(--field),var(--accent-soft))}
 .eq-note{font-size:12px;color:var(--muted);text-align:center}
@@ -357,6 +371,12 @@ body:not(.is-home) .home-only{display:none!important}
 .tbq>span:not(.qb){display:flex;flex-direction:column;line-height:1.25;font-size:12px;opacity:.85;font-weight:500}.tbq b{font-size:13px;opacity:1}
 .tbp:hover,.tbq:hover{background:rgba(255,255,255,.18)}
 .rail-biz{display:flex;flex-direction:column}
+.rb-list .biz[data-href]{cursor:pointer;transition:border-color .15s,box-shadow .15s,transform .15s}
+.rb-list .biz[data-href]:hover,.rb-list .biz[data-href]:focus-visible{border-color:var(--navy);box-shadow:0 4px 14px rgba(27,42,134,.14);transform:translateY(-1px);outline:none}
+.rb-go{font-size:12px;color:var(--navy);font-weight:700;display:inline!important}
+.rb-sub{display:flex!important;flex-wrap:wrap;gap:4px;margin-top:4px}
+.rb-sub a{font-size:12px;font-weight:600;color:var(--navy);border:1px solid var(--line);border-radius:999px;padding:1px 8px;text-decoration:none;background:var(--paper)}
+.rb-sub a:hover{background:var(--navy);color:#fff;border-color:var(--navy)}
 .rail-biz h3{margin:2px 0 10px;font-size:16px}
 .rb-list{display:flex;flex-direction:column;gap:8px}
 .rb-list .biz{flex-direction:row;align-items:flex-start;gap:10px;padding:10px 12px}
@@ -367,7 +387,7 @@ body:not(.is-home) .home-only{display:none!important}
 .rate-src{margin:0 0 10px;padding:10px 12px;border-radius:10px;background:var(--accent-soft);color:var(--ink);font-size:13px;line-height:1.5}
 .rb-links{display:flex;flex-direction:column;gap:6px;margin-top:10px}.rb-links .btn{text-decoration:none;color:inherit;justify-content:flex-start;text-align:left}
 .rb-cap{margin:-6px 0 10px;font-size:12px;color:var(--muted)}
-.rb-list .biz i{grid-row:1/5}
+.rb-list .biz i{grid-row:1/7}
 .rb-bar{display:block;height:6px;border-radius:99px;background:var(--line-2);margin-top:7px;overflow:hidden}
 .rb-bar s{display:block;height:100%;border-radius:99px;background:linear-gradient(90deg,var(--accent),var(--ok));text-decoration:none}
 .rb-list .biz small{display:block;margin-top:3px;font-size:12px;font-weight:700;color:var(--accent);font-variant-numeric:tabular-nums}
@@ -445,6 +465,21 @@ dl.kv dd{margin:0;overflow-wrap:anywhere}
 .mk.sec{background:#1b2a86}.mk.cln{background:#2b8a3e}.mk.mix{background:#7a4fc0}.mk.etc{background:#b4561b}
 .pin{width:30px;height:30px;border-radius:50% 50% 50% 0;transform:rotate(-45deg);background:#d9363e;border:3px solid #fff;box-shadow:0 3px 10px rgba(0,0,0,.35)}
 .pin.int{background:var(--green)}
+.mk.sys{width:9px;height:9px;border-radius:2px;transform:rotate(45deg);background:#d9480f}
+.brmk.sys{border-color:#d9480f;color:#b0390a}
+.grpsel{font:inherit;font-size:12.5px;font-weight:600;padding:2px 6px;border:1px solid var(--line);border-radius:6px;background:var(--paper);color:var(--ink);margin-left:6px}
+.near li small.tag{color:var(--muted)}
+.org-sum{display:flex;flex-wrap:wrap;gap:8px;margin:2px 0 12px}
+.org-sum div{background:var(--soft,rgba(27,42,134,.06));border:1px solid var(--line);border-radius:10px;padding:6px 12px;font-size:12.5px}
+.org-sum b{font-size:17px;margin-right:3px;color:var(--navy)}
+.org-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(230px,1fr));gap:10px}
+.org-col{border:1px solid var(--line);border-radius:12px;padding:10px 12px;background:var(--paper)}
+.org-col.me{border-color:var(--navy);box-shadow:0 0 0 2px rgba(27,42,134,.15)}
+.org-col h4{margin:0 0 6px;font-size:14px;color:var(--navy)}
+.org-u{margin:5px 0 0;font-size:12.5px}
+.org-u>b{display:block;font-weight:700}
+.org-u .chips{display:flex;flex-wrap:wrap;gap:4px;margin-top:3px}
+.org-u .chips span{font-size:12px;border:1px solid var(--line);border-radius:999px;padding:1px 8px;background:var(--bg)}
 .brmk{background:#fff;border:2px solid #1b2a86;border-radius:6px;font-size:12px;font-weight:700;color:#1b2a86;padding:1px 5px;white-space:nowrap;box-shadow:0 2px 6px rgba(0,0,0,.2)}
 
 /* roles */
@@ -655,7 +690,7 @@ aside.rail{position:sticky;top:calc(env(safe-area-inset-top,0px) + 82px);align-s
 <script>try{var _t=localStorage.getItem("stec_theme");if(_t==="light"||_t==="dark")document.documentElement.setAttribute("data-theme",_t)}catch(e){}</script>
 <header class="topbar">
   <button type="button" class="logo-fig" id="logoHome" title="메인화면으로" aria-label="메인화면으로"><img src="__FIGLOGO__" alt="S-Tec 에스텍 그룹"></button>
-  <div class="brand" title="에스텍 그룹 용역인력 견적시스템"><b>S-Tec Quotation System</b><span class="ver">Ver 4.9</span></div>
+  <div class="brand" title="에스텍 그룹 용역인력 견적시스템"><b>S-Tec Quotation System</b><span class="ver">Ver 5.0</span></div>
   <div class="sp"><div class="gstrip" id="gstrip" aria-hidden="true"></div></div>
   <div class="tb-home home-only" id="tbHome"></div>
   <div class="tb-actions">
@@ -771,7 +806,7 @@ aside.rail{position:sticky;top:calc(env(safe-area-inset-top,0px) + 82px);align-s
         <div class="tx">
           <span class="pill g" style="align-self:flex-start;background:rgba(255,255,255,.16);color:#fff">사업장 명칭부터 입력하세요</span>
           <h1>사업장 위치와 현황을 확인하고 바로 산출합니다</h1>
-          <p>신규 영업은 전국 사업장을 인터넷 지도에서 검색해 위치·세부현황을 확인하고, 재계약·갱신은 에스텍 그룹 사업장 DB(등록 151곳)의 현황을 그대로 불러옵니다.</p>
+          <p>신규 영업은 전국 사업장을 인터넷 지도에서 검색해 위치·세부현황을 확인하고, 관할·접근성은 에스텍시스템 사업장·본부 기준(계열사 선택 가능)으로 보여주며, 재계약·갱신은 에스텍베스트 사업장 DB(등록 151곳)의 현황을 그대로 불러옵니다.</p>
         </div>
         <img src="__TEAM__" alt="에스텍 그룹 보안·미화·주차·시설·사무 인력">
       </div>
@@ -801,10 +836,15 @@ aside.rail{position:sticky;top:calc(env(safe-area-inset-top,0px) + 82px);align-s
         <div class="mapwrap">
           <div>
             <div id="map" role="region" aria-label="사업장 지도"></div>
-            <div class="mapnote" id="mapNote">● 보안 ● 미화 ● 복합 — 에스텍 그룹 운영 사업장 · 사각 라벨은 지사/본사</div>
+            <div class="mapnote" id="mapNote">◆ 에스텍시스템 사업장 · ● 에스텍베스트 사업장(보안·미화·복합) · 사각 라벨은 본부/지사</div>
           </div>
           <div class="info" id="siteInfo"></div>
         </div>
+      </div>
+
+      <div class="card" id="orgCard">
+        <div class="h-row"><div><h2>에스텍 그룹 조직 현황</h2><p class="sub" id="orgSrc"></p></div><div class="seg" role="radiogroup" aria-label="조직 보기" id="orgSeg"><button type="button" data-org="sys">에스텍시스템</button><button type="button" data-org="aff">계열사</button></div></div>
+        <div id="orgBody"></div>
       </div>
 
       <div class="card">
@@ -911,12 +951,12 @@ aside.rail{position:sticky;top:calc(env(safe-area-inset-top,0px) + 82px);align-s
     <div class="sum person-card est-only" id="personCard"></div>
     <div class="sum qr-card est-only" id="qrCard"></div>
     <div class="sum rail-biz home-only" id="railBiz"><span class="grp-k">BUSINESS</span><h3>에스텍 그룹 사업 분야</h3>
-      <p class="rb-cap">2026년 상반기 연결 매출 5,414억 원 · 사업부문별 비중</p>
+      <p class="rb-cap">2026년 상반기 연결 매출 5,414억 원 · 사업부문별 비중 · 누르면 에스텍시스템 홈페이지 사업영역</p>
       <div class="rb-list">
-          <div class="biz"><i>🛡️</i><b>시큐리티</b><span>관공서·공장·빌딩·공동주택 경비, 개인·행사 경호, 전자보안 원격감시·SI</span><em class="rb-bar"><s style="width:60.7%"></s></em><small>3,283억 원 · 60.7%</small></div>
-          <div class="biz"><i>🛠️</i><b>인프라</b><span>시설물 유지관리(FM·PM), 미화, 방역·해충방제 — 새니텍 SANITECH</span><em class="rb-bar"><s style="width:26.3%"></s></em><small>1,422억 원 · 26.3%</small></div>
-          <div class="biz"><i>♻️</i><b>환경</b><span>문서·저장매체 파쇄(문서보안), 자원순환</span><em class="rb-bar"><s style="width:10.7%"></s></em><small>577억 원 · 10.7%</small></div>
-          <div class="biz"><i>🧯</i><b>소방</b><span>청정소화시스템 · 가스식 자동소화장치 생산 (천안 R&amp;D)</span><em class="rb-bar"><s style="width:2.4%"></s></em><small>129억 원 · 2.4%</small></div>
+          <div class="biz" data-href="https://www.s-tec.co.kr/business/business_02.php" role="link" tabindex="0" title="에스텍시스템 홈페이지 사업영역 · 시큐리티"><i>🛡️</i><b>시큐리티 <span class="rb-go">↗</span></b><span>관공서·공장·빌딩·공동주택 경비, 개인·행사 경호, 전자보안 원격감시·SI</span><em class="rb-bar"><s style="width:60.7%"></s></em><small>3,283억 원 · 60.7%</small><span class="rb-sub"><a href="https://www.s-tec.co.kr/business/business_02.php" target="_blank" rel="noopener">경비보안</a><a href="https://www.s-tec.co.kr/business/business_05.php" target="_blank" rel="noopener">SI·통합보안</a><a href="https://www.s-tec.co.kr/business/business_06.php" target="_blank" rel="noopener">토탈 아웃소싱</a></span></div>
+          <div class="biz" data-href="https://www.s-tec.co.kr/business/business_01.php" role="link" tabindex="0" title="에스텍시스템 홈페이지 사업영역 · 인프라"><i>🛠️</i><b>인프라 <span class="rb-go">↗</span></b><span>시설물 유지관리(FM·PM), 미화, 방역·해충방제 — 새니텍 SANITECH</span><em class="rb-bar"><s style="width:26.3%"></s></em><small>1,422억 원 · 26.3%</small><span class="rb-sub"><a href="https://www.s-tec.co.kr/business/business_01.php" target="_blank" rel="noopener">시설관리</a><a href="https://www.s-tec.co.kr/business/business_03.php" target="_blank" rel="noopener">미화</a><a href="https://www.s-tec.co.kr/business/business_00.php" target="_blank" rel="noopener">방역·해충방제</a></span></div>
+          <div class="biz" data-href="https://www.s-tec.co.kr/business/business_08.php" role="link" tabindex="0" title="에스텍시스템 홈페이지 사업영역 · 환경"><i>♻️</i><b>환경 <span class="rb-go">↗</span></b><span>문서·저장매체 파쇄(문서보안), 자원순환</span><em class="rb-bar"><s style="width:10.7%"></s></em><small>577억 원 · 10.7%</small><span class="rb-sub"><a href="https://www.s-tec.co.kr/business/business_08.php" target="_blank" rel="noopener">보안정보 폐기</a></span></div>
+          <div class="biz" data-href="https://www.s-tec.co.kr/business/business_07.php" role="link" tabindex="0" title="에스텍시스템 홈페이지 사업영역 · 소방"><i>🧯</i><b>소방 <span class="rb-go">↗</span></b><span>청정소화시스템 · 가스식 자동소화장치 생산 (천안 R&amp;D)</span><em class="rb-bar"><s style="width:2.4%"></s></em><small>129억 원 · 2.4%</small><span class="rb-sub"><a href="https://www.s-tec.co.kr/business/business_07.php" target="_blank" rel="noopener">소방사업</a></span></div>
         </div>
       </div>
     <div class="sum est-only">
@@ -947,6 +987,7 @@ aside.rail{position:sticky;top:calc(env(safe-area-inset-top,0px) + 82px);align-s
 "use strict";
 const IMG = /*__IMG__*/{};
 const SITEDB = /*__SITES__*/{};
+const GROUPDB = /*__GROUP__*/{};
 const ADM = /*__ADM__*/{};
 
 /* ───────── 기준 데이터 ───────── */
@@ -1019,6 +1060,12 @@ const SHIFTS = {
 /* 장비 그림·설명 — 그림은 Material Design Icons(Apache 2.0) 아이콘 */
 const EQUIP_INFO=[{k:"전기트럭",kind:"차량",d:"1톤 전기 화물차 — 유류비 대신 충전비가 들어 운행비가 낮음",p:"M18,18.5A1.5,1.5 0 0,1 16.5,17A1.5,1.5 0 0,1 18,15.5A1.5,1.5 0 0,1 19.5,17A1.5,1.5 0 0,1 18,18.5M19.5,9.5L21.46,12H17V9.5M6,18.5A1.5,1.5 0 0,1 4.5,17A1.5,1.5 0 0,1 6,15.5A1.5,1.5 0 0,1 7.5,17A1.5,1.5 0 0,1 6,18.5M20,8H17V4H3C1.89,4 1,4.89 1,6V17H3A3,3 0 0,0 6,20A3,3 0 0,0 9,17H15A3,3 0 0,0 18,20A3,3 0 0,0 21,17H23V12L20,8Z"},{k:"포터2",kind:"차량",d:"1톤 화물차 — 장비·자재 운반과 현장 순회",p:"M18 4H13V13H1V17H3C3 17.83 3.3 18.53 3.89 19.13C4.5 19.72 5.19 20 6 20S7.5 19.72 8.11 19.13C8.7 18.53 9 17.83 9 17H14.5C14.5 17.83 14.78 18.53 15.38 19.13C15.97 19.72 16.67 20 17.5 20C18.3 20 19 19.72 19.59 19.13C20.19 18.53 20.5 17.83 20.5 17H23V10L18 4M7.08 18.07C6.8 18.37 6.44 18.5 6 18.5S5.2 18.37 4.92 18.07C4.64 17.77 4.5 17.42 4.5 17C4.5 16.61 4.64 16.26 4.92 15.96C5.2 15.66 5.56 15.5 6 15.5S6.8 15.66 7.08 15.96C7.36 16.26 7.5 16.61 7.5 17C7.5 17.42 7.36 17.77 7.08 18.07M18.54 18.07C18.24 18.37 17.89 18.5 17.5 18.5C17.08 18.5 16.73 18.37 16.43 18.07S16 17.42 16 17C16 16.61 16.13 16.26 16.43 15.96C16.73 15.66 17.08 15.5 17.5 15.5C17.89 15.5 18.24 15.66 18.54 15.96C18.84 16.26 19 16.61 19 17C19 17.42 18.84 17.77 18.54 18.07M15 10V6H17.06L20.39 10H15Z"},{k:"세단",kind:"차량",d:"관리자 업무·출장용 중형 승용차",p:"M16,6L19,10H21C22.11,10 23,10.89 23,12V15H21A3,3 0 0,1 18,18A3,3 0 0,1 15,15H9A3,3 0 0,1 6,18A3,3 0 0,1 3,15H1V12C1,10.89 1.89,10 3,10L6,6H16M10.5,7.5H6.75L4.86,10H10.5V7.5M12,7.5V10H17.14L15.25,7.5H12M6,13.5A1.5,1.5 0 0,0 4.5,15A1.5,1.5 0 0,0 6,16.5A1.5,1.5 0 0,0 7.5,15A1.5,1.5 0 0,0 6,13.5M18,13.5A1.5,1.5 0 0,0 16.5,15A1.5,1.5 0 0,0 18,16.5A1.5,1.5 0 0,0 19.5,15A1.5,1.5 0 0,0 18,13.5Z"},{k:"SUV",kind:"차량",d:"순찰·현장 관리용 SUV",p:"M3,6H16L19,10H21C22.11,10 23,10.89 23,12V15H21A3,3 0 0,1 18,18A3,3 0 0,1 15,15H9A3,3 0 0,1 6,18A3,3 0 0,1 3,15H1V8C1,6.89 1.89,6 3,6M2.5,7.5V10H10.5V7.5H2.5M12,7.5V10H17.14L15.25,7.5H12M6,13.5A1.5,1.5 0 0,0 4.5,15A1.5,1.5 0 0,0 6,16.5A1.5,1.5 0 0,0 7.5,15A1.5,1.5 0 0,0 6,13.5M18,13.5A1.5,1.5 0 0,0 16.5,15A1.5,1.5 0 0,0 18,16.5A1.5,1.5 0 0,0 19.5,15A1.5,1.5 0 0,0 18,13.5Z"},{k:"픽업트럭",kind:"차량",d:"장비 적재와 현장 순찰을 겸하는 픽업트럭",p:"M16,6H10.5V10H1V15H3A3,3 0 0,0 6,18A3,3 0 0,0 9,15H15A3,3 0 0,0 18,18A3,3 0 0,0 21,15H23V12C23,10.89 22.11,10 21,10H19L16,6M12,7.5H15.5L17.46,10H12V7.5M6,13.5A1.5,1.5 0 0,1 7.5,15A1.5,1.5 0 0,1 6,16.5A1.5,1.5 0 0,1 4.5,15A1.5,1.5 0 0,1 6,13.5M18,13.5A1.5,1.5 0 0,1 19.5,15A1.5,1.5 0 0,1 18,16.5A1.5,1.5 0 0,1 16.5,15A1.5,1.5 0 0,1 18,13.5Z"},{k:"경차",kind:"차량",d:"단지 내 순찰·근거리 업무용 경차",p:"M16,6H6L1,12V15H3A3,3 0 0,0 6,18A3,3 0 0,0 9,15H15A3,3 0 0,0 18,18A3,3 0 0,0 21,15H23V12C23,10.89 22.11,10 21,10H19L16,6M6.5,7.5H10.5V10H4.5L6.5,7.5M12,7.5H15.5L17.46,10H12V7.5M6,13.5A1.5,1.5 0 0,1 7.5,15A1.5,1.5 0 0,1 6,16.5A1.5,1.5 0 0,1 4.5,15A1.5,1.5 0 0,1 6,13.5M18,13.5A1.5,1.5 0 0,1 19.5,15A1.5,1.5 0 0,1 18,16.5A1.5,1.5 0 0,1 16.5,15A1.5,1.5 0 0,1 18,13.5Z"},{k:"승합",kind:"차량",d:"근무자 출퇴근·이동용 승합차",p:"M3,7C1.89,7 1,7.89 1,9V17H3A3,3 0 0,0 6,20A3,3 0 0,0 9,17H15A3,3 0 0,0 18,20A3,3 0 0,0 21,17H23V13C23,11.89 22.11,11 21,11L18,7H3M3,8.5H7V11H3V8.5M9,8.5H13V11H9V8.5M15,8.5H17.5L19.46,11H15V8.5M6,15.5A1.5,1.5 0 0,1 7.5,17A1.5,1.5 0 0,1 6,18.5A1.5,1.5 0 0,1 4.5,17A1.5,1.5 0 0,1 6,15.5M18,15.5A1.5,1.5 0 0,1 19.5,17A1.5,1.5 0 0,1 18,18.5A1.5,1.5 0 0,1 16.5,17A1.5,1.5 0 0,1 18,15.5Z"},{k:"전동 카트",kind:"차량",d:"캠퍼스·단지 순찰용 전동 카트",p:"M19.89 12.37L18.25 5H19V3H3V7H1V9H3V12.54A6 6 0 0 0 1 17V19H3A3 3 0 0 0 9 19H15A3 3 0 0 0 21 19H23V17A5 5 0 0 0 19.89 12.37M6 20.5A1.5 1.5 0 1 1 7.5 19A1.5 1.5 0 0 1 6 20.5M15.53 12L14.38 10.28L15.8 9.33L14.7 7.67L10.2 10.67L11.3 12.33L12.73 11.38L13.88 13.12L13 14H10.2L5 7V5H16.2L17.75 12M18 20.5A1.5 1.5 0 1 1 19.5 19A1.5 1.5 0 0 1 18 20.5Z"},{k:"무전기 구입",kind:"보안",d:"근무자 연락용 디지털 무전기 구입비",p:"M9,2A1,1 0 0,0 8,3C8,8.67 8,14.33 8,20C8,21.11 8.89,22 10,22H15C16.11,22 17,21.11 17,20V9C17,7.89 16.11,7 15,7H10V3A1,1 0 0,0 9,2M10,9H15V13H10V9Z"},{k:"LTE 무전기",kind:"보안",d:"거리 제한 없는 LTE 무전기의 월 통신료",p:"M20.07,4.93C21.88,6.74 23,9.24 23,12C23,14.76 21.88,17.26 20.07,19.07L18.66,17.66C20.11,16.22 21,14.22 21,12C21,9.79 20.11,7.78 18.66,6.34L20.07,4.93M17.24,7.76C18.33,8.85 19,10.35 19,12C19,13.65 18.33,15.15 17.24,16.24L15.83,14.83C16.55,14.11 17,13.11 17,12C17,10.89 16.55,9.89 15.83,9.17L17.24,7.76M13,10A2,2 0 0,1 15,12A2,2 0 0,1 13,14A2,2 0 0,1 11,12A2,2 0 0,1 13,10M11.5,1A2.5,2.5 0 0,1 14,3.5V8H12V4H3V19H12V16H14V20.5A2.5,2.5 0 0,1 11.5,23H3.5A2.5,2.5 0 0,1 1,20.5V3.5A2.5,2.5 0 0,1 3.5,1H11.5Z"},{k:"휴대폰 통신료",kind:"기타",d:"현장 대표번호용 업무 휴대폰 요금",p:"M17,19H7V5H17M17,1H7C5.89,1 5,1.89 5,3V21A2,2 0 0,0 7,23H17A2,2 0 0,0 19,21V3C19,1.89 18.1,1 17,1Z"},{k:"순찰관리 시스템",kind:"보안",d:"QR·NFC 순찰 기록·보고 시스템 이용료",p:"M21.41 11.58L12.41 2.58A2 2 0 0 0 11 2H4A2 2 0 0 0 2 4V11A2 2 0 0 0 2.59 12.42L11.59 21.42A2 2 0 0 0 13 22A2 2 0 0 0 14.41 21.41L21.41 14.41A2 2 0 0 0 22 13A2 2 0 0 0 21.41 11.58M13 20L4 11V4H11L20 13M6.5 5A1.5 1.5 0 1 1 5 6.5A1.5 1.5 0 0 1 6.5 5Z"},{k:"CCTV",kind:"보안",d:"CCTV 저장장치·모니터 유지보수비",p:"M6.03 12.03L8.03 15.5L5.5 18.68L2 12.62L6.03 12.03M17 18V15.29C17.88 14.9 18.5 14.03 18.5 13C18.5 12.43 18.3 11.9 17.97 11.5L19.94 10.35C20.95 9.76 21.3 8.47 20.71 7.46L19.33 5.06C18.74 4.05 17.45 3.7 16.44 4.28L8.31 9C7.36 9.53 7.03 10.75 7.58 11.71L9.08 14.31C9.63 15.26 10.86 15.59 11.81 15.04L13.69 13.96C13.94 14.55 14.41 15.03 15 15.29V18C15 19.1 15.9 20 17 20H22V18H17Z"},{k:"안전보호구",kind:"공통",d:"안전화·안전모·장갑 등 인당 보호구",p:"M9.87,12.15L9,6.46C10.95,5.84 13.05,5.84 15,6.46L14.13,12.15C14.06,12.64 13.63,13 13.13,13H10.86C10.37,13 9.94,12.64 9.87,12.15M22,16V16C22,15.21 21.53,14.5 20.8,14.17C20.32,11.86 18.96,9.83 17,8.5L15.24,13.34C15.1,13.74 14.72,14 14.3,14H9.7C9.28,14 8.9,13.74 8.76,13.34L7,8.5C5.04,9.83 3.68,11.86 3.2,14.16C2.47,14.5 2,15.2 2,16L8.45,17.84C8.81,17.94 9.18,18 9.55,18H14.43C14.8,18 15.17,17.94 15.53,17.84L22,16Z"},{k:"방한복",kind:"공통",d:"겨울 방한복과 우의 — 인당 지급",p:"M12 4A3.5 3.5 0 0 0 8.5 7.5H10.5A1.5 1.5 0 0 1 12 6A1.5 1.5 0 0 1 13.5 7.5A1.5 1.5 0 0 1 12 9C11.45 9 11 9.45 11 10V11.75L2.4 18.2A1 1 0 0 0 3 20H21A1 1 0 0 0 21.6 18.2L13 11.75V10.85A3.5 3.5 0 0 0 15.5 7.5A3.5 3.5 0 0 0 12 4M12 13.5L18 18H6Z"},{k:"경광봉·신호기",kind:"보안",d:"차량 유도용 경광봉·신호기·안전조끼",p:"M17 15L18 19H21V22H3V19H6L7 15H17M15 8L16 12H8L9 8H15M13 1L14 5H10L11 1H13Z"},{k:"구급함",kind:"공통",d:"현장 구급함과 상비약 보충",p:"M10,3L8,5V7H5C3.85,7 3.12,8 3,9L2,19C1.88,20 2.54,21 4,21H20C21.46,21 22.12,20 22,19L21,9C20.88,8 20.06,7 19,7H16V5L14,3H10M10,5H14V7H10V5M11,10H13V13H16V15H13V18H11V15H8V13H11V10Z"},{k:"단체상해보험",kind:"기타",d:"산재 외 보장을 위한 근로자 단체상해보험",p:"M10,17L6,13L7.41,11.59L10,14.17L16.59,7.58L18,9M12,1L3,5V11C3,16.55 6.84,21.74 12,23C17.16,21.74 21,16.55 21,11V5L12,1Z"},{k:"영업배상책임보험",kind:"기타",d:"현장 사고 시 대인·대물 배상 보험 분담금",p:"M10,17L6,13L7.41,11.59L10,14.17L16.59,7.58L18,9M12,1L3,5V11C3,16.55 6.84,21.74 12,23C17.16,21.74 21,16.55 21,11V5L12,1Z"},{k:"계약이행보증보험",kind:"기타",d:"계약금액 10% 이행보증보험 보증료",p:"M14 2H7A2 2 0 0 0 5 4V18A2 2 0 0 0 7 20H10V23L12 22L14 23V20H17A2 2 0 0 0 19 18V7M14 15V17L12 16L10 17V15L8 14L10 13V11L12 12L14 11V13L16 14M13 8V3.5L17.5 8Z"},{k:"청소 소모품",kind:"미화",d:"세제·걸레·봉투 등 인당 청소 소모품",p:"M16.72 10.43C14.68 8.39 14.5 4.66 14.5 4H13V6H9V4H7C7 2.9 7.9 2 9 2H16V3C16 3.08 16.04 7.63 17.78 9.37L16.72 10.43M17 2V4H18V2H17M15 12C13 10 13 7 13 7H9V9C9 10 9 10 8 11S7 13 7 13V20C7 21.1 7.9 22 9 22H13C14.1 22 15 21.1 15 20V12Z"},{k:"위생소모품",kind:"미화",d:"화장지·핸드타올·비누 등 위생용품",p:"M9 3C5.69 3 3.14 5.69 3 9V21H12V13.46C13.1 14.45 14.5 15 16 15C19.31 15 22 12.31 22 9C22 5.69 19.31 3 16 3H9M16 5C18.21 5 20 6.79 20 9C20 11.21 18.21 13 16 13C13.79 13 12 11.21 12 9C12 6.79 13.79 5 16 5M16 7.25C15.03 7.25 14.25 8.03 14.25 9C14.25 9.97 15.03 10.75 16 10.75C16.97 10.75 17.75 9.97 17.75 9C17.75 8.03 16.97 7.25 16 7.25M4 12H5V13H4V12M6 12H7V13H6V12M8 12H9V13H8V12M10 12H11V13H10V12Z"},{k:"쓰레기봉투",kind:"미화",d:"종량제·대형 쓰레기봉투",p:"M9,3V4H4V6H5V19A2,2 0 0,0 7,21H17A2,2 0 0,0 19,19V6H20V4H15V3H9M9,8H11V17H9V8M13,8H15V17H13V8Z"},{k:"바닥 왁스",kind:"미화",d:"바닥 왁스·박리 작업 재료(연 2회 기준)",p:"M10.6 9.6L9 15L7.4 9.6L2 8L7.4 6.4L9 1L10.6 6.4L16 8L10.6 9.6M17 14.2L21 12L18.8 16L21 20L17 17.8L13 20L15.2 16L13 12L17 14.2M10 16L8.3 19L10 22L7 20.3L4 22L5.7 19L4 16L7 17.7L10 16"},{k:"외벽·유리창",kind:"미화",d:"외벽·유리창 고소 청소 외주비",p:"M21 20V2H3V20H1V23H23V20M19 4V11H13V4M5 4H11V11H5M5 20V13H11V20M13 20V13H19V20Z"},{k:"방역·소독",kind:"미화",d:"해충 방역·소독 외주비",p:"M20,8H17.19C16.74,7.2 16.12,6.5 15.37,6L17,4.41L15.59,3L13.42,5.17C12.96,5.06 12.5,5 12,5C11.5,5 11.05,5.06 10.59,5.17L8.41,3L7,4.41L8.62,6C7.87,6.5 7.26,7.21 6.81,8H4V10H6.09C6.03,10.33 6,10.66 6,11V12H4V14H6V15C6,15.34 6.03,15.67 6.09,16H4V18H6.81C8.47,20.87 12.14,21.84 15,20.18C15.91,19.66 16.67,18.9 17.19,18H20V16H17.91C17.97,15.67 18,15.34 18,15V14H20V12H18V11C18,10.66 17.97,10.33 17.91,10H20V8M16,15A4,4 0 0,1 12,19A4,4 0 0,1 8,15V11A4,4 0 0,1 12,7A4,4 0 0,1 16,11V15M14,10V12H10V10H14M10,14H14V16H10V14Z"},{k:"저수조",kind:"미화",d:"수도법에 따른 저수조 청소(연 2회)",p:"M19,14.5C19,14.5 21,16.67 21,18A2,2 0 0,1 19,20A2,2 0 0,1 17,18C17,16.67 19,14.5 19,14.5M5,18V9A2,2 0 0,1 3,7A2,2 0 0,1 5,5V4A2,2 0 0,1 7,2H9A2,2 0 0,1 11,4V5H19A2,2 0 0,1 21,7V9L21,11A1,1 0 0,1 22,12A1,1 0 0,1 21,13H17A1,1 0 0,1 16,12A1,1 0 0,1 17,11V9H11V18H12A2,2 0 0,1 14,20V22H2V20A2,2 0 0,1 4,18H5Z"},{k:"정화조",kind:"미화",d:"하수도법에 따른 정화조 청소(연 1회)",p:"M9,22H17V19.5C19.41,17.87 21,15.12 21,12V4A2,2 0 0,0 19,2H15C13.89,2 13,2.9 13,4V12H3C3,15.09 5,18 9,19.5V22M5.29,14H18.71C18.14,15.91 16.77,17.5 15,18.33V20H11V18.33C9,18 5.86,15.91 5.29,14M15,4H19V12H15V4M16,5V8H18V5H16Z"},{k:"주차권",kind:"공통",d:"주차권·영수증 용지",p:"M4,4A2,2 0 0,0 2,6V10A2,2 0 0,1 4,12A2,2 0 0,1 2,14V18A2,2 0 0,0 4,20H20A2,2 0 0,0 22,18V14A2,2 0 0,1 20,12A2,2 0 0,1 22,10V6A2,2 0 0,0 20,4H4M4,6H20V8.54C18.76,9.25 18,10.57 18,12C18,13.43 18.76,14.75 20,15.46V18H4V15.46C5.24,14.75 6,13.43 6,12C6,10.57 5.24,9.25 4,8.54V6Z"},{k:"라바콘",kind:"공통",d:"라바콘·안내표지·차단봉",p:"M17 15L18 19H21V22H3V19H6L7 15H17M15 8L16 12H8L9 8H15M13 1L14 5H10L11 1H13Z"},{k:"주차관제",kind:"공통",d:"주차관제(차단기) 시스템 유지보수",p:"M20,9H8.22C7.11,7.77 5.21,7.68 4,8.8C3.36,9.36 3,10.16 3,11V20A1,1 0 0,0 2,21V22H10V21A1,1 0 0,0 9,20V13H20A2,2 0 0,0 22,11A2,2 0 0,0 20,9M6,12.5A1.5,1.5 0 0,1 4.5,11A1.5,1.5 0 0,1 6,9.5A1.5,1.5 0 0,1 7.5,11A1.5,1.5 0 0,1 6,12.5M10.5,12L9,10H10.5L12,12H10.5M14.5,12L13,10H14.5L16,12H14.5M18.5,12L17,10H18.5L20,12H18.5Z"},{k:"공구·계측기",kind:"공통",d:"시설관리 공구·계측기 소모품",p:"M21.71 20.29L20.29 21.71A1 1 0 0 1 18.88 21.71L7 9.85A3.81 3.81 0 0 1 6 10A4 4 0 0 1 2.22 4.7L4.76 7.24L5.29 6.71L6.71 5.29L7.24 4.76L4.7 2.22A4 4 0 0 1 10 6A3.81 3.81 0 0 1 9.85 7L21.71 18.88A1 1 0 0 1 21.71 20.29M2.29 18.88A1 1 0 0 0 2.29 20.29L3.71 21.71A1 1 0 0 0 5.12 21.71L10.59 16.25L7.76 13.42M20 2L16 4V6L13.83 8.17L15.83 10.17L18 8H20L22 4Z"},{k:"시설 점검 자재",kind:"공통",d:"전구·필터 등 시설 점검 자재",p:"M12,2A7,7 0 0,0 5,9C5,11.38 6.19,13.47 8,14.74V17A1,1 0 0,0 9,18H15A1,1 0 0,0 16,17V14.74C17.81,13.47 19,11.38 19,9A7,7 0 0,0 12,2M9,21A1,1 0 0,0 10,22H14A1,1 0 0,0 15,21V20H9V21Z"},{k:"신임교육",kind:"기타",d:"일반경비원 신임교육(24시간) 비용",p:"M12,3L1,9L12,15L21,10.09V17H23V9M5,13.18V17.18L12,21L19,17.18V13.18L12,17L5,13.18Z"},{k:"채용 공고",kind:"기타",d:"채용 공고·배치 비용",p:"M15,14C12.33,14 7,15.33 7,18V20H23V18C23,15.33 17.67,14 15,14M6,10V7H4V10H1V12H4V15H6V12H9V10M15,12A4,4 0 0,0 19,8A4,4 0 0,0 15,4A4,4 0 0,0 11,8A4,4 0 0,0 15,12Z"},{k:"정수기",kind:"기타",d:"근무자 휴게실 정수기 렌탈",p:"M18.32,8H5.67L5.23,4H18.77M12,19A3,3 0 0,1 9,16C9,14 12,10.6 12,10.6C12,10.6 15,14 15,16A3,3 0 0,1 12,19M3,2L5,20.23C5.13,21.23 5.97,22 7,22H17C18,22 18.87,21.23 19,20.23L21,2H3Z"},{k:"휴게실 비품",kind:"기타",d:"휴게실 비품·사무용품",p:"M10,2H14A2,2 0 0,1 16,4V6H20A2,2 0 0,1 22,8V19A2,2 0 0,1 20,21H4C2.89,21 2,20.1 2,19V8C2,6.89 2.89,6 4,6H8V4C8,2.89 8.89,2 10,2M14,6V4H10V6H14Z"},{k:"간식",kind:"기타",d:"근무자 간식·음료 — 인당",p:"M2,21H20V19H2M20,8H18V5H20M20,3H4V13A4,4 0 0,0 8,17H14A4,4 0 0,0 18,13V10H20A2,2 0 0,0 22,8V5C22,3.89 21.1,3 20,3Z"},{k:"통행료",kind:"차량",d:"업무차량 통행료·하이패스",p:"M10,2L8,8H11V2H10M13,2V8H16L14,2H13M2,9V10H4V11H6V10H18L18.06,11H20V10H22V9H2M7,11L3.34,22H11V11H7M13,11V22H20.66L17,11H13Z"},{k:"GPS 관제",kind:"차량",d:"업무차량 GPS 관제 이용료",p:"M12,2C15.31,2 18,4.66 18,7.95C18,12.41 12,19 12,19C12,19 6,12.41 6,7.95C6,4.66 8.69,2 12,2M12,6A2,2 0 0,0 10,8A2,2 0 0,0 12,10A2,2 0 0,0 14,8A2,2 0 0,0 12,6M20,19C20,21.21 16.42,23 12,23C7.58,23 4,21.21 4,19C4,17.71 5.22,16.56 7.11,15.83L7.75,16.74C6.67,17.19 6,17.81 6,18.5C6,19.88 8.69,21 12,21C15.31,21 18,19.88 18,18.5C18,17.81 17.33,17.19 16.25,16.74L16.89,15.83C18.78,16.56 20,17.71 20,19Z"},{k:"차량 주차비",kind:"차량",d:"업무차량 주차비",p:"M13.2,11H10V7H13.2A2,2 0 0,1 15.2,9A2,2 0 0,1 13.2,11M13,3H6V21H10V15H13A6,6 0 0,0 19,9C19,5.68 16.31,3 13,3Z"},{k:"탑승식청소차",kind:"미화",d:"넓은 주차장·공장 바닥을 타고 다니며 세척·흡입하는 승용식 바닥청소 장비",p:"M5,4V11.26C3.2,11.9 2,13.6 2,15.5C2,18 4,20 6.5,20C8.79,20 10.71,18.28 10.97,16H15.17C15.06,16.32 15,16.66 15,17A3,3 0 0,0 18,20A3,3 0 0,0 21,17C21,16.66 20.94,16.32 20.82,16H22V13C22,11.89 21.11,11 20,11H15.04L13.65,4H5M7,6H12L13,11V14H10.74C10.16,12.38 8.71,11.23 7,11.03V6M6.5,13.25A2.25,2.25 0 0,1 8.75,15.5A2.25,2.25 0 0,1 6.5,17.75A2.25,2.25 0 0,1 4.25,15.5A2.25,2.25 0 0,1 6.5,13.25M18,15.5A1.5,1.5 0 0,1 19.5,17A1.5,1.5 0 0,1 18,18.5A1.5,1.5 0 0,1 16.5,17A1.5,1.5 0 0,1 18,15.5Z"},{k:"보행식청소차",kind:"미화",d:"작업자가 밀고 다니며 물세척·흡입을 동시에 하는 보행식 바닥 스크러버",p:"M12,2C14.65,2 17.19,3.06 19.07,4.93L17.65,6.35C16.15,4.85 14.12,4 12,4C9.88,4 7.84,4.84 6.35,6.35L4.93,4.93C6.81,3.06 9.35,2 12,2M3.66,6.5L5.11,7.94C4.39,9.17 4,10.57 4,12A8,8 0 0,0 12,20A8,8 0 0,0 20,12C20,10.57 19.61,9.17 18.88,7.94L20.34,6.5C21.42,8.12 22,10.04 22,12A10,10 0 0,1 12,22A10,10 0 0,1 2,12C2,10.04 2.58,8.12 3.66,6.5M12,6A6,6 0 0,1 18,12C18,13.59 17.37,15.12 16.24,16.24L14.83,14.83C14.08,15.58 13.06,16 12,16C10.94,16 9.92,15.58 9.17,14.83L7.76,16.24C6.63,15.12 6,13.59 6,12A6,6 0 0,1 12,6M12,8A1,1 0 0,0 11,9A1,1 0 0,0 12,10A1,1 0 0,0 13,9A1,1 0 0,0 12,8Z"},{k:"고압분사기",kind:"미화",d:"외벽·주차장·차량 진입로의 찌든 때를 고압수로 제거",p:"M19,14.5C19,14.5 21,16.67 21,18A2,2 0 0,1 19,20A2,2 0 0,1 17,18C17,16.67 19,14.5 19,14.5M5,18V9A2,2 0 0,1 3,7A2,2 0 0,1 5,5V4A2,2 0 0,1 7,2H9A2,2 0 0,1 11,4V5H19A2,2 0 0,1 21,7V9L21,11A1,1 0 0,1 22,12A1,1 0 0,1 21,13H17A1,1 0 0,1 16,12A1,1 0 0,1 17,11V9H11V18H12A2,2 0 0,1 14,20V22H2V20A2,2 0 0,1 4,18H5Z"},{k:"왁스머신기",kind:"미화",d:"바닥 왁스 작업·광택(버니싱)용 회전 패드 장비",p:"M10.6 9.6L9 15L7.4 9.6L2 8L7.4 6.4L9 1L10.6 6.4L16 8L10.6 9.6M17 14.2L21 12L18.8 16L21 20L17 17.8L13 20L15.2 16L13 12L17 14.2M10 16L8.3 19L10 22L7 20.3L4 22L5.7 19L4 16L7 17.7L10 16"},{k:"진공청소기",kind:"미화",d:"사무실·복도 카펫과 바닥의 먼지 흡입용 업소용 청소기",p:"M23 20V22H16L16 20H18.46L12 4.61C11.81 4.14 11.5 3.76 11.06 3.46S10.14 3 9.61 3C8.9 3 8.28 3.27 7.76 3.79S7 4.92 7 5.64L7 9H8C10.21 9 12 10.79 12 13V22H8C8.61 21.16 9 20.13 9 19C9 16.24 6.76 14 4 14C3.29 14 2.61 14.15 2 14.42V9H5V5.64C5 4.8 5.23 4 5.63 3.32C6.04 2.62 6.59 2.06 7.3 1.63C8 1.21 8.77 1 9.61 1C10.55 1 11.4 1.26 12.16 1.77S13.5 2.97 13.87 3.81L20.66 20H23M7 19C7 20.66 5.66 22 4 22S1 20.66 1 19 2.34 16 4 16 7 17.34 7 19M5 19C5 18.45 4.55 18 4 18S3 18.45 3 19 3.45 20 4 20 5 19.55 5 19Z"},{k:"습식청소기",kind:"미화",d:"물기·오수까지 빨아들이는 건습식 겸용 청소기",p:"M3 4H21V7H20L17.5 21H6.5L4 7H3V4Z"},{k:"송풍기",kind:"미화",d:"낙엽·먼지를 바람으로 모으는 블로어",p:"M4,10A1,1 0 0,1 3,9A1,1 0 0,1 4,8H12A2,2 0 0,0 14,6A2,2 0 0,0 12,4C11.45,4 10.95,4.22 10.59,4.59C10.2,5 9.56,5 9.17,4.59C8.78,4.2 8.78,3.56 9.17,3.17C9.9,2.45 10.9,2 12,2A4,4 0 0,1 16,6A4,4 0 0,1 12,10H4M19,12A1,1 0 0,0 20,11A1,1 0 0,0 19,10C18.72,10 18.47,10.11 18.29,10.29C17.9,10.68 17.27,10.68 16.88,10.29C16.5,9.9 16.5,9.27 16.88,8.88C17.42,8.34 18.17,8 19,8A3,3 0 0,1 22,11A3,3 0 0,1 19,14H5A1,1 0 0,1 4,13A1,1 0 0,1 5,12H19M18,18H4A1,1 0 0,1 3,17A1,1 0 0,1 4,16H18A3,3 0 0,1 21,19A3,3 0 0,1 18,22C17.17,22 16.42,21.66 15.88,21.12C15.5,20.73 15.5,20.1 15.88,19.71C16.27,19.32 16.9,19.32 17.29,19.71C17.47,19.89 17.72,20 18,20A1,1 0 0,0 19,19A1,1 0 0,0 18,18Z"},{k:"무전기",kind:"보안",d:"근무자 간 즉시 연락용 휴대 무전기",p:"M9,2A1,1 0 0,0 8,3C8,8.67 8,14.33 8,20C8,21.11 8.89,22 10,22H15C16.11,22 17,21.11 17,20V9C17,7.89 16.11,7 15,7H10V3A1,1 0 0,0 9,2M10,9H15V13H10V9Z"},{k:"순찰시스템",kind:"보안",d:"순찰 지점 태그를 찍어 순찰 기록을 남기는 시스템",p:"M21.41 11.58L12.41 2.58A2 2 0 0 0 11 2H4A2 2 0 0 0 2 4V11A2 2 0 0 0 2.59 12.42L11.59 21.42A2 2 0 0 0 13 22A2 2 0 0 0 14.41 21.41L21.41 14.41A2 2 0 0 0 22 13A2 2 0 0 0 21.41 11.58M13 20L4 11V4H11L20 13M6.5 5A1.5 1.5 0 1 1 5 6.5A1.5 1.5 0 0 1 6.5 5Z"},{k:"주차 유도봉",kind:"보안",d:"주차 유도·차량 통제용 유도봉·라바콘 등 안전용품",p:"M17 15L18 19H21V22H3V19H6L7 15H17M15 8L16 12H8L9 8H15M13 1L14 5H10L11 1H13Z"},{k:"예초기",kind:"공통",d:"조경·풀베기 작업용 예초기",p:"M12 20H2V18H7.75C7 15.19 4.81 13 2 12.26C2.64 12.1 3.31 12 4 12C8.42 12 12 15.58 12 20M22 12.26C21.36 12.1 20.69 12 20 12C17.07 12 14.5 13.58 13.12 15.93C13.41 16.59 13.65 17.28 13.79 18C13.92 18.65 14 19.32 14 20H22V18H16.24C17 15.19 19.19 13 22 12.26M15.64 11C16.42 8.93 17.87 7.18 19.73 6C15.44 6.16 12 9.67 12 14V14C12.95 12.75 14.2 11.72 15.64 11M11.42 8.85C10.58 6.66 8.88 4.89 6.7 4C8.14 5.86 9 8.18 9 10.71C9 10.92 8.97 11.12 8.96 11.32C9.39 11.56 9.79 11.84 10.18 12.14C10.39 10.96 10.83 9.85 11.42 8.85Z"},{k:"스팀청소기",kind:"미화",d:"고온 스팀으로 화장실·주방 기름때와 세균 제거",p:"M19 11L16 8L13.9 10.1C12.58 9.38 11.05 9 9.5 9C7.65 9 5.95 9.53 4.55 10.41C4.19 9.97 4 9.5 4 9C4 7.21 6.46 5.75 9.5 5.75C10.93 5.75 12.3 6.08 13.33 6.67L15.35 4.65C13.77 3.59 11.68 3 9.5 3C4.81 3 1 5.69 1 9C1 10.19 1.5 11.34 2.44 12.33C1.53 13.5 1 14.96 1 16.5V20C1 21.11 1.89 22 3 22H16C17.11 22 18 21.11 18 20V16.5C18 15.28 17.66 14.07 17 13L19 11M5 17.5V20H3V17.5C3 13.91 5.91 11 9.5 11C9.84 11 10.17 11.04 10.5 11.09C7.39 11.57 5 14.25 5 17.5M23 7.3C23 8.93 21.91 10.6 20.38 10.97L19.71 10.29L19 9.6H19.75C20.75 9.6 21.5 8.22 21.5 7.2C21.5 6.18 20.65 5.14 19.65 5.14V3.64C21.5 3.64 23 5.45 23 7.3M17.65 6.73C17.03 6.12 16.65 5.28 16.65 4.35C16.65 2.5 18.15 1 20 1V2.5C19 2.5 18.15 3.33 18.15 4.35C18.15 5.37 19 6.2 20 6.2V7.7C19.18 7.7 18.42 7.95 17.79 8.38L16.72 7.31C17 7.09 17.32 6.89 17.65 6.73Z"},{k:"카펫 세척기",kind:"미화",d:"카펫 깊은 곳까지 세제 분사·흡입하는 세척기",p:"M12 14C10.9 14 10 13.11 10 12S10.9 10 12 10 14 10.9 14 12 13.11 14 12 14M23 19H1V17H4V15H1V13H4V11H1V9H4V7H1V5H23V7H20V9H23V11H20V13H23V15H20V17H23V19M12 15.92C12.62 16.62 13.66 16.81 14.5 16.33C15.34 15.85 15.69 14.84 15.4 13.96C16.31 13.78 17 12.97 17 12S16.31 10.22 15.4 10.04C15.69 9.16 15.34 8.15 14.5 7.67C13.66 7.19 12.62 7.38 12 8.08C11.38 7.38 10.34 7.19 9.5 7.67C8.66 8.15 8.31 9.16 8.61 10.04C7.69 10.22 7 11.03 7 12S7.69 13.78 8.61 13.96C8.31 14.84 8.66 15.85 9.5 16.33C10.34 16.82 11.38 16.62 12 15.92Z"},{k:"유리창 청소",kind:"미화",d:"스퀴지·봉·세제 등 유리창 청소 도구 세트",p:"M13,6C13,5.7 13.1,4.6 13.8,3.8L12,2.4L10.2,3.9C10.9,4.6 11,5.7 11,6C4.7,6.4 2,11 2,11L9,18C9,18 9.7,16.7 11,16.2V18.3C10.4,18.6 10,19.3 10,20A2,2 0 0,0 12,22A2,2 0 0,0 14,20C14,19.3 13.6,18.6 13,18.3V16.2C14.3,16.7 15,18 15,18L22,11C22,11 19.3,6.5 13,6M11,14.1C10.2,14.3 9.5,14.6 8.9,15.1L4.7,10.9C5.8,9.8 7.8,8.3 11,8.1V14.1M15.1,15.1C14.5,14.7 13.8,14.3 13,14.1V8.1C16.2,8.4 18.2,9.8 19.3,10.9L15.1,15.1M18,1.3L17.3,3.2C16.6,2.9 15.5,2.9 14.7,3.2L14,1.3C15.2,0.9 16.8,0.9 18,1.3M21,6H19C19,6 19,4.7 18.2,3.9L19.7,2.6C21,4 21,5.9 21,6M4.2,2.6L5.7,3.9C5,4.7 5,6 5,6H3C3,5.9 3,4 4.2,2.6M10,1.3L9.3,3.2C8.6,2.9 7.5,2.9 6.7,3.2L6,1.3C7.2,0.9 8.8,0.9 10,1.3Z"},{k:"사다리",kind:"공통",d:"고소 작업용 A형 사다리",p:"M14 1V3H10V1H8V22H10V20H14V22H16V1H14M14 5V8H10V5H14M14 10V13H10V10H14M10 18V15H14V18H10Z"},{k:"제설기",kind:"공통",d:"출입로·주차장 눈을 치우는 소형 제설기",p:"M4,16.36C3.86,15.82 4.18,15.25 4.73,15.11L7,14.5L5.33,12.86C4.93,12.46 4.93,11.81 5.33,11.4C5.73,11 6.4,11 6.79,11.4L8.45,13.05L9.04,10.8C9.18,10.24 9.75,9.92 10.29,10.07C10.85,10.21 11.17,10.78 11,11.33L10.42,13.58L12.67,13C13.22,12.83 13.79,13.15 13.93,13.71C14.08,14.25 13.76,14.82 13.2,14.96L10.95,15.55L12.6,17.21C13,17.6 13,18.27 12.6,18.67C12.2,19.07 11.54,19.07 11.15,18.67L9.5,17L8.89,19.27C8.75,19.83 8.18,20.14 7.64,20C7.08,19.86 6.77,19.29 6.91,18.74L7.5,16.5L5.26,17.09C4.71,17.23 4.14,16.92 4,16.36M1,10A5,5 0 0,1 6,5C7,2.65 9.3,1 12,1C15.43,1 18.24,3.66 18.5,7.03L19,7A4,4 0 0,1 23,11A4,4 0 0,1 19,15A1,1 0 0,1 18,14A1,1 0 0,1 19,13A2,2 0 0,0 21,11A2,2 0 0,0 19,9H17V8A5,5 0 0,0 12,3C9.5,3 7.45,4.82 7.06,7.19C6.73,7.07 6.37,7 6,7A3,3 0 0,0 3,10C3,10.85 3.35,11.61 3.91,12.16C4.27,12.55 4.26,13.16 3.88,13.54C3.5,13.93 2.85,13.93 2.47,13.54C1.56,12.63 1,11.38 1,10M14.03,20.43C14.13,20.82 14.5,21.04 14.91,20.94L16.5,20.5L16.06,22.09C15.96,22.5 16.18,22.87 16.57,22.97C16.95,23.08 17.35,22.85 17.45,22.46L17.86,20.89L19.03,22.05C19.3,22.33 19.77,22.33 20.05,22.05C20.33,21.77 20.33,21.3 20.05,21.03L18.89,19.86L20.46,19.45C20.85,19.35 21.08,18.95 20.97,18.57C20.87,18.18 20.5,17.96 20.09,18.06L18.5,18.5L18.94,16.91C19.04,16.5 18.82,16.13 18.43,16.03C18.05,15.92 17.65,16.15 17.55,16.54L17.14,18.11L15.97,16.95C15.7,16.67 15.23,16.67 14.95,16.95C14.67,17.24 14.67,17.7 14.95,17.97L16.11,19.14L14.54,19.55C14.15,19.65 13.92,20.05 14.03,20.43Z"},{k:"낙엽청소기",kind:"미화",d:"낙엽을 흡입·분쇄하는 전동 낙엽청소기",p:"M17,8C8,10 5.9,16.17 3.82,21.34L5.71,22L6.66,19.7C7.14,19.87 7.64,20 8,20C19,20 22,3 22,3C21,5 14,5.25 9,6.25C4,7.25 2,11.5 2,13.5C2,15.5 3.75,17.25 3.75,17.25C7,8 17,8 17,8Z"},{k:"금속탐지기",kind:"보안",d:"출입자 소지품 검색용 봉형 금속탐지기",p:"M12,8A4,4 0 0,1 16,12A4,4 0 0,1 12,16A4,4 0 0,1 8,12A4,4 0 0,1 12,8M3.05,13H1V11H3.05C3.5,6.83 6.83,3.5 11,3.05V1H13V3.05C17.17,3.5 20.5,6.83 20.95,11H23V13H20.95C20.5,17.17 17.17,20.5 13,20.95V23H11V20.95C6.83,20.5 3.5,17.17 3.05,13M12,5A7,7 0 0,0 5,12A7,7 0 0,0 12,19A7,7 0 0,0 19,12A7,7 0 0,0 12,5Z"},{k:"바디캠",kind:"보안",d:"근무 중 상황을 영상으로 기록하는 몸에 다는 카메라",p:"M20,5H15A2,2 0 0,0 13,7V12A2,2 0 0,0 15,14H20A2,2 0 0,0 22,12V7A2,2 0 0,0 20,5M17.5,12.5A3,3 0 0,1 14.5,9.5A3,3 0 0,1 17.5,6.5A3,3 0 0,1 20.5,9.5A3,3 0 0,1 17.5,12.5M17.5,11A1.5,1.5 0 0,1 16,9.5A1.5,1.5 0 0,1 17.5,8A1.5,1.5 0 0,1 19,9.5A1.5,1.5 0 0,1 17.5,11M12,15V5H4A2,2 0 0,0 2,7V17A2,2 0 0,0 4,19H20A2,2 0 0,0 22,17V15H12M10,12H4V7H10V12Z"},{k:"경광봉",kind:"보안",d:"야간 차량 유도·신호용 경광봉과 호루라기",p:"M8.5,9A6.5,6.5 0 0,0 2,15.5A6.5,6.5 0 0,0 8.5,22A6.5,6.5 0 0,0 15,15.5V13.91L22,12V9H11V11H9V9H8.5M11,2V7H9V2H11M6.35,7.28C5.68,7.44 5.04,7.68 4.43,8L2.14,4.88L3.76,3.7L6.35,7.28M17.86,4.88L16.32,7H13.85L16.24,3.7L17.86,4.88Z"},{k:"출입통제 단말기",kind:"보안",d:"출입자 인증(지문·카드)으로 출입을 통제하는 단말기",p:"M17.81,4.47C17.73,4.47 17.65,4.45 17.58,4.41C15.66,3.42 14,3 12,3C10.03,3 8.15,3.47 6.44,4.41C6.2,4.54 5.9,4.45 5.76,4.21C5.63,3.97 5.72,3.66 5.96,3.53C7.82,2.5 9.86,2 12,2C14.14,2 16,2.47 18.04,3.5C18.29,3.65 18.38,3.95 18.25,4.19C18.16,4.37 18,4.47 17.81,4.47M3.5,9.72C3.4,9.72 3.3,9.69 3.21,9.63C3,9.47 2.93,9.16 3.09,8.93C4.08,7.53 5.34,6.43 6.84,5.66C10,4.04 14,4.03 17.15,5.65C18.65,6.42 19.91,7.5 20.9,8.9C21.06,9.12 21,9.44 20.78,9.6C20.55,9.76 20.24,9.71 20.08,9.5C19.18,8.22 18.04,7.23 16.69,6.54C13.82,5.07 10.15,5.07 7.29,6.55C5.93,7.25 4.79,8.25 3.89,9.5C3.81,9.65 3.66,9.72 3.5,9.72M9.75,21.79C9.62,21.79 9.5,21.74 9.4,21.64C8.53,20.77 8.06,20.21 7.39,19C6.7,17.77 6.34,16.27 6.34,14.66C6.34,11.69 8.88,9.27 12,9.27C15.12,9.27 17.66,11.69 17.66,14.66A0.5,0.5 0 0,1 17.16,15.16A0.5,0.5 0 0,1 16.66,14.66C16.66,12.24 14.57,10.27 12,10.27C9.43,10.27 7.34,12.24 7.34,14.66C7.34,16.1 7.66,17.43 8.27,18.5C8.91,19.66 9.35,20.15 10.12,20.93C10.31,21.13 10.31,21.44 10.12,21.64C10,21.74 9.88,21.79 9.75,21.79M16.92,19.94C15.73,19.94 14.68,19.64 13.82,19.05C12.33,18.04 11.44,16.4 11.44,14.66A0.5,0.5 0 0,1 11.94,14.16A0.5,0.5 0 0,1 12.44,14.66C12.44,16.07 13.16,17.4 14.38,18.22C15.09,18.7 15.92,18.93 16.92,18.93C17.16,18.93 17.56,18.9 17.96,18.83C18.23,18.78 18.5,18.96 18.54,19.24C18.59,19.5 18.41,19.77 18.13,19.82C17.56,19.93 17.06,19.94 16.92,19.94M14.91,22C14.87,22 14.82,22 14.78,22C13.19,21.54 12.15,20.95 11.06,19.88C9.66,18.5 8.89,16.64 8.89,14.66C8.89,13.04 10.27,11.72 11.97,11.72C13.67,11.72 15.05,13.04 15.05,14.66C15.05,15.73 16,16.6 17.13,16.6C18.28,16.6 19.21,15.73 19.21,14.66C19.21,10.89 15.96,7.83 11.96,7.83C9.12,7.83 6.5,9.41 5.35,11.86C4.96,12.67 4.76,13.62 4.76,14.66C4.76,15.44 4.83,16.67 5.43,18.27C5.53,18.53 5.4,18.82 5.14,18.91C4.88,19 4.59,18.87 4.5,18.62C4,17.31 3.77,16 3.77,14.66C3.77,13.46 4,12.37 4.45,11.42C5.78,8.63 8.73,6.82 11.96,6.82C16.5,6.82 20.21,10.33 20.21,14.65C20.21,16.27 18.83,17.59 17.13,17.59C15.43,17.59 14.05,16.27 14.05,14.65C14.05,13.58 13.12,12.71 11.97,12.71C10.82,12.71 9.89,13.58 9.89,14.65C9.89,16.36 10.55,17.96 11.76,19.16C12.71,20.1 13.62,20.62 15.03,21C15.3,21.08 15.45,21.36 15.38,21.62C15.33,21.85 15.12,22 14.91,22Z"},{k:"순찰단말",kind:"보안",d:"NFC 태그를 읽어 순찰을 기록하는 휴대 단말",p:"M2,16V18A5,5 0 0,1 7,23H9A7,7 0 0,0 2,16M2,20V23H5A3,3 0 0,0 2,20M2,12V14A9,9 0 0,1 11,23H13C13,16.92 8.08,12 2,12M17,1H7A2,2 0 0,0 5,3V10.37C5.69,10.53 6.36,10.74 7,11V5H17V18H13.97C14.5,19.25 14.81,20.59 14.92,22H17A2,2 0 0,0 19,20V3A2,2 0 0,0 17,1Z"}];
 const EQ_KIND={"미화":["#2b8a3e","#e3f2e6","미화"],"보안":["#1b2a86","#e7eaf8","보안"],"공통":["#c07a12","#fbf1de","공통"],"차량":["#6a4fb0","#efeafb","업무차량"],"기타":["#4b6478","#e8eef3","기타 부대비용"]};
+EQUIP_INFO.unshift({k:"안전보호구함",kind:"공통",d:"안전모·보호구를 현장에 보관하는 철제 보호구함",p:"M8,2H16A2,2 0 0,1 18,4V20A2,2 0 0,1 16,22H8A2,2 0 0,1 6,20V4A2,2 0 0,1 8,2M8,4V20H16V4H8M10,13H12V17H10V13M10,6H14V7.5H10V6M10,9H14V10.5H10V9Z"},{k:"복합기",kind:"기타",d:"현장 사무실 복사·출력·스캔용 복합기 렌탈",p:"M18,3H6V7H18M19,12A1,1 0 0,1 18,11A1,1 0 0,1 19,10A1,1 0 0,1 20,11A1,1 0 0,1 19,12M16,19H8V14H16M19,8H5A3,3 0 0,0 2,11V17H6V21H18V17H22V11A3,3 0 0,0 19,8Z"});
+/* 업체 참고 가격·사진 — 2026.10 각 업체 홈페이지 확인값(부가세 포함 소비자가). 실제 견적 시 업체 견적으로 확인 */
+const VENDORS={"hd": ["현대자동차", "https://www.hyundai.com/"], "kia": ["기아자동차", "https://www.kia.com/kr"], "hana": ["무전기렌탈 하나통신", "https://smartstore.naver.com/ktp"], "daehan": ["대한통신", "https://smartstore.naver.com/daehantongsin"], "cleon": ["보흥클레온", "https://www.cleon.co.kr/"], "cg": ["청광특수청소", "https://cheonggwang.co.kr/"], "sg": ["스팀지니", "https://steamgenie.co.kr/"], "hm": ["에이치엠청소장비", "https://hmclean25.imweb.me/"], "sv": ["선볼트", "https://sunvolt-clean.com/"], "hy": ["한양청소기", "https://www.hanyangcleaner.co.kr/"], "kg": ["금강안전시스템", "https://www.kgss24.com/"], "ji": ["제일안전", "https://safetyji.co.kr/"], "sd": ["신도리코", "https://www.sindoh.com/"]};
+const MARKET={"전기트럭": [["hd", "2026 포터 II 일렉트릭 스타일 스페셜", 43500000, "https://www.hyundai.com/kr/ko/e/vehicles/porter2/price", "https://www.hyundai.com/contents/repn-car/side-45/porter2-26my-45side.png"], ["hd", "2026 포터 II 일렉트릭 스마트 스페셜", 44850000, "https://www.hyundai.com/kr/ko/e/vehicles/porter2/price", "https://www.hyundai.com/contents/repn-car/side-45/porter2-26my-45side.png"]], "포터2": [["hd", "2026 포터 II LPG 스마트", 21520000, "https://www.hyundai.com/kr/ko/e/vehicles/porter2/price", "https://www.hyundai.com/contents/repn-car/side-45/porter2-26my-45side.png"], ["hd", "2026 포터 II LPG 프리미엄", 23800000, "https://www.hyundai.com/kr/ko/e/vehicles/porter2/price", "https://www.hyundai.com/contents/repn-car/side-45/porter2-26my-45side.png"]], "세단": [["hd", "쏘나타 디 엣지 1.6T 프리미엄", 29330000, "https://www.hyundai.com/kr/ko/e/vehicles/sonata-the-edge/price", "https://www.hyundai.com/contents/repn-car/side-45/sonata-the-edge-27my-45side.png"], ["hd", "쏘나타 디 엣지 2.0 프리미엄", 28660000, "https://www.hyundai.com/kr/ko/e/vehicles/sonata-the-edge/price", "https://www.hyundai.com/contents/repn-car/side-45/sonata-the-edge-27my-45side.png"]], "SUV": [["kia", "쏘렌토 2.5T 프레스티지", 36410000, "https://www.kia.com/kr/vehicles/sorento/price", "https://www.kia.com/content/dam/kwp/kr/ko/vehicles/represent/krmq326/sorento_s_bn4.png"], ["kia", "쏘렌토 2.5T 노블레스", 39660000, "https://www.kia.com/kr/vehicles/sorento/price", "https://www.kia.com/content/dam/kwp/kr/ko/vehicles/represent/krmq326/sorento_s_bn4.png"]], "픽업트럭": [["kia", "타스만 다이내믹", 35000000, "https://www.kia.com/kr/vehicles/tasman/price", "https://www.kia.com/content/dam/kwp/kr/ko/vehicles/represent/krpk306/tasman_s_agt.png"], ["kia", "타스만 어드벤처", 41200000, "https://www.kia.com/kr/vehicles/tasman/price", "https://www.kia.com/content/dam/kwp/kr/ko/vehicles/represent/krpk306/tasman_s_agt.png"]], "경차": [["kia", "레이 1.0 가솔린 트렌디", 15550000, "https://www.kia.com/kr/vehicles/ray/price", "https://www.kia.com/content/dam/kwp/kr/ko/vehicles/represent/krtm311/ray_s_ud.png"], ["kia", "레이 1인승 밴 트렌디", 14800000, "https://www.kia.com/kr/vehicles/ray/price", "https://www.kia.com/content/dam/kwp/kr/ko/vehicles/represent/krtm311/ray_s_ud.png"]], "승합": [["hd", "스타리아 — 트림별 가격은 홈페이지", null, "https://www.hyundai.com/kr/ko/e/vehicles/staria/price", "https://www.hyundai.com/contents/repn-car/side-45/staria-26pe-45side.png"]], "무전기 구입": [["hana", "무전기 렌탈·판매", null, "https://smartstore.naver.com/ktp/products/8324489208", ""], ["daehan", "무전기·통신장비", null, "https://smartstore.naver.com/daehantongsin/category/7aa08db999154f5d85a28ba53ce1ab35", ""]], "LTE 무전기": [["hana", "무전기 렌탈·판매", null, "https://smartstore.naver.com/ktp/products/8324489208", ""], ["daehan", "무전기·통신장비", null, "https://smartstore.naver.com/daehantongsin/category/7aa08db999154f5d85a28ba53ce1ab35", ""]], "무전기": [["hana", "무전기 렌탈·판매", null, "https://smartstore.naver.com/ktp/products/8324489208", ""], ["daehan", "무전기·통신장비", null, "https://smartstore.naver.com/daehantongsin/category/7aa08db999154f5d85a28ba53ce1ab35", ""]], "탑승식청소차": [["cleon", "CLAS-50R Mono", 7700000, "https://www.cleon.co.kr/goods/goods_view.php?goodsNo=1000001007", "https://godomall.speedycdn.net/766858cefd686a55d37d9adfb8ebf443/goods/1000001007/image/main/1000001007_main_022.jpg"], ["cleon", "CLAS-80R Mono", 11000000, "https://www.cleon.co.kr/goods/goods_view.php?goodsNo=1000001005", "https://godomall.speedycdn.net/766858cefd686a55d37d9adfb8ebf443/goods/1000001005/image/main/1000001005_main_074.jpg"], ["sv", "습식청소차 탑승식 4,000㎡", 5290000, "https://sunvolt-clean.com/index/view/4680675", ""], ["sv", "건식청소차 탑승식 8,500㎡", 5900000, "https://sunvolt-clean.com/index/view/4680689", ""]], "보행식청소차": [["cleon", "CLAS-20B", 3520000, "https://www.cleon.co.kr/goods/goods_view.php?goodsNo=1000001011", "https://godomall.speedycdn.net/766858cefd686a55d37d9adfb8ebf443/goods/1000001011/image/main/1000001011_main_095.jpg"], ["cleon", "CLAS-30B", 3960000, "https://www.cleon.co.kr/goods/goods_view.php?goodsNo=1000001010", "https://godomall.speedycdn.net/766858cefd686a55d37d9adfb8ebf443/goods/1000001010/image/main/1000001010_main_066.jpg"], ["sv", "습식청소차 2,500㎡", 2450000, "https://sunvolt-clean.com/index/view/4680681", ""], ["sv", "라이트 습식청소차 보행식 3,200㎡", 2200000, "https://sunvolt-clean.com/index/view/6171547", ""], ["hm", "청소장비 전반", null, "https://hmclean25.imweb.me/", ""]], "고압분사기": [["cleon", "F-1002", 2530000, "https://www.cleon.co.kr/goods/goods_view.php?goodsNo=1000001023", "https://godomall.speedycdn.net/766858cefd686a55d37d9adfb8ebf443/goods/1000001023/image/main/1000001023_main_075.jpg"], ["cleon", "F-1003", 2640000, "https://www.cleon.co.kr/goods/goods_view.php?goodsNo=1000001024", "https://godomall.speedycdn.net/766858cefd686a55d37d9adfb8ebf443/goods/1000001024/image/main/1000001024_main_083.jpg"], ["hm", "청소장비 전반", null, "https://hmclean25.imweb.me/", ""]], "왁스머신기": [["cleon", "FM-16F", 1320000, "https://www.cleon.co.kr/goods/goods_view.php?goodsNo=1000001089", "https://godomall.speedycdn.net/766858cefd686a55d37d9adfb8ebf443/goods/1000001089/image/main/1000001089_main_049.jpg"], ["cleon", "FM-16S", 2090000, "https://www.cleon.co.kr/goods/goods_view.php?goodsNo=1000001149", "https://godomall.speedycdn.net/766858cefd686a55d37d9adfb8ebf443/goods/1000001149/image/main/1000001149_main_030.png"], ["cleon", "FM-18S", 2200000, "https://www.cleon.co.kr/goods/goods_view.php?goodsNo=1000001150", "https://godomall.speedycdn.net/766858cefd686a55d37d9adfb8ebf443/goods/1000001150/image/main/1000001150_main_028.jpg"]], "진공청소기": [["cleon", "S-201", 264000, "https://www.cleon.co.kr/goods/goods_view.php?goodsNo=1000001046", "https://godomall.speedycdn.net/766858cefd686a55d37d9adfb8ebf443/goods/1000001046/image/main/1000001046_main_060.jpg"], ["cleon", "S-402", 396000, "https://www.cleon.co.kr/goods/goods_view.php?goodsNo=1000001040", "https://godomall.speedycdn.net/766858cefd686a55d37d9adfb8ebf443/goods/1000001040/image/main/1000001040_main_012.jpg"], ["cleon", "S-803", 715000, "https://www.cleon.co.kr/goods/goods_view.php?goodsNo=1000000982", "https://godomall.speedycdn.net/766858cefd686a55d37d9adfb8ebf443/goods/1000000982/image/main/1000000982_main_074.jpg"], ["hy", "업소용 청소기", null, "https://www.hanyangcleaner.co.kr/", ""]], "습식청소기": [["cleon", "건습식 진공청소기 (목록)", null, "https://www.cleon.co.kr/goods/goods_list.php?cateCd=008010", ""], ["hy", "건습식 청소기", null, "https://www.hanyangcleaner.co.kr/", ""]], "송풍기": [["cleon", "산업용 브로아청소기 (목록)", null, "https://www.cleon.co.kr/goods/goods_list.php?cateCd=008010004", ""], ["hy", "블로어", null, "https://www.hanyangcleaner.co.kr/", ""]], "스팀청소기": [["cleon", "스팀기 ST-3500(VC)", 880000, "https://www.cleon.co.kr/goods/goods_view.php?goodsNo=1000001613", "https://godomall.speedycdn.net/766858cefd686a55d37d9adfb8ebf443/goods/1000001613/image/main/1000001613_main_038.jpg"], ["sg", "업소용 스팀청소기", null, "https://steamgenie.co.kr/", ""]], "카펫 세척기": [["cleon", "PRO-602", 2640000, "https://www.cleon.co.kr/goods/goods_view.php?goodsNo=1000001017", "https://godomall.speedycdn.net/766858cefd686a55d37d9adfb8ebf443/goods/1000001017/image/main/1000001017_main_035.jpg"], ["cleon", "PRO-402 Basic", 3300000, "https://www.cleon.co.kr/goods/goods_view.php?goodsNo=1000001978", "https://godomall.speedycdn.net/766858cefd686a55d37d9adfb8ebf443/goods/1000001978/image/main/1000001978_main_017.png"], ["cleon", "DR-260 (건조기)", 550000, "https://www.cleon.co.kr/goods/goods_view.php?goodsNo=1000001020", "https://godomall.speedycdn.net/766858cefd686a55d37d9adfb8ebf443/goods/1000001020/image/main/1000001020_main_080.jpg"]], "유리창 청소": [["cg", "고소·외벽 특수청소 (외주)", null, "https://cheonggwang.co.kr/", ""]], "외벽·유리창": [["cg", "고소·외벽 특수청소 (외주)", null, "https://cheonggwang.co.kr/", ""]], "낙엽청소기": [["hy", "낙엽청소기·블로어", null, "https://www.hanyangcleaner.co.kr/", ""]], "안전보호구함": [["ji", "JI-28N 소형 안전보호구함", 121000, "https://safetyji.co.kr/goods/view?no=6", "https://safetyji.co.kr/data/goods/1/2015/04/6_tmp_5ab5585f71dd1181768df5c9a33b83b87564list2.jpg"], ["ji", "JI-80N 중형 안전보호구함", 264000, "https://safetyji.co.kr/goods/view?no=9", "https://safetyji.co.kr/data/goods/1/2026/04/9_temp_17768364363584list2.jpg"], ["ji", "JI-110N 중형 안전보호구함", 301000, "https://safetyji.co.kr/goods/view?no=10", "https://safetyji.co.kr/data/goods/1/2026/04/10_temp_17768364111400list2.jpg"]], "안전보호구": [["kg", "안전화·안전모·장갑·조끼", null, "https://www.kgss24.com/", ""], ["ji", "안전·보호구 용품", null, "https://safetyji.co.kr/", ""]], "방한복": [["kg", "안전화·안전모·장갑·조끼", null, "https://www.kgss24.com/", ""]], "경광봉·신호기": [["kg", "안전화·안전모·장갑·조끼", null, "https://www.kgss24.com/", ""], ["ji", "안전·보호구 용품", null, "https://safetyji.co.kr/", ""]], "경광봉": [["kg", "안전화·안전모·장갑·조끼", null, "https://www.kgss24.com/", ""], ["ji", "안전·보호구 용품", null, "https://safetyji.co.kr/", ""]], "주차 유도봉": [["kg", "안전화·안전모·장갑·조끼", null, "https://www.kgss24.com/", ""], ["ji", "안전·보호구 용품", null, "https://safetyji.co.kr/", ""]], "라바콘": [["kg", "안전화·안전모·장갑·조끼", null, "https://www.kgss24.com/", ""], ["ji", "안전·보호구 용품", null, "https://safetyji.co.kr/", ""]], "복합기": [["sd", "복합기 (제품 목록)", null, "https://www.sindoh.com/products/printers/multifunction-printers", ""], ["sd", "렌탈·구매 견적 문의", null, "https://www.sindoh.com/support/rental-purchase/inquiry", ""]]};
+const MARKET_AT="2026.10";
+function eqRefs(name){ const n=String(name||""); const k=Object.keys(MARKET).find(k=>n.includes(k)); if(k) return MARKET[k]; const I=eqInfo(name); return MARKET[I.k]||[]; }
 function eqInfo(name){ const n=String(name||""); return EQUIP_INFO.find(x=>n.includes(x.k)) || {k:n,kind:"공통",d:"투입 장비",p:"M12 2L2 7l10 5 10-5-10-5zm0 7.2L4.5 5.6 12 2.4l7.5 3.2L12 9.2zM2 17l10 5 10-5v-6l-10 5-10-5v6z"}; }
 function eqPhotoKey(name){ return "stec_eqphoto:"+eqInfo(name).k; }
 function eqPhoto(name){ try{ return localStorage.getItem(eqPhotoKey(name))||""; }catch(e){ return ""; } }
@@ -1026,43 +1073,55 @@ function eqPic(name, size){ const I=eqInfo(name), [c,bg]=EQ_KIND[I.kind]||EQ_KIN
   return ph ? `<span class="eq-pic photo" style="--s:${size}px"><img src="${ph}" alt="${esc(I.k)} 사진"></span>`
     : `<span class="eq-pic" style="--s:${size}px;--c:${c};--bg:${bg}"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="${I.p}"/></svg></span>`; }
 function openEqPopup(name, price, onAdd, priceText, addLabel){
-  const I=eqInfo(name), [c,,lbl]=EQ_KIND[I.kind]||EQ_KIND["공통"];
+  const I=eqInfo(name), [c,,lbl]=EQ_KIND[I.kind]||EQ_KIND["공통"], R=eqRefs(name);
+  let si=R.findIndex(r=>r[2]!=null && String(name).includes(r[1])); 
   const ov=document.createElement("div"); ov.className="qr-ov eq-ov";
-  const draw=()=>{ const has=!!eqPhoto(name);
+  const draw=()=>{ const has=!!eqPhoto(name), sel=si>=0?R[si]:null, img=has?"":(sel&&sel[4])||((R.find(r=>r[4])||[])[4]||""), imgRef=sel&&sel[4]?sel:R.find(r=>r[4]);
+    const P=sel&&sel[2]!=null?sel[2]:price;
     ov.innerHTML=`<div class="eq-pop" role="dialog" aria-modal="true" aria-label="${esc(name)}">
       <button type="button" class="best-x eq-x" aria-label="닫기">✕</button>
-      <div class="eq-stage">${eqPic(name,220)}${has?"":`<span class="eq-note">기본 그림 · ‘사진 등록’으로 실제 사진을 넣을 수 있어요</span>`}</div>
+      <div class="eq-stage">${img?`<span class="eq-pic photo eq-web" style="--s:220px"><img src="${esc(img)}" alt="${esc(I.k)} 참고 사진" referrerpolicy="no-referrer" loading="lazy"></span><span class="eq-fb">${eqPic(name,220)}</span><span class="eq-note">사진: ${esc(VENDORS[imgRef[0]][0])} 홈페이지 · 참고용</span>`
+        :`${eqPic(name,220)}${has?"":`<span class="eq-note">기본 그림 · ‘사진 등록’으로 실제 사진을 넣을 수 있어요</span>`}`}</div>
       <div class="eq-body"><span class="eq-tag" style="--c:${c}">${lbl}</span><h3>${esc(name)}</h3><p>${esc(I.d)}</p>
-        ${price?`<div class="eq-price">기준 단가 <b>${won(price)}원</b>${priceText?` ${esc(priceText)}`:""}</div>`:""}
+        ${P?`<div class="eq-price">${sel?`${esc(VENDORS[sel[0]][0])} ${esc(sel[1])} <b>${won(P)}원</b>`:`기준 단가 <b>${won(P)}원</b>`}${priceText?` ${esc(priceText)}`:""}</div>`:""}
+        ${R.length?`<div class="eq-refs"><div class="eq-refs-h">업체 참고 가격 <small>${MARKET_AT} 업체 홈페이지 기준 · 누르면 사진·가격 보기</small></div><div class="eq-ref-list">${R.map((r,i)=>`<div class="eq-ref ${i===si?"on":""} ${r[2]==null?"link":""}" ${r[2]!=null?`data-ri="${i}" role="button" tabindex="0"`:""}>
+            ${r[4]?`<span class="er-img"><img src="${esc(r[4])}" alt="" referrerpolicy="no-referrer" loading="lazy" onerror="this.parentNode.classList.add('x')"></span>`:`<span class="er-img x"></span>`}
+            <span class="er-tx"><b>${esc(r[1])}</b><small>${esc(VENDORS[r[0]][0])}</small></span>
+            <span class="er-pr">${r[2]!=null?won(r[2])+"원":"가격 문의"}</span>
+            <a href="${esc(r[3])}" target="_blank" rel="noopener" title="업체 페이지 열기">↗</a></div>`).join("")}</div></div>`:""}
         <div class="row" style="gap:6px;flex-wrap:wrap;margin-top:12px">
-          ${onAdd?`<button type="button" class="btn pri" data-add>+ ${addLabel||"이 장비 추가"}</button>`:""}
+          ${onAdd?`<button type="button" class="btn pri" data-add>+ ${sel?"이 업체 가격으로 추가":(addLabel||"이 장비 추가")}</button>`:""}
           <label class="btn sm" for="eqPhotoIn">📷 사진 ${has?"바꾸기":"등록"}</label><input type="file" id="eqPhotoIn" accept="image/*" hidden>
           ${has?`<button type="button" class="btn sm ghost" data-delph>사진 지우기</button>`:""}
-        </div><p class="hint" style="margin:8px 0 0">등록한 사진은 이 PC(휴대폰)에만 저장됩니다.</p></div></div>`;
+        </div><p class="hint" style="margin:8px 0 0">업체 가격은 참고용 소비자가입니다(부가세 포함·옵션 제외). 등록한 사진은 이 PC(휴대폰)에만 저장됩니다.</p></div></div>`;
     ov.querySelector(".eq-x").onclick=()=>ov.remove();
-    const a=ov.querySelector("[data-add]"); if(a) a.onclick=()=>{ ov.remove(); onAdd(); };
+    const wi=ov.querySelector(".eq-web img"); if(wi){ const st=ov.querySelector(".eq-stage"); wi.onerror=()=>st.classList.add("noimg"); wi.onload=()=>st.classList.add("ok"); }
+    ov.querySelectorAll("[data-ri]").forEach(el=>{ const pick=e=>{ if(e.target.closest("a")) return; const i=+el.dataset.ri; si=si===i?-1:i; draw(); };
+      el.onclick=pick; el.onkeydown=e=>{ if(e.key==="Enter"||e.key===" "){ e.preventDefault(); pick(e); } }; });
+    const a=ov.querySelector("[data-add]"); if(a) a.onclick=()=>{ ov.remove(); const s=si>=0?R[si]:null; onAdd(s&&s[2]!=null?{v:VENDORS[s[0]][0],m:s[1],price:s[2]}:null); };
     ov.querySelector("#eqPhotoIn").onchange=async e=>{ const f=e.target.files[0]; if(!f) return; try{ const d=await shrinkPhoto(f,480,360); localStorage.setItem(eqPhotoKey(name),d); draw(); renderAddons(); toast("장비 사진을 등록했습니다"); }catch(err){ toast("사진을 저장하지 못했습니다: "+(err.message||err)); } };
     const d=ov.querySelector("[data-delph]"); if(d) d.onclick=()=>{ try{ localStorage.removeItem(eqPhotoKey(name)); }catch(e){} draw(); renderAddons(); };
   };
   draw(); ov.onclick=e=>{ if(e.target===ov) ov.remove(); }; document.body.appendChild(ov);
   document.addEventListener("keydown",function k(e){ if(e.key==="Escape"){ ov.remove(); document.removeEventListener("keydown",k); } });
 }
+const pickName=(base,pk)=>pk?`${String(base).replace(/\s*\(.*\)\s*$/,"")} · ${pk.v} ${pk.m}`:base;
 const EQUIP_CAT = [
   ["탑승식청소차 (S5)",4950000],["보행식청소차 (MEDIA75BT)",6500000],["보행식청소차 (K5)",3800000],["고압분사기",1750000],
   ["왁스머신기 (BP-16\")",590000],["업소용 진공청소기",450000],["습식청소기",1200000],["송풍기(블로어)",380000],
   ["무전기",350000],["순찰시스템(태그형)",1500000],["주차 유도봉·안전용품 세트",200000],["예초기",650000],
   ["스팀청소기",900000],["카펫 세척기",2500000],["유리창 청소 장비 세트",350000],["고소작업용 사다리(A형)",250000],["제설기(소형)",1500000],["전동 낙엽청소기",450000],
-  ["금속탐지기(봉형)",180000],["바디캠",350000],["경광봉·호루라기 세트",30000],["출입통제 단말기",1200000],["무선 순찰단말(NFC)",600000]
+  ["안전보호구함 (중형)",264000],["금속탐지기(봉형)",180000],["바디캠",350000],["경광봉·호루라기 세트",30000],["출입통제 단말기",1200000],["무선 순찰단말(NFC)",600000]
 ];
-/* 차량 기준가: 2026년형 최저트림 공시가(옵션 제외) · 연비는 복합연비. 실제 견적 시 수정 */
+/* 차량 기준가: 현대·기아 홈페이지 2026.10 최저트림 판매가(옵션 제외) · 연비는 복합연비. 실제 견적 시 수정 */
 const VEH_PRESET = {
   porter_used:{grp:"화물", name:"포터2 (중고)", price:10000000, km:30, fuel:1785, eff:8.7},
-  porter_new:{grp:"화물", name:"포터2 (신차)", price:22000000, km:30, fuel:1785, eff:8.7},
-  ev:{grp:"화물", name:"1톤 전기트럭 (포터2 EV)", price:43000000, km:30, fuel:347, eff:3.5},
-  sedan:{grp:"승용", name:"세단 (쏘나타 1.6T 급)", price:29370000, km:40, fuel:1700, eff:13.5, cons:60000, insp:20000, tax:290840, ins:1200000, reg:0, acq:7, fuelType:"휘발유", note:"관리소장 업무·지사 순회"},
-  suv:{grp:"승용", name:"SUV (쏘렌토 2.5T 급)", price:36310000, km:40, fuel:1700, eff:10.8, cons:70000, insp:20000, tax:649220, ins:1400000, reg:0, acq:7, fuelType:"휘발유", note:"순찰·현장 관리"},
-  pickup:{grp:"픽업", name:"픽업트럭 (타스만 2.5T 급)", price:37500000, km:40, fuel:1700, eff:8.6, cons:75000, insp:40000, tax:28500, ins:1300000, reg:0, acq:5, fuelType:"휘발유", note:"화물차 분류 · 자재·장비 운반"},
-  light:{grp:"승용", name:"경차 (레이 급)", price:14500000, km:30, fuel:1700, eff:13.0, cons:45000, insp:20000, tax:129870, ins:900000, reg:0, acq:4, fuelType:"휘발유", note:"단지 내 순회 · 경차 취득세 감면"},
+  porter_new:{grp:"화물", name:"포터2 (신차)", price:21520000, km:30, fuel:1785, eff:8.7},
+  ev:{grp:"화물", name:"1톤 전기트럭 (포터2 EV)", price:43500000, km:30, fuel:347, eff:3.5},
+  sedan:{grp:"승용", name:"세단 (쏘나타 1.6T 급)", price:29330000, km:40, fuel:1700, eff:13.5, cons:60000, insp:20000, tax:290840, ins:1200000, reg:0, acq:7, fuelType:"휘발유", note:"관리소장 업무·지사 순회"},
+  suv:{grp:"승용", name:"SUV (쏘렌토 2.5T 급)", price:36410000, km:40, fuel:1700, eff:10.8, cons:70000, insp:20000, tax:649220, ins:1400000, reg:0, acq:7, fuelType:"휘발유", note:"순찰·현장 관리"},
+  pickup:{grp:"픽업", name:"픽업트럭 (타스만 2.5T 급)", price:35000000, km:40, fuel:1700, eff:8.6, cons:75000, insp:40000, tax:28500, ins:1300000, reg:0, acq:5, fuelType:"휘발유", note:"화물차 분류 · 자재·장비 운반"},
+  light:{grp:"승용", name:"경차 (레이 급)", price:15550000, km:30, fuel:1700, eff:13.0, cons:45000, insp:20000, tax:129870, ins:900000, reg:0, acq:4, fuelType:"휘발유", note:"단지 내 순회 · 경차 취득세 감면"},
   van:{grp:"승합", name:"승합 (스타리아 11인승 급)", price:33000000, km:50, fuel:1600, eff:10.0, cons:75000, insp:40000, tax:65000, ins:1500000, reg:0, acq:5, fuelType:"경유", note:"근무자 출퇴근·현장 이동"},
   cart:{grp:"기타", name:"전동 카트 (4인승)", price:11000000, km:20, fuel:250, eff:6.0, cons:30000, insp:0, tax:0, ins:400000, reg:0, acq:0, fuelType:"전기", note:"캠퍼스·단지 순찰·미화"}
 };
@@ -1104,6 +1163,7 @@ const ETC_CAT = [
     ["채용 공고·배치 비용",300000,"1회",12,0,"",""]]],
   ["복리·사무", [
     ["정수기 렌탈",30000,"월",12,0,"",""],
+    ["복합기 렌탈 (현장 사무실)",100000,"월",12,0,"참고 단가 · 신도리코 등 렌탈 견적으로 수정",""],
     ["휴게실 비품·사무용품",50000,"월",12,0,"",""],
     ["근무자 간식·음료",10000,"월",12,1,"인당",""]]],
   ["차량 운행", [
@@ -1205,7 +1265,7 @@ function today(){ const d=new Date(); return `${d.getFullYear()}-${String(d.getM
 function newState(year, from, to){
   const y = +year || new Date().getFullYear() + 1;
   return {
-    meta:{client:"", addr:"", svc:"보안용역 도급업무", year:y, date:today(), from:from||`${y}-01-01`, to:to||`${y}-12-31`, valid:"작성일로부터 1개월", mode:"new", branch:"동부", siteId:null, lat:null, lng:null, geoName:"", geoSrc:""},
+    meta:{client:"", addr:"", svc:"보안용역 도급업무", year:y, date:today(), from:from||`${y}-01-01`, to:to||`${y}-12-31`, valid:"작성일로부터 1개월", mode:"new", branch:"", grpCo:"에스텍시스템", siteId:null, lat:null, lng:null, geoName:"", geoSrc:""},
     roles:[], vehicles:[], equips:[], others:[],
     addonMode:"spread", addonMargin:true,
     set: defaultSettings(y)
@@ -1366,7 +1426,7 @@ const SIDO_KO={seoul:"서울",busan:"부산",daegu:"대구",incheon:"인천",gwa
 let admSido=[], admMuni=[], lblLayer=null, dongLayer=null, baseMode="vector";
 function initMap(){
   if(map || !window.L) return;
-  map = L.map("map",{zoomControl:true,minZoom:6,maxZoom:18,zoomSnap:.5}).setView([35.55,128.9],8);
+  map = L.map("map",{zoomControl:true,minZoom:6,maxZoom:18,zoomSnap:.5}).setView([36.35,127.75],7);
   map.createPane("adm").style.zIndex=250;
   map.createPane("admLbl").style.zIndex=390; map.getPane("admLbl").style.pointerEvents="none";
   const dec=(str,prec=1e4)=>{const out=[];let i=0,lat=0,lng=0;while(i<str.length){for(const k of [0,1]){let b,sh=0,r=0;do{b=str.charCodeAt(i++)-63;r|=(b&0x1f)<<sh;sh+=5;}while(b>=0x20);const d=(r&1)?~(r>>1):(r>>1);if(k===0)lat+=d;else lng+=d;}out.push([lat/prec,lng/prec]);}return out;};
@@ -1395,20 +1455,29 @@ function initMap(){
   const sat=L.layerGroup([L.tileLayer(ESRI("World_Imagery"),{maxZoom:19,maxNativeZoom:18,attribution:"&copy; Esri, Maxar"}),
     L.tileLayer(ESRI("Reference/World_Boundaries_and_Places"),{maxZoom:19,maxNativeZoom:18})]);
   const offline=L.layerGroup();
-  const onTile=()=>{ if(tileOk) return; tileOk=true; setBase("tiles"); $("#mapNote").textContent="● 보안 ● 미화 ● 복합 — 에스텍 그룹 운영 사업장 · 사각 라벨은 지사/본사 · 오른쪽 위 [지도 종류]에서 일반·지형·위성 지도 변경"; };
+  const onTile=()=>{ if(tileOk) return; tileOk=true; setBase("tiles"); $("#mapNote").textContent="◆ 에스텍시스템 사업장 · ● 에스텍베스트 사업장 · 사각 라벨은 본부/지사 · 오른쪽 위 [지도 종류]에서 지도 종류와 표시할 회사 선택"; };
   [street,topo].forEach(t=>t.on("tileload",onTile)); sat.eachLayer(t=>t.on("tileload",onTile));
   street.addTo(map);
-  L.control.layers({"일반 지도":street,"지형 지도":topo,"위성 지도":sat,"행정경계(오프라인)":offline},null,{position:"topright"}).addTo(map);
+  const bestLy=L.layerGroup().addTo(map), sysLy=L.layerGroup().addTo(map);
+  L.control.layers({"일반 지도":street,"지형 지도":topo,"위성 지도":sat,"행정경계(오프라인)":offline},{[`에스텍시스템 사업장 (${(GROUPDB.sites||[]).length})`]:sysLy,[`에스텍베스트 사업장 (${SITEDB.sites.length})`]:bestLy},{position:"topright"}).addTo(map);
   map.on("baselayerchange",e=>{ if(e.layer===offline) setBase("vector"); else if(tileOk) setBase("tiles"); });
   setTimeout(()=>{ if(!tileOk) $("#mapNote").textContent="이 화면에서는 인터넷 지도 타일을 불러올 수 없어 행정경계 지도(시·군·구, 읍·면·동 경계와 지명)로 표시합니다. PC용 HTML 파일로 실행하면 일반 지도가 보입니다."; },4500);
   SITEDB.sites.forEach(s=>{
     const k = s.work.includes("/") ? "mix" : s.work.startsWith("보안")?"sec": s.work.startsWith("미화")?"cln":"etc";
     L.marker([s.lat,s.lng],{icon:L.divIcon({className:"",html:`<div class="mk ${k}"></div>`,iconSize:[10,10]}),title:s.name})
-      .on("click",()=>{ state.meta.mode="renew"; renderMode(); selectSite(s.id,true); }).addTo(map)
+      .on("click",()=>{ state.meta.mode="renew"; renderMode(); selectSite(s.id,true); }).addTo(bestLy)
       .bindTooltip(`${esc(s.name)} · ${esc(s.work)} ${s.total}명`,{direction:"top"});
   });
   [...SITEDB.branches, {...SITEDB.hq, key:"본사", name:"본사"}].forEach(b=>{
-    L.marker([b.lat,b.lng],{icon:L.divIcon({className:"",html:`<div class="brmk">${esc(b.key==="본사"?"에스텍 본사":b.name)}</div>`,iconSize:null,iconAnchor:[30,10]}),zIndexOffset:500}).addTo(map);
+    L.marker([b.lat,b.lng],{icon:L.divIcon({className:"",html:`<div class="brmk">${esc(b.key==="본사"?"에스텍베스트 본사":"베스트 "+b.name)}</div>`,iconSize:null,iconAnchor:[30,10]}),zIndexOffset:500}).addTo(bestLy);
+  });
+  (GROUPDB.sites||[]).forEach(s=>{
+    L.marker([s.lat,s.lng],{icon:L.divIcon({className:"",html:`<div class="mk sys"></div>`,iconSize:[10,10]}),title:s.name})
+      .on("click",()=>pickSysSite(s)).addTo(sysLy)
+      .bindTooltip(`에스텍시스템 · ${esc(s.name)}${s.br?" · "+esc(s.br):""}`,{direction:"top"});
+  });
+  (GROUPDB.offices||[]).filter(o=>o.t==="본사"||o.t==="본부"||o.t==="지사").forEach(o=>{
+    L.marker([o.lat,o.lng],{icon:L.divIcon({className:"",html:`<div class="brmk sys">${esc(o.t==="본사"?"에스텍시스템 본사":o.n)}</div>`,iconSize:null,iconAnchor:[30,10]}),zIndexOffset:600}).addTo(sysLy);
   });
   map.on("click",e=>{ if(!pickMode) return; pickMode=false; $("#btnPick").classList.remove("pri");
     setLoc(e.latlng.lat,e.latlng.lng,"지도에서 직접 지정"); });
@@ -1427,9 +1496,9 @@ function setLoc(lat,lng,src,name){
 }
 function autoBranch(){
   const m=state.meta; if(m.lat==null) return;
+  fillBranchSel();
   if(m.siteId){ const s=SITEDB.sites.find(x=>x.id===m.siteId); if(s){ m.branch=s.br; $("#m_branch").value=s.br; return; } }
-  let best=null; SITEDB.branches.forEach(b=>{ const d=hav(m.lat,m.lng,b.lat,b.lng); if(!best||d<best.d) best={k:b.key,d}; });
-  if(best){ m.branch=best.k; $("#m_branch").value=best.k; }
+  const j=grpJuris(grpCoOf(m),m.lat,m.lng); if(j){ m.branch=j.k; $("#m_branch").value=j.k; }
 }
 function showSel(){
   if(!map) return; const m=state.meta; if(selLayer){ map.removeLayer(selLayer); selLayer=null; }
@@ -1439,7 +1508,7 @@ function showSel(){
 }
 function selectSite(id, fromMap){
   const s = SITEDB.sites.find(x=>x.id===id); if(!s) return;
-  state.meta.siteId=s.id; state.meta.client=s.name; state.meta.addr=s.addr; state.meta.geoInfo=null;
+  state.meta.siteId=s.id; state.meta.client=s.name; state.meta.addr=s.addr; state.meta.geoInfo=null; state.meta.grpCo="에스텍베스트";
   $("#m_client").value=s.name; $("#m_addr").value=s.addr;
   const w=s.work; state.meta.svc = (w.includes("보안")&&w.includes("미화"))?"보안·미화용역 도급업무": w.startsWith("미화")?"미화(위생관리)용역 도급업무": w.startsWith("주차")?"주차관리용역 도급업무":"보안용역 도급업무";
   $("#m_svc").value=state.meta.svc;
@@ -1451,6 +1520,68 @@ function siteBadge(){
   if(m.siteId) el.innerHTML=`<span class="pill g">기존 에스텍 그룹 사업장</span>`;
   else if(m.client) el.innerHTML=`<span class="pill w">신규 사업장</span>`;
   else el.innerHTML="";
+}
+/* ───────── 에스텍 그룹: 회사별 본부·지사·사업장, 조직 현황 ───────── */
+const GRP_COS=["에스텍시스템","에스텍베스트","에스텍에이스","에스텍퍼스트","에스텍세이프","에스텍플러스","에스텍프라임","에스텍에코","어울림에프"];
+const grpCoOf=m=>GRP_COS.includes(m&&m.grpCo)?m.grpCo:"에스텍시스템";
+function grpOffices(co){
+  if(co==="에스텍시스템") return (GROUPDB.offices||[]).map(o=>({n:o.n,k:o.hq||o.n,lat:o.lat,lng:o.lng,p:o.p,t:o.t}));
+  if(co==="에스텍베스트") return [...SITEDB.branches.map(b=>({n:"에스텍베스트 "+b.name,k:b.key,lat:b.lat,lng:b.lng})),{n:"에스텍베스트 본사",k:"본사",lat:SITEDB.hq.lat,lng:SITEDB.hq.lng}];
+  const a=(GROUPDB.affs||{})[co]; return a?[{n:co+" 본사",k:"본사",lat:a.lat,lng:a.lng,p:a.p}]:[];
+}
+function grpSites(co){
+  if(co==="에스텍시스템") return (GROUPDB.sites||[]).map(s=>({id:"s"+s.id,name:s.name,lat:s.lat,lng:s.lng,br:s.br,hq:s.hq,tag:[s.hq,s.br].filter(Boolean).join(" · ")}));
+  if(co==="에스텍베스트") return SITEDB.sites.map(s=>({id:s.id,name:s.name,lat:s.lat,lng:s.lng,tag:`${s.work} ${s.total}명`}));
+  return [];
+}
+/* 관할 추정: 에스텍시스템 = 15km 안 가장 가까운 사업장의 지사, 없으면 가장 가까운 본부 */
+function grpJuris(co,lat,lng){
+  if(lat==null) return null;
+  if(co==="에스텍베스트"){ let best=null; SITEDB.branches.forEach(b=>{ const d=hav(lat,lng,b.lat,b.lng); if(!best||d<best.d) best={k:b.key,d}; }); return best; }
+  if(co==="에스텍시스템"){
+    const s=grpSites(co).filter(x=>x.br).map(x=>({...x,d:hav(lat,lng,x.lat,x.lng)})).sort((a,b)=>a.d-b.d)[0];
+    if(s&&s.d<=15) return {k:s.br,d:s.d,via:`인근 사업장(${s.name}) 기준`};
+    const o=grpOffices(co).filter(x=>x.t==="본부").map(x=>({...x,d:hav(lat,lng,x.lat,x.lng)})).sort((a,b)=>a.d-b.d)[0];
+    const hq=grpOffices(co)[0], dh=hq?hav(lat,lng,hq.lat,hq.lng):1e9;
+    if(o&&o.d<dh) return {k:o.k.split("·")[0],d:o.d,via:`가장 가까운 본부(${o.n}) 기준`};
+    return {k:"서울본부",d:dh,via:"본사 기준"};
+  }
+  return {k:"본사",d:0,via:""};
+}
+function branchOpts(co){
+  const O=(GROUPDB.org||{});
+  if(co==="에스텍베스트") return [{g:"지사",o:SITEDB.branches.map(b=>[b.key,b.name])}];
+  if(co==="에스텍시스템"){ const sec=(O.sys||[]).find(d=>d.n==="시큐리티사업부문"); const out=[];
+    (sec?sec.c:[]).filter(u=>u.c).forEach(u=>out.push({g:u.n,o:[[u.n,u.n+" (본부)"],...u.c.map(x=>[x,x])]})); return out; }
+  const a=(O.aff||[]).find(x=>x.n===co); const brs=[]; (a?a.c:[]).forEach(u=>(u.c||[]).forEach(x=>{ if(/지사$/.test(x)) brs.push([x,(u.n!=="지사"?u.n+" · ":"")+x]); }));
+  return [{g:co,o:[["본사","본사"],...brs]}];
+}
+function branchLabel(co,k){ for(const g of branchOpts(co)) for(const [v,l] of g.o) if(v===k) return l.replace(" (본부)",""); return k||""; }
+function fillBranchSel(){
+  const m=state.meta, co=grpCoOf(m), sel=$("#m_branch"); if(!sel) return;
+  sel.innerHTML=`<option value="">— ${esc(co)} —</option>`+branchOpts(co).map(g=>`<optgroup label="${esc(g.g)}">${g.o.map(([v,l])=>`<option value="${esc(v)}">${esc(l)}</option>`).join("")}</optgroup>`).join("");
+  sel.value=m.branch||"";
+}
+function pickSysSite(s){
+  const m=state.meta; if(m.mode!=="new"){ m.mode="new"; renderMode(); }
+  m.grpCo="에스텍시스템"; m.siteId=null; m.geoInfo=null; m.client=s.name; $("#m_client").value=s.name;
+  setLoc(s.lat,s.lng,"에스텍시스템 전사 사업장 위치(구글 지도)",s.name); renderOrg();
+}
+function renderOrg(view){
+  const O=GROUPDB.org, box=$("#orgBody"); if(!O||!box) return;
+  const co=grpCoOf(state.meta); view=view||renderOrg._v||(co==="에스텍시스템"?"sys":"aff"); renderOrg._v=view;
+  $("#orgSeg").querySelectorAll("button").forEach(b=>b.setAttribute("aria-checked",String(b.dataset.org===view)));
+  $("#orgSrc").textContent=O.src;
+  const unit=u=>`<div class="org-u"><b>${esc(u.n)}</b>${u.c?`<div class="chips">${u.c.map(x=>`<span>${esc(x)}</span>`).join("")}</div>`:""}</div>`;
+  if(view==="sys"){
+    const all=O.sys.flatMap(d=>d.c), nHq=all.filter(u=>/본부$/.test(u.n)).length, nBr=all.flatMap(u=>u.c||[]).filter(x=>/지사$/.test(x)).length, nCt=all.flatMap(u=>u.c||[]).filter(x=>/센터$/.test(x)).length;
+    box.innerHTML=`<div class="org-sum"><div><b>${O.sys.length}</b>부문·실</div><div><b>${nHq}</b>본부</div><div><b>${nBr}</b>지사</div><div><b>${nCt}</b>센터</div><div><b>${(GROUPDB.sites||[]).length}</b>사업장 위치 등록 <small class="hint">(서울·경인·메디칼)</small></div></div>
+      <div class="org-grid">${O.sys.map(d=>`<div class="org-col"><h4>${esc(d.n)}</h4>${d.c.map(unit).join("")}</div>`).join("")}</div>`;
+  } else {
+    const S=O.affSummary||{};
+    box.innerHTML=`<div class="org-sum">${Object.entries(S).map(([k,v])=>`<div><b>${v}</b>${esc(k)}</div>`).join("")}</div>
+      <div class="org-grid">${O.aff.map(a=>`<div class="org-col ${a.n===co?"me":""}"><h4>${esc(a.n)}</h4>${a.c.map(unit).join("")}</div>`).join("")}</div>`;
+  }
 }
 function renderSiteInfo(){
   siteBadge();
@@ -1474,12 +1605,16 @@ function renderSiteInfo(){
       <div class="online-res" id="geoRes"></div><div id="wikiBox" style="margin-top:8px"></div></div>`;
   }
   if(m.lat!=null){
-    const brs=[...SITEDB.branches.map(b=>({n:b.name,k:b.key,d:hav(m.lat,m.lng,b.lat,b.lng)})), {n:"에스텍 본사",k:"본사",d:hav(m.lat,m.lng,SITEDB.hq.lat,SITEDB.hq.lng)}].sort((a,b)=>a.d-b.d);
-    const near=SITEDB.sites.filter(x=>x.id!==m.siteId).map(x=>({...x,d:hav(m.lat,m.lng,x.lat,x.lng)})).sort((a,b)=>a.d-b.d);
-    const n10=near.filter(x=>x.d<=10);
-    h+=`<div class="blk"><h3>관할·접근성</h3><dl class="kv">${brs.slice(0,3).map(b=>`<dt>${esc(b.n)}</dt><dd>직선 ${b.d.toFixed(1)} km${b.k===m.branch?' <span class="pill">관할</span>':""}</dd>`).join("")}</dl></div>
-      <div class="blk"><h3>인근 에스텍 그룹 사업장 <span class="pill">${n10.length}곳 · 10km 이내</span></h3><ul class="near">${near.slice(0,5).map(x=>`<li><span>${esc(x.name)} <small class="hint">${esc(x.work)} ${x.total}명</small></span><span class="num">${x.d.toFixed(1)}km</span></li>`).join("")}</ul>
-      <p class="hint" style="margin:6px 0 0">대체근무·순회점검·차량 공동운영 검토 시 참고</p></div>`;
+    const co=grpCoOf(m), offs=grpOffices(co).map(o=>({...o,d:hav(m.lat,m.lng,o.lat,o.lng)})).sort((a,b)=>a.d-b.d);
+    const j=grpJuris(co,m.lat,m.lng), bl=branchLabel(co,m.branch);
+    const near=grpSites(co).filter(x=>!(co==="에스텍베스트"&&x.id===m.siteId)).map(x=>({...x,d:hav(m.lat,m.lng,x.lat,x.lng)})).sort((a,b)=>a.d-b.d);
+    const n10=near.filter(x=>x.d<=10), approx=offs.slice(0,3).some(o=>o.p==="a");
+    h+=`<div class="blk"><h3>관할·접근성 <select class="grpsel" id="grpCo" aria-label="기준 회사">${GRP_COS.map(c=>`<option ${c===co?"selected":""}>${c}</option>`).join("")}</select></h3><dl class="kv">
+      ${m.branch?`<dt>관할</dt><dd><b>${esc(co)} ${esc(bl)}</b>${j&&j.via?` <small class="hint">${esc(j.via)}</small>`:""}</dd>`:""}
+      ${offs.slice(0,3).map(b=>`<dt>${esc(b.n)}</dt><dd>직선 ${b.d.toFixed(1)} km${b.p==="a"?' <small class="hint">(근사)</small>':""}</dd>`).join("")}</dl>
+      ${approx?`<p class="hint" style="margin:6px 0 0">(근사) = 주소의 동 단위 위치로 계산한 거리입니다.</p>`:""}</div>
+      <div class="blk"><h3>인근 ${esc(co)} 사업장 ${near.length?`<span class="pill">${n10.length}곳 · 10km 이내</span>`:""}</h3>${near.length?`<ul class="near">${near.slice(0,5).map(x=>`<li><span>${esc(x.name)} <small class="tag">${esc(x.tag)}</small></span><span class="num">${x.d.toFixed(1)}km</span></li>`).join("")}</ul>
+      <p class="hint" style="margin:6px 0 0">대체근무·순회점검·차량 공동운영 검토 시 참고${co==="에스텍시스템"?" · 사업장 위치: 에스텍시스템 전사 사업장 위치 지도(서울·경인·메디칼본부 202곳)":""}</p>`:`<p class="hint" style="margin:0">${esc(co)}의 사업장 위치 자료가 아직 없습니다. 본사까지 거리만 표시합니다.</p>`}</div>`;
   }
   box.innerHTML=h+linksBlk();
   $("#btnFromSite").hidden=!s;
@@ -2212,7 +2347,11 @@ function go(n){
 /* ───────── 메타 바인딩 ───────── */
 function bindMeta(){
   const m=state.meta;
-  $("#m_branch").innerHTML=SITEDB.branches.map(b=>`<option value="${b.key}">${b.name}</option>`).join("");
+  fillBranchSel();
+  if(!bindMeta._once){ bindMeta._once=1;
+  $("#siteInfo").addEventListener("change",e=>{ if(e.target.id!=="grpCo") return; const m=state.meta; m.grpCo=e.target.value; if(m.grpCo!=="에스텍베스트"&&m.siteId){ m.siteId=null; } m.branch=""; autoBranch(); renderSiteInfo(); renderOrg(); persistDraft(); });
+  $("#orgSeg").addEventListener("click",e=>{ const b=e.target.closest("button[data-org]"); if(!b) return; renderOrg(b.dataset.org); }); }
+  renderOrg._v=null; renderOrg();
   [["client","m_client"],["addr","m_addr"],["svc","m_svc"],["year","m_year"],["date","m_date"],["from","m_from"],["to","m_to"],["valid","m_valid"],["branch","m_branch"]].forEach(([k,id])=>{ $("#"+id).value=m[k]??""; });
   yearTag();
 }
@@ -2280,7 +2419,7 @@ function loadSample(k){
       R({rank:"요원",detail:"매암·3조2교대",shift:"s32",count:1,wage:10320,ot:25,night:82,dayH:12,rest:1,adj:50000,leave:16}),
       R({rank:"요원",detail:"매암·3조2교대",shift:"s32",count:2,wage:10320,ot:25,night:82,dayH:12,rest:1,adj:50000,leave:26})
     ];
-    const s=SITEDB.sites.find(x=>x.name==="송원산업 울산"); if(s){ st.meta.siteId=s.id; st.meta.addr=s.addr; st.meta.lat=s.lat; st.meta.lng=s.lng; st.meta.branch=s.br; }
+    const s=SITEDB.sites.find(x=>x.name==="송원산업 울산"); if(s){ st.meta.siteId=s.id; st.meta.addr=s.addr; st.meta.lat=s.lat; st.meta.lng=s.lng; st.meta.branch=s.br; st.meta.grpCo="에스텍베스트"; }
   }
   if(k==="lotte"){
     Object.assign(st.meta,{client:"롯데정밀화학", svc:"사내 폐기물수거 도급업무", year:2027, date:today(), from:"2027-01-01", to:"2027-12-31"});
@@ -2290,7 +2429,7 @@ function loadSample(k){
       Object.assign(newRole("spc"),{rank:"요원",detail:"폐기물수거원",gender:"M",count:2,wage:10700,leave:16,laborDay:false,pensionPct:0,special:"on",uniform:14145,note:"만 60세 이상"})
     ];
     st.vehicles=[newVeh("porter_used")];
-    const s=SITEDB.sites.find(x=>x.name==="롯데정밀화학"); if(s){ st.meta.siteId=s.id; st.meta.addr=s.addr; st.meta.lat=s.lat; st.meta.lng=s.lng; st.meta.branch=s.br; }
+    const s=SITEDB.sites.find(x=>x.name==="롯데정밀화학"); if(s){ st.meta.siteId=s.id; st.meta.addr=s.addr; st.meta.lat=s.lat; st.meta.lng=s.lng; st.meta.branch=s.br; st.meta.grpCo="에스텍베스트"; }
   }
   if(k==="uc"){
     Object.assign(st.meta,{client:"울산과학대학교", svc:"미화(위생관리)용역 도급업무", year:2026, date:today(), from:"2026-01-01", to:"2026-12-31"});
@@ -2312,7 +2451,7 @@ function loadSample(k){
       {id:nid(),name:"왁스머신기 (BP-16\")",mode:"new",qty:4,price:590000,rep:5,months:60}
     ];
     st.others=[{id:nid(),name:"재료비(청소 소모품)",amount:1890000,cycle:"월",months:12,note:"에스텍 그룹 지급 기준"}];
-    const s=SITEDB.sites.find(x=>x.name==="울산과학대학교"); if(s){ st.meta.siteId=s.id; st.meta.addr=s.addr; st.meta.lat=s.lat; st.meta.lng=s.lng; st.meta.branch=s.br; }
+    const s=SITEDB.sites.find(x=>x.name==="울산과학대학교"); if(s){ st.meta.siteId=s.id; st.meta.addr=s.addr; st.meta.lat=s.lat; st.meta.lng=s.lng; st.meta.branch=s.br; st.meta.grpCo="에스텍베스트"; }
   }
   st.set.cond=DEFAULT_COND; st.meta.mode="renew";
   applyState(st);
@@ -2718,7 +2857,7 @@ function fxBuildState(A, idx, opts={}){
       if(FR.rates.emp!=null||c.set.emp!=null){ const prem=fEmp-RY.ui; st.set.empSize=Object.entries(EMP_SIZE).sort((a,b)=>Math.abs(a[1][1]-prem)-Math.abs(b[1][1]-prem))[0][0]; } } }
   const fps=c.roles.map(x=>x.opt.filePrice).filter(Boolean);
   if(fps.length && fps.some(v=>v%1000)) st.set.priceRound = fps.some(v=>v%100) ? "none" : "down2";
-  const s=fxSite(client); if(s){ Object.assign(st.meta,{siteId:s.id, addr:s.addr, lat:s.lat, lng:s.lng, branch:s.br}); }
+  const s=fxSite(client); if(s){ Object.assign(st.meta,{siteId:s.id, addr:s.addr, lat:s.lat, lng:s.lng, branch:s.br, grpCo:"에스텍베스트"}); }
   st.roles=c.roles.map((x,i)=>{ const r=newRole(x.cat, {...x.opt}); if(c.kind==="summary"){ r.wage=st.set.minWage; } else r.srcCol=c.block.cols[i]; return migrateRole(r); });
   st.importSrc={name:opts.file||"", sheet:c.sheet, map:c.map, year:Y, xls:/\.(xls|csv)$/i.test(opts.file||"")};
   st.others=c.others.map(o=>({...o,id:nid()}));
@@ -2819,6 +2958,8 @@ function renderGrowth(){
       <div class="g-ft">↗ 2026 반기보고서 · 2026.6.30</div>`;
     requestAnimationFrame(()=>setTimeout(()=>gc.querySelectorAll(".bar i").forEach(i=>i.style.width=i.dataset.w+"%"),80)); }
   const cb=$("#coBest"); if(cb) cb.onclick=openBestPopup;
+  document.querySelectorAll("#railBiz .biz[data-href]").forEach(b=>{ const go=e=>{ if(e.target.closest("a")) return; window.open(b.dataset.href,"_blank","noopener"); };
+    b.onclick=go; b.onkeydown=e=>{ if(e.key==="Enter"||e.key===" "){ e.preventDefault(); go(e); } }; });
 }
 
 /* ───────── 원본 견적서 파일 보관 (이 기기 IndexedDB) ───────── */
@@ -3980,8 +4121,9 @@ async function exportXlsx(){
 function applyState(st){
   state=fixBranchName(st); uid = 1000; state.roles.forEach(migrateRole);
   if(!state.meta.mode) state.meta.mode = state.roles.length||state.meta.siteId ? "renew" : "new";
+  if(!state.meta.grpCo) state.meta.grpCo = state.meta.siteId ? "에스텍베스트" : "에스텍시스템";
   bindMeta(); renderRoles(); renderSettings(); renderAddons(); renderSiteInfo(); renderMode();
-  if(map){ showSel(); if(state.meta.lat==null) map.setView([35.55,128.9],8); }
+  if(map){ showSel(); if(state.meta.lat==null) map.setView([36.35,127.75],7); }
   recalc();
 }
 function boot(){
@@ -4015,16 +4157,16 @@ function boot(){
   $("#btnPrint").onclick=()=>NATIVE?nativePrint():window.print();
   const vg={}; Object.entries(VEH_PRESET).forEach(([k,p])=>(vg[p.grp]=vg[p.grp]||[]).push([k,p]));
   $("#vehSel").innerHTML=Object.entries(vg).map(([g,L])=>`<optgroup label="${g}">${L.map(([k,p])=>`<option value="${k}">${p.name} · ${won(p.price)}원</option>`).join("")}</optgroup>`).join("");
-  const addVeh=k=>{ state.vehicles.push(newVeh(k)); renderAddons(); recalc(); toast(`${VEH_PRESET[k].name}을(를) 추가했습니다 · 구매가·운행거리를 확인하세요`); };
+  const addVeh=(k,pk)=>{ const v=newVeh(k); if(pk&&pk.price){ v.name=pickName(VEH_PRESET[k].name,pk); v.price=pk.price; } state.vehicles.push(v); renderAddons(); recalc(); toast(`${v.name}을(를) 추가했습니다 · 구매가·운행거리를 확인하세요`); };
   $("#btnAddVeh").onclick=()=>addVeh($("#vehSel").value);
-  const showVeh=()=>{ const k=$("#vehSel").value, P=VEH_PRESET[k]; $("#vehPrev").innerHTML=eqPic(P.name,40); openEqPopup(P.name,P.price,()=>addVeh(k),`(구매가 · 연료 ${P.fuelType||"경유"})`,"이 차량 추가"); };
+  const showVeh=()=>{ const k=$("#vehSel").value, P=VEH_PRESET[k]; $("#vehPrev").innerHTML=eqPic(P.name,40); openEqPopup(P.name,P.price,pk=>addVeh(k,pk),`(구매가 · 연료 ${P.fuelType||"경유"})`,"이 차량 추가"); };
   $("#vehSel").onchange=showVeh; $("#vehPrev").onclick=showVeh; $("#vehPrev").innerHTML=eqPic(VEH_PRESET[$("#vehSel").value].name,40);
   $("#vehQuick").innerHTML=[["porter_used","포터2 중고"],["porter_new","포터2 신차"],["ev","1톤 전기트럭"],["sedan","세단 (쏘나타 급)"],["suv","SUV (쏘렌토 급)"],["pickup","픽업트럭 (타스만 급)"]].map(([k,l])=>`<button class="btn sm" data-addveh="${k}">+ ${l}</button>`).join("");
   $$("[data-addveh]").forEach(b=>b.onclick=()=>addVeh(b.dataset.addveh));
   $("#etcSel").innerHTML=ETC_CAT.map(([g,L],gi)=>`<optgroup label="${g}">${L.map((x,i)=>`<option value="${gi}.${i}">${x[0]} · ${won(x[1])}원/${x[2]}${x[4]?"·인당":""}</option>`).join("")}</optgroup>`).join("");
   const etcItem=(g,x)=>({id:nid(),grp:g,name:x[0],amount:x[1],cycle:x[2],months:x[3],qty:1,per:x[4]?"head":"",note:x[5]||""});
-  const addEtcSel=()=>{ const [gi,i]=$("#etcSel").value.split(".").map(Number); const [g,L]=ETC_CAT[gi]; state.others.push(etcItem(g,L[i])); renderAddons(); recalc(); toast(`${L[i][0]}을(를) 추가했습니다`); };
-  $("#btnAddEtcCat").onclick=addEtcSel;
+  const addEtcSel=pk=>{ const [gi,i]=$("#etcSel").value.split(".").map(Number); const [g,L]=ETC_CAT[gi], it=etcItem(g,L[i]); if(pk&&pk.price){ it.name=pickName(it.name,pk); it.amount=pk.price; } state.others.push(it); renderAddons(); recalc(); toast(`${it.name}을(를) 추가했습니다`); };
+  $("#btnAddEtcCat").onclick=()=>addEtcSel();
   const showEtc=()=>{ const [gi,i]=$("#etcSel").value.split(".").map(Number); const x=ETC_CAT[gi][1][i]; $("#etcPrev").innerHTML=eqPic(x[0],40); openEqPopup(x[0],x[1],addEtcSel,`/ ${x[2]}${x[4]?" · 인당":""}`,"이 항목 추가"); };
   $("#etcSel").onchange=showEtc; $("#etcPrev").onclick=showEtc; { const x=ETC_CAT[0][1][0]; $("#etcPrev").innerHTML=eqPic(x[0],40); }
   $("#btnEtcRec").onclick=()=>{ const cats=new Set(state.roles.map(r=>r.cat)); if(!cats.size){ toast("먼저 인력 구성에서 직종을 추가하세요"); return; }
@@ -4032,11 +4174,11 @@ function boot(){
     ETC_CAT.forEach(([g,L])=>L.forEach(x=>{ if(x[6] && x[6].split(" ").some(c=>cats.has(c)) && !have.has(x[0])){ state.others.push(etcItem(g,x)); n++; } }));
     renderAddons(); recalc(); toast(n?`투입 직종에 맞는 항목 ${n}개를 추가했습니다 · 단가를 현장에 맞게 고치세요`:"추천 항목이 이미 모두 들어 있습니다"); };
   $("#eqCat").innerHTML=EQUIP_CAT.map(([n,p],i)=>`<option value="${i}">${n} · ${won(p)}원</option>`).join("");
-  const addEq=()=>{ const [n,p]=EQUIP_CAT[+$("#eqCat").value]; state.equips.push({id:nid(),name:n,mode:"new",qty:1,price:p,rep:5,months:60}); renderAddons(); recalc(); toast(`${n}을(를) 추가했습니다`); };
+  const addEq=pk=>{ const [n0,p0]=EQUIP_CAT[+$("#eqCat").value], n=pickName(n0,pk&&pk.price?pk:null), p=pk&&pk.price?pk.price:p0; state.equips.push({id:nid(),name:n,mode:"new",qty:1,price:p,rep:5,months:60}); renderAddons(); recalc(); toast(`${n}을(를) 추가했습니다`); };
   const showEq=()=>{ const [n,p]=EQUIP_CAT[+$("#eqCat").value]; $("#eqPrev").innerHTML=eqPic(n,40); openEqPopup(n,p,addEq); };
   $("#eqCat").onchange=showEq; $("#eqPrev").onclick=showEq;
   { const [n]=EQUIP_CAT[0]; $("#eqPrev").innerHTML=eqPic(n,40); }
-  $("#btnAddEq").onclick=addEq;
+  $("#btnAddEq").onclick=()=>addEq();
   $("#btnAddEtc").onclick=()=>{ state.others.push({id:nid(),name:"",amount:0,cycle:"월",months:12,qty:1,per:"",note:""}); renderAddons(); recalc(); };
   $("#am_spread").onchange=()=>{ state.addonMode="spread"; renderAddons(); recalc(); };
   $("#am_sep").onchange=()=>{ state.addonMode="separate"; renderAddons(); recalc(); };
