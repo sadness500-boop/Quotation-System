@@ -469,6 +469,17 @@ dl.kv dd{margin:0;overflow-wrap:anywhere}
 .brmk.sys{border-color:#d9480f;color:#b0390a}
 .grpsel{font:inherit;font-size:12.5px;font-weight:600;padding:2px 6px;border:1px solid var(--line);border-radius:6px;background:var(--paper);color:var(--ink);margin-left:6px}
 .near li small.tag{color:var(--muted)}
+.org-wrap{display:grid;grid-template-rows:0fr;transition:grid-template-rows .45s ease}
+.org-wrap.open{grid-template-rows:1fr}
+.org-in{overflow:hidden;min-height:0}
+.org-wrap.open .org-in{padding-top:8px}
+.org-seg button i{font-style:normal;display:inline-block;transition:transform .3s;margin-left:2px}
+.org-seg button[aria-expanded="true"] i{transform:rotate(180deg)}
+.org-seg button[aria-expanded="true"]{background:var(--navy);color:#fff;font-weight:600}
+.org-tip{margin:4px 0 0}.org-open .org-tip{display:none}
+@media (prefers-reduced-motion:reduce){.org-wrap{transition:none}}
+.svc-combo{display:flex;gap:6px}.svc-combo select{flex:0 0 46%;min-width:0}.svc-combo input{flex:1;min-width:0}
+.br-combo{display:flex;gap:6px}.br-combo select{flex:1;min-width:0}
 .org-sum{display:flex;flex-wrap:wrap;gap:8px;margin:2px 0 12px}
 .org-sum div{background:var(--soft,rgba(27,42,134,.06));border:1px solid var(--line);border-radius:10px;padding:6px 12px;font-size:12.5px}
 .org-sum b{font-size:17px;margin-right:3px;color:var(--navy)}
@@ -690,7 +701,7 @@ aside.rail{position:sticky;top:calc(env(safe-area-inset-top,0px) + 82px);align-s
 <script>try{var _t=localStorage.getItem("stec_theme");if(_t==="light"||_t==="dark")document.documentElement.setAttribute("data-theme",_t)}catch(e){}</script>
 <header class="topbar">
   <button type="button" class="logo-fig" id="logoHome" title="메인화면으로" aria-label="메인화면으로"><img src="__FIGLOGO__" alt="S-Tec 에스텍 그룹"></button>
-  <div class="brand" title="에스텍 그룹 용역인력 견적시스템"><b>S-Tec Quotation System</b><span class="ver">Ver 5.0</span></div>
+  <div class="brand" title="에스텍 그룹 용역인력 견적시스템"><b>S-Tec Quotation System</b><span class="ver">Ver 5.1</span></div>
   <div class="sp"><div class="gstrip" id="gstrip" aria-hidden="true"></div></div>
   <div class="tb-home home-only" id="tbHome"></div>
   <div class="tb-actions">
@@ -843,21 +854,22 @@ aside.rail{position:sticky;top:calc(env(safe-area-inset-top,0px) + 82px);align-s
       </div>
 
       <div class="card" id="orgCard">
-        <div class="h-row"><div><h2>에스텍 그룹 조직 현황</h2><p class="sub" id="orgSrc"></p></div><div class="seg" role="radiogroup" aria-label="조직 보기" id="orgSeg"><button type="button" data-org="sys">에스텍시스템</button><button type="button" data-org="aff">계열사</button></div></div>
-        <div id="orgBody"></div>
+        <div class="h-row"><div><h2>에스텍 그룹 조직 현황</h2><p class="sub" id="orgSrc"></p></div><div class="seg org-seg" aria-label="조직 보기" id="orgSeg"><button type="button" data-org="sys" aria-expanded="false" aria-controls="orgWrap">에스텍시스템 <i>▾</i></button><button type="button" data-org="aff" aria-expanded="false" aria-controls="orgWrap">계열사 <i>▾</i></button></div></div>
+        <p class="hint org-tip" id="orgTip">버튼을 누르면 조직도가 아래로 펼쳐집니다.</p>
+        <div class="org-wrap" id="orgWrap"><div class="org-in"><div id="orgBody"></div></div></div>
       </div>
 
       <div class="card">
         <h2>용역 조건</h2>
         <p class="sub">견적서 표지에 들어가는 항목입니다.</p>
         <div class="grid g4">
-          <label class="f" style="grid-column:span 2"><span>용역명</span><input class="inp" id="m_svc"></label>
+          <label class="f" style="grid-column:span 2"><span>용역명 <em>· 종류를 고르거나 직접 입력</em></span><div class="svc-combo"><select class="inp" id="m_svcPick" aria-label="용역 종류"></select><input class="inp" id="m_svc" aria-label="용역명"></div></label>
           <label class="f"><span>견적 기준연도 <em class="ytag" id="m_yearTag"></em></span><select class="inp" id="m_year"><option>2025</option><option>2026</option><option>2027</option><option>2028</option><option>2029</option><option>2030</option></select></label>
           <label class="f"><span>작성일</span><input class="inp" type="date" id="m_date"></label>
           <label class="f"><span>용역 시작</span><input class="inp" type="date" id="m_from"></label>
           <label class="f"><span>용역 종료</span><input class="inp" type="date" id="m_to"></label>
           <label class="f"><span>견적 유효기간</span><input class="inp" id="m_valid"></label>
-          <label class="f"><span>관할 지사</span><select class="inp" id="m_branch"></select></label>
+          <label class="f" style="grid-column:span 2"><span>관할 회사 · 관할 지사 <em>· 계열사 선택 가능</em></span><div class="br-combo"><select class="inp" id="m_co" aria-label="관할 회사"></select><select class="inp" id="m_branch" aria-label="관할 지사"></select></div></label>
         </div>
       </div>
     </section>
@@ -1511,7 +1523,7 @@ function selectSite(id, fromMap){
   state.meta.siteId=s.id; state.meta.client=s.name; state.meta.addr=s.addr; state.meta.geoInfo=null; state.meta.grpCo="에스텍베스트";
   $("#m_client").value=s.name; $("#m_addr").value=s.addr;
   const w=s.work; state.meta.svc = (w.includes("보안")&&w.includes("미화"))?"보안·미화용역 도급업무": w.startsWith("미화")?"미화(위생관리)용역 도급업무": w.startsWith("주차")?"주차관리용역 도급업무":"보안용역 도급업무";
-  $("#m_svc").value=state.meta.svc;
+  $("#m_svc").value=state.meta.svc; syncSvcPick();
   setLoc(s.lat,s.lng,"에스텍 그룹 사업장 DB", s.name);
   $("#sugg").hidden=true;
 }
@@ -1522,6 +1534,8 @@ function siteBadge(){
   else el.innerHTML="";
 }
 /* ───────── 에스텍 그룹: 회사별 본부·지사·사업장, 조직 현황 ───────── */
+const SVC_TYPES=["보안용역 도급업무","미화(위생관리)용역 도급업무","시설관리용역 도급업무","주차관리용역 도급업무","보안·미화용역 도급업무","보안·미화·시설 종합관리용역 도급업무","안내(리셉션)용역 도급업무","조경관리용역 도급업무","방역·소독용역 도급업무","구내식당(조리)용역 도급업무"];
+function syncSvcPick(){ const s=$("#m_svcPick"); if(!s) return; if(!s.options.length) s.innerHTML=`<optgroup label="용역 종류">${SVC_TYPES.map(x=>`<option>${x}</option>`).join("")}</optgroup><option value="">기타 (직접 입력)</option>`; const v=state.meta.svc||""; s.value=SVC_TYPES.includes(v)?v:""; }
 const GRP_COS=["에스텍시스템","에스텍베스트","에스텍에이스","에스텍퍼스트","에스텍세이프","에스텍플러스","에스텍프라임","에스텍에코","어울림에프"];
 const grpCoOf=m=>GRP_COS.includes(m&&m.grpCo)?m.grpCo:"에스텍시스템";
 function grpOffices(co){
@@ -1559,6 +1573,7 @@ function branchOpts(co){
 function branchLabel(co,k){ for(const g of branchOpts(co)) for(const [v,l] of g.o) if(v===k) return l.replace(" (본부)",""); return k||""; }
 function fillBranchSel(){
   const m=state.meta, co=grpCoOf(m), sel=$("#m_branch"); if(!sel) return;
+  const cs=$("#m_co"); if(cs){ if(!cs.options.length) cs.innerHTML=GRP_COS.map(c=>`<option>${c}</option>`).join(""); cs.value=co; }
   sel.innerHTML=`<option value="">— ${esc(co)} —</option>`+branchOpts(co).map(g=>`<optgroup label="${esc(g.g)}">${g.o.map(([v,l])=>`<option value="${esc(v)}">${esc(l)}</option>`).join("")}</optgroup>`).join("");
   sel.value=m.branch||"";
 }
@@ -1570,7 +1585,8 @@ function pickSysSite(s){
 function renderOrg(view){
   const O=GROUPDB.org, box=$("#orgBody"); if(!O||!box) return;
   const co=grpCoOf(state.meta); view=view||renderOrg._v||(co==="에스텍시스템"?"sys":"aff"); renderOrg._v=view;
-  $("#orgSeg").querySelectorAll("button").forEach(b=>b.setAttribute("aria-checked",String(b.dataset.org===view)));
+  const open=!!renderOrg._open; $("#orgWrap").classList.toggle("open",open); $("#orgCard").classList.toggle("org-open",open);
+  $("#orgSeg").querySelectorAll("button").forEach(b=>b.setAttribute("aria-expanded",String(open&&b.dataset.org===view)));
   $("#orgSrc").textContent=O.src;
   const unit=u=>`<div class="org-u"><b>${esc(u.n)}</b>${u.c?`<div class="chips">${u.c.map(x=>`<span>${esc(x)}</span>`).join("")}</div>`:""}</div>`;
   if(view==="sys"){
@@ -2349,10 +2365,15 @@ function bindMeta(){
   const m=state.meta;
   fillBranchSel();
   if(!bindMeta._once){ bindMeta._once=1;
+  $("#m_svcPick").addEventListener("change",e=>{ const v=e.target.value, i=$("#m_svc"); if(v){ i.value=v; state.meta.svc=v; recalc(); persistDraft(); } else { i.focus(); i.select(); } });
+  $("#m_svc").addEventListener("input",()=>{ state.meta.svc=$("#m_svc").value; syncSvcPick(); });
+  $("#m_co").addEventListener("change",e=>{ const m=state.meta; m.grpCo=e.target.value; if(m.grpCo!=="에스텍베스트"&&m.siteId){ m.siteId=null; } m.branch=""; fillBranchSel(); if(m.lat!=null) autoBranch(); renderSiteInfo(); renderOrg(); recalc(); persistDraft(); });
   $("#siteInfo").addEventListener("change",e=>{ if(e.target.id!=="grpCo") return; const m=state.meta; m.grpCo=e.target.value; if(m.grpCo!=="에스텍베스트"&&m.siteId){ m.siteId=null; } m.branch=""; autoBranch(); renderSiteInfo(); renderOrg(); persistDraft(); });
-  $("#orgSeg").addEventListener("click",e=>{ const b=e.target.closest("button[data-org]"); if(!b) return; renderOrg(b.dataset.org); }); }
+  $("#orgSeg").addEventListener("click",e=>{ const b=e.target.closest("button[data-org]"); if(!b) return; const v=b.dataset.org; renderOrg._open = !(renderOrg._open && renderOrg._v===v); renderOrg(v);
+    if(renderOrg._open) setTimeout(()=>{ const c=$("#orgCard").getBoundingClientRect(); if(c.bottom>innerHeight) $("#orgCard").scrollIntoView({behavior:"smooth",block:"start"}); },460); }); }
   renderOrg._v=null; renderOrg();
   [["client","m_client"],["addr","m_addr"],["svc","m_svc"],["year","m_year"],["date","m_date"],["from","m_from"],["to","m_to"],["valid","m_valid"],["branch","m_branch"]].forEach(([k,id])=>{ $("#"+id).value=m[k]??""; });
+  syncSvcPick();
   yearTag();
 }
 function yearTag(){ const t=$("#m_yearTag"); if(!t) return; const Y0=new Date().getFullYear(), y=+state.meta.year;
