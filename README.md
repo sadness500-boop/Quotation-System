@@ -82,3 +82,4 @@ python3 tools/build.py
 - v4.5: 메인 맨 아래 ‘Things to enjoy’(오늘의 뽑기판·팔도 제철맛길·팔도 축제길) 추가, 필기체 서명 ‘Produced by Rat Rae Choi’(Great Vibes, SIL OFL 1.1 — 글자만 잘라 내장) 고정 표시.
 - v4.6: 제목 아래 버전에서 날짜 삭제, 제작자 서명을 가운데 정렬·그라데이션 필기체·밑줄 장식으로 다듬음.
 - v4.7: 작은 글씨 시인성 개선(9~11.5px → 11~12.5px, 중간 굵기, 흐림 줄임, 회색 글자 대비 강화), 제작자 서명에 RC 모노그램 추가·잘림 수정.
+- v4.8: 부대비용 미화·보안 장비 — 고르면 장비 그림·용도·단가 팝업(+ 이 장비 추가), 장비표에 그림 버튼, PC별 ‘사진 등록’으로 실제 사진 교체(그림: Material Design Icons, Apache 2.0). 메인 하단 ‘THINGS TO ENJOY’·‘S-TEC QUOTATION SYSTEM’ 작은 글자 삭제. 쓰지 않던 인물 사진(personFull) 제거.
