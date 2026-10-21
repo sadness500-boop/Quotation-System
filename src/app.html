@@ -701,7 +701,7 @@ aside.rail{position:sticky;top:calc(env(safe-area-inset-top,0px) + 82px);align-s
 <script>try{var _t=localStorage.getItem("stec_theme");if(_t==="light"||_t==="dark")document.documentElement.setAttribute("data-theme",_t)}catch(e){}</script>
 <header class="topbar">
   <button type="button" class="logo-fig" id="logoHome" title="메인화면으로" aria-label="메인화면으로"><img src="__FIGLOGO__" alt="S-Tec 에스텍 그룹"></button>
-  <div class="brand" title="에스텍 그룹 용역인력 견적시스템"><b>S-Tec Quotation System</b><span class="ver">Ver 5.2</span></div>
+  <div class="brand" title="에스텍 그룹 용역인력 견적시스템"><b>S-Tec Quotation System</b><span class="ver">Ver 5.3</span></div>
   <div class="sp"><div class="gstrip" id="gstrip" aria-hidden="true"></div></div>
   <div class="tb-home home-only" id="tbHome"></div>
   <div class="tb-actions">
@@ -2287,7 +2287,7 @@ function renderTbHome(){
   el.innerHTML=`<button type="button" class="tbp" id="tbPerson" title="내 정보(사진·이름·소속) 등록"><img src="${IMG.person}" alt=""><span>견적 담당<b>${esc(S.coPerson||"내 정보 등록")}${S.coPersonTitle?` ${esc(S.coPersonTitle)}`:""}</b>${esc(S.coBranch||"")}</span></button>
     <button type="button" class="tbq" id="tbQR" title="QR 크게 보기"><span class="qb">${qrSvg(url,3)}<img src="${IMG.cube}" alt=""></span><span>앱 다운로드 QR<b>휴대폰으로 찍기</b>누르면 크게 보기</span></button>`;
   $("#tbPerson").onclick=openProfile;
-  $("#tbQR").onclick=()=>$("#qrBig")&&$("#qrBig").click();
+  $("#tbQR").onclick=openQRBig;
 }
 function renderPerson(){ renderTbHome();
   const S=state.set, el=$("#personCard"); if(!el) return;
@@ -2305,6 +2305,9 @@ function qrSvg(text, cell){
 }
 let installEvt=null;
 window.addEventListener("beforeinstallprompt",e=>{ e.preventDefault(); installEvt=e; const b=document.querySelector("#qrInstall"); if(b) b.hidden=false; });
+function openQRBig(){ const url=appUrl(); const ov=document.createElement("div"); ov.className="qr-ov"; ov.innerHTML=`<div class="qr-pop" role="dialog" aria-modal="true" aria-label="앱 다운로드 QR"><div class="qr-pop-box">${qrSvg(url,8)}<img class="qr-logo" src="${IMG.cube}" alt=""></div><b>에스텍 그룹 용역인력 견적시스템</b><span>${esc(url)}</span><button type="button" class="btn pri">닫기</button></div>`;
+  const close=()=>{ ov.remove(); document.removeEventListener("keydown",k); }; const k=e=>{ if(e.key==="Escape") close(); };
+  ov.onclick=e=>{ if(e.target===ov||e.target.tagName==="BUTTON") close(); }; document.addEventListener("keydown",k); document.body.appendChild(ov); }
 function renderQR(){
   const el=$("#qrCard"); if(!el) return; const url=appUrl();
   el.innerHTML=`<div class="lbl">앱 다운로드 QR</div>
@@ -2319,7 +2322,7 @@ function renderQR(){
   $("#qrEdit").onclick=()=>{ $("#qrEditBox").hidden=!$("#qrEditBox").hidden; };
   renderTbHome();
   $("#qrSave").onclick=()=>{ const v=$("#qrUrlIn").value.trim(); try{ if(v&&v!==APP_URL_DEFAULT) localStorage.setItem("stec_app_url",v); else localStorage.removeItem("stec_app_url"); }catch(e){} renderQR(); toast("QR 주소를 바꿨습니다"); };
-  $("#qrBig").onclick=()=>{ const ov=document.createElement("div"); ov.className="qr-ov"; ov.innerHTML=`<div class="qr-pop"><div class="qr-pop-box">${qrSvg(url,8)}<img class="qr-logo" src="${IMG.cube}" alt=""></div><b>에스텍 그룹 용역인력 견적시스템</b><span>${esc(url)}</span><button type="button" class="btn pri">닫기</button></div>`; ov.onclick=e=>{ if(e.target===ov||e.target.tagName==="BUTTON") ov.remove(); }; document.body.appendChild(ov); };
+  $("#qrBig").onclick=openQRBig;
 }
 function recalc(){
   const R=calcAll(state); lastR=R;
