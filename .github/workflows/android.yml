@@ -1,6 +1,6 @@
 # 안드로이드 앱(APK) 자동 만들기
 # index.html 이나 mobile 폴더가 바뀌면 GitHub 서버가 앱을 새로 만들어
-# "android-latest" 릴리스에 S-Tec-Quotation.apk 로 올립니다.
+# "android-latest" 릴리스에 S-Tec-Quotation-System.apk 로(예전 링크용 S-Tec-Quotation.apk 도 함께) 올립니다.
 name: Android 앱 만들기
 
 on:
@@ -38,7 +38,7 @@ jobs:
       - name: 버전 정하기
         id: ver
         run: |
-          f=$(ls 에스텍_용역인력_견적시스템_v*.html | head -1)
+          f=$(ls S-Tec-Quotation-System_v*.html | head -1)
           v=$(echo "$f" | sed -E 's/.*_v([0-9.]+)\.html/\1/')
           echo "name=$v" >> "$GITHUB_OUTPUT"
           echo "code=$(( GITHUB_RUN_NUMBER + 100 ))" >> "$GITHUB_OUTPUT"
@@ -97,22 +97,23 @@ jobs:
             echo "::error title=APK 만들기 실패::$msg"
             exit 1
           fi
+          cp app/build/outputs/apk/release/app-release.apk "$GITHUB_WORKSPACE/S-Tec-Quotation-System.apk"
           cp app/build/outputs/apk/release/app-release.apk "$GITHUB_WORKSPACE/S-Tec-Quotation.apk"
 
       - uses: actions/upload-artifact@v4
         with:
-          name: S-Tec-Quotation-apk
-          path: S-Tec-Quotation.apk
+          name: S-Tec-Quotation-System-apk
+          path: S-Tec-Quotation-System.apk
 
       - name: 릴리스에 올리기 (android-latest)
         env:
           GH_TOKEN: ${{ github.token }}
           V: ${{ steps.ver.outputs.name }}
         run: |
-          notes="S-Tec Quotation System v$V 안드로이드 앱 (빌드 ${{ steps.ver.outputs.code }}, $(date -u +%Y-%m-%d)). 휴대폰에서 S-Tec-Quotation.apk 를 눌러 설치하세요."
+          notes="S-Tec-Quotation-System v$V 안드로이드 앱 (빌드 ${{ steps.ver.outputs.code }}, $(date -u +%Y-%m-%d)). 휴대폰에서 S-Tec-Quotation-System.apk 를 눌러 설치하세요."
           if gh release view android-latest >/dev/null 2>&1; then
-            gh release upload android-latest S-Tec-Quotation.apk --clobber
+            gh release upload android-latest S-Tec-Quotation-System.apk S-Tec-Quotation.apk --clobber
             gh release edit android-latest --title "안드로이드 앱 v$V" --notes "$notes" --latest
           else
-            gh release create android-latest S-Tec-Quotation.apk --title "안드로이드 앱 v$V" --notes "$notes" --latest
+            gh release create android-latest S-Tec-Quotation-System.apk S-Tec-Quotation.apk --title "안드로이드 앱 v$V" --notes "$notes" --latest
           fi

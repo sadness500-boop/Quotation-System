@@ -1,6 +1,6 @@
 {
-  "name": "에스텍 그룹 용역인력 견적시스템",
-  "short_name": "에스텍 견적",
+  "name": "S-Tec-Quotation-System · 에스텍 그룹 용역인력 견적시스템",
+  "short_name": "S-Tec-Quotation-System",
   "description": "에스텍 그룹 용역인력 도급비 견적 프로그램",
   "start_url": "./",
   "scope": "./",
@@ -9,7 +9,17 @@
   "theme_color": "#1b2a86",
   "lang": "ko",
   "icons": [
-    {"src": "icon-192.png", "sizes": "192x192", "type": "image/png", "purpose": "any"},
-    {"src": "icon-512.png", "sizes": "512x512", "type": "image/png", "purpose": "any"}
+    {
+      "src": "icon-192.png",
+      "sizes": "192x192",
+      "type": "image/png",
+      "purpose": "any"
+    },
+    {
+      "src": "icon-512.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "any"
+    }
   ]
 }

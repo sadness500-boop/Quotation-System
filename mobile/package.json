@@ -1,8 +1,8 @@
 {
   "name": "stec-quotation-app",
-  "version": "5.3.0",
+  "version": "5.4.0",
   "private": true,
-  "description": "S-Tec Quotation System 휴대폰 앱 (Capacitor)",
+  "description": "S-Tec-Quotation-System 휴대폰 앱 (Capacitor)",
   "scripts": {
     "prep": "node prep.js",
     "sync": "node prep.js && npx cap sync android"

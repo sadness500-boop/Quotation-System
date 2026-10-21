@@ -29,7 +29,7 @@
 
 ```
 index.html            빌드된 단독 실행 파일 (웹 주소용)
-에스텍_용역인력_견적시스템_v4.1.html  같은 파일 (PC 내려받기용)
+S-Tec-Quotation-System_v5.4.html 같은 파일 (PC 내려받기용)
 manifest.webmanifest, sw.js, icon-*.png  휴대폰 앱 설치(PWA)용
 src/app.html          화면·계산 엔진·엑셀 생성 코드 (템플릿)
 src/leaflet.css       지도 스타일
@@ -63,7 +63,7 @@ python3 tools/build.py
 ## 휴대폰 앱
 
 - **설치 안내 페이지:** https://sadness500-boop.github.io/Quotation-System/install.html (메인화면 ‘앱 다운로드 QR’이 이 페이지를 엽니다)
-- **안드로이드 앱(APK):** https://github.com/sadness500-boop/Quotation-System/releases/download/android-latest/S-Tec-Quotation.apk
+- **안드로이드 앱(APK):** https://github.com/sadness500-boop/Quotation-System/releases/download/android-latest/S-Tec-Quotation-System.apk
   - `index.html`이나 `mobile/` 폴더가 바뀌면 GitHub Actions(‘Android 앱 만들기’)가 자동으로 새 APK를 만들어 위 주소에 올립니다.
   - 앱 안에서 엑셀 내보내기·JSON 백업은 휴대폰 ‘공유’ 창으로 저장하고, 인쇄는 안드로이드 인쇄(프린터·PDF로 저장)로 연결됩니다.
   - 서명 키는 저장소에 넣지 않습니다. GitHub 비밀값 `STEC_KEYSTORE_B64`·`STEC_KEYSTORE_PASSWORD`·`STEC_KEY_ALIAS`·`STEC_KEY_PASSWORD`가 있으면 그 키를, 없으면 빌드 캐시에 보관한 키를 씁니다.
@@ -88,3 +88,4 @@ python3 tools/build.py
 - v5.1: ‘에스텍 그룹 조직 현황’ — 에스텍시스템·계열사 버튼을 누르면 조직도가 아래로 펼쳐짐(다시 누르면 접힘). 용역 조건 — 용역명에 보안·미화·시설·주차·종합·안내·조경·방역·조리·기타(직접 입력) 선택, 관할 회사(에스텍시스템·계열사) 선택 + 회사별 관할 지사.
 - v5.2: 신규·갱신 견적 화면 오른쪽의 ‘앱 다운로드 QR’ 카드 삭제(홈 화면 QR은 유지).
 - v5.3: 홈 화면 상단 ‘앱 다운로드 QR · 누르면 크게 보기’가 다시 크게 열리도록 수정(Esc·바깥 클릭으로 닫기).
+- v5.4: 프로그램 이름을 ‘S-Tec-Quotation-System’으로 통일 — 화면 제목·브라우저 탭·홈 화면 앱 이름·안드로이드 앱 이름, PC 파일명 S-Tec-Quotation-System_v5.4.html, 앱 파일 S-Tec-Quotation-System.apk(예전 링크 S-Tec-Quotation.apk도 계속 동작).

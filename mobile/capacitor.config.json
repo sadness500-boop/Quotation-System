@@ -1,7 +1,11 @@
 {
   "appId": "kr.co.stecbest.quotation",
-  "appName": "S-Tec 견적",
+  "appName": "S-Tec-Quotation-System",
   "webDir": "www",
-  "android": { "allowMixedContent": false },
-  "server": { "androidScheme": "https" }
+  "android": {
+    "allowMixedContent": false
+  },
+  "server": {
+    "androidScheme": "https"
+  }
 }
