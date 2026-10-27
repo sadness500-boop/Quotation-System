@@ -406,6 +406,7 @@ body:not(.is-home) .home-only{display:none!important}
 @media (max-width:900px){.tb-home .tbp span{display:none}}
 .qr-ov{position:fixed;inset:0;background:rgba(10,16,40,.6);z-index:200;display:grid;place-items:center;padding:20px}
 .qr-pop{background:#fff;color:#16192a;border-radius:16px;padding:24px;display:flex;flex-direction:column;align-items:center;gap:8px;max-width:360px;width:100%;text-align:center}
+.qr-howto{margin:4px 0 2px;font-size:13px;line-height:1.55;color:#4a5270;text-align:center;max-width:320px}
 .qr-pop-box{position:relative;width:min(280px,70vw);aspect-ratio:1}
 .qr-pop-box svg{width:100%;height:100%}
 .qr-pop span{font-size:12.5px;color:#5d6784;overflow-wrap:anywhere;font-weight:500}
@@ -701,7 +702,7 @@ aside.rail{position:sticky;top:calc(env(safe-area-inset-top,0px) + 82px);align-s
 <script>try{var _t=localStorage.getItem("stec_theme");if(_t==="light"||_t==="dark")document.documentElement.setAttribute("data-theme",_t)}catch(e){}</script>
 <header class="topbar">
   <button type="button" class="logo-fig" id="logoHome" title="메인화면으로" aria-label="메인화면으로"><img src="__FIGLOGO__" alt="S-Tec 에스텍 그룹"></button>
-  <div class="brand" title="에스텍 그룹 용역인력 견적시스템"><b>S-Tec-Quotation-System</b><span class="ver">Ver 5.4</span></div>
+  <div class="brand" title="에스텍 그룹 용역인력 견적시스템"><b>S-Tec-Quotation-System</b><span class="ver">Ver 5.5</span></div>
   <div class="sp"><div class="gstrip" id="gstrip" aria-hidden="true"></div></div>
   <div class="tb-home home-only" id="tbHome"></div>
   <div class="tb-actions">
@@ -2285,7 +2286,7 @@ let lastR=null;
 function renderTbHome(){
   const el=$("#tbHome"); if(!el||!state) return; const S=state.set, url=appUrl();
   el.innerHTML=`<button type="button" class="tbp" id="tbPerson" title="내 정보(사진·이름·소속) 등록"><img src="${IMG.person}" alt=""><span>견적 담당<b>${esc(S.coPerson||"내 정보 등록")}${S.coPersonTitle?` ${esc(S.coPersonTitle)}`:""}</b>${esc(S.coBranch||"")}</span></button>
-    <button type="button" class="tbq" id="tbQR" title="QR 크게 보기"><span class="qb">${qrSvg(url,3)}<img src="${IMG.cube}" alt=""></span><span>앱 다운로드 QR<b>휴대폰으로 찍기</b>누르면 크게 보기</span></button>`;
+    <button type="button" class="tbq" id="tbQR" title="사이트 주소 QR 크게 보기"><span class="qb">${qrSvg(url,3)}<img src="${IMG.cube}" alt=""></span><span>다운로드 QR<b>사이트 주소 · 북마크</b>누르면 크게 보기</span></button>`;
   $("#tbPerson").onclick=openProfile;
   $("#tbQR").onclick=openQRBig;
 }
@@ -2294,10 +2295,10 @@ function renderPerson(){ renderTbHome();
   el.innerHTML=`<img src="${IMG.person}" alt="견적 담당자"><div class="pc-tx"><span class="lbl">견적 담당</span><b>${esc(S.coPerson||"담당자 미등록")}${S.coPersonTitle?` <small>${esc(S.coPersonTitle)}</small>`:""}</b><span>${esc(S.coBranch)}</span>${S.coPersonTel?`<span class="num">${esc(S.coPersonTel)}</span>`:""}<button type="button" class="btn sm ${getProfile()?"ghost":"pri"}" id="pcEdit">${getProfile()?"내 정보 수정":"내 정보 등록"}</button></div>`;
   $("#pcEdit").onclick=openProfile;
 }
-/* ── 앱 다운로드 QR ── */
-const APP_URL_DEFAULT="https://sadness500-boop.github.io/Quotation-System/install.html";
+/* ── 다운로드 QR : 사이트 주소(북마크용) ── */
+const APP_URL_DEFAULT="https://sadness500-boop.github.io/Quotation-System/";
 const APP_FILE_URL="https://github.com/sadness500-boop/Quotation-System/raw/main/index.html";
-function appUrl(){ try{ return localStorage.getItem("stec_app_url")||APP_URL_DEFAULT; }catch(e){ return APP_URL_DEFAULT; } }
+function appUrl(){ try{ const v=localStorage.getItem("stec_app_url"); return v&&!/install\.html/.test(v)?v:APP_URL_DEFAULT; }catch(e){ return APP_URL_DEFAULT; } }
 function qrSvg(text, cell){
   if(typeof qrcode!=="function") return "";
   const q=qrcode(0,"H"); q.addData(text); q.make();
@@ -2305,12 +2306,16 @@ function qrSvg(text, cell){
 }
 let installEvt=null;
 window.addEventListener("beforeinstallprompt",e=>{ e.preventDefault(); installEvt=e; const b=document.querySelector("#qrInstall"); if(b) b.hidden=false; });
-function openQRBig(){ const url=appUrl(); const ov=document.createElement("div"); ov.className="qr-ov"; ov.innerHTML=`<div class="qr-pop" role="dialog" aria-modal="true" aria-label="앱 다운로드 QR"><div class="qr-pop-box">${qrSvg(url,8)}<img class="qr-logo" src="${IMG.cube}" alt=""></div><b>에스텍 그룹 용역인력 견적시스템</b><span>${esc(url)}</span><button type="button" class="btn pri">닫기</button></div>`;
+function openQRBig(){ const url=appUrl(); const ov=document.createElement("div"); ov.className="qr-ov"; ov.innerHTML=`<div class="qr-pop" role="dialog" aria-modal="true" aria-label="다운로드 QR · 사이트 주소"><div class="qr-pop-box">${qrSvg(url,8)}<img class="qr-logo" src="${IMG.cube}" alt=""></div><b>S-Tec-Quotation-System 사이트 주소</b><span>${esc(url)}</span>
+    <p class="qr-howto">휴대폰 카메라로 찍어 사이트를 연 뒤 <b>북마크(즐겨찾기)</b>에 추가하세요.<br>PC는 아래 ‘주소 복사’ 후 브라우저 주소창에 붙여넣고 <b>Ctrl+D</b>로 북마크합니다.</p>
+    <div class="row" style="gap:6px;justify-content:center"><button type="button" class="btn" data-copy>주소 복사</button><a class="btn" style="text-decoration:none;color:inherit" href="${esc(url)}" target="_blank" rel="noopener">사이트 열기</a><button type="button" class="btn pri" data-close>닫기</button></div></div>`;
   const close=()=>{ ov.remove(); document.removeEventListener("keydown",k); }; const k=e=>{ if(e.key==="Escape") close(); };
-  ov.onclick=e=>{ if(e.target===ov||e.target.tagName==="BUTTON") close(); }; document.addEventListener("keydown",k); document.body.appendChild(ov); }
+  ov.onclick=e=>{ if(e.target===ov||e.target.closest("[data-close]")) close(); };
+  ov.querySelector("[data-copy]").onclick=async()=>{ try{ await navigator.clipboard.writeText(url); toast("사이트 주소를 복사했습니다 · 브라우저에서 북마크하세요"); }catch(e){ prompt("아래 주소를 복사하세요",url); } };
+  document.addEventListener("keydown",k); document.body.appendChild(ov); }
 function renderQR(){
   const el=$("#qrCard"); if(!el) return; const url=appUrl();
-  el.innerHTML=`<div class="lbl">앱 다운로드 QR</div>
+  el.innerHTML=`<div class="lbl">다운로드 QR</div>
     <div class="qr-row"><button type="button" class="qr-box" id="qrBig" aria-label="QR 크게 보기">${qrSvg(url,4)}<img class="qr-logo" src="${IMG.cube}" alt=""></button>
       <div class="qr-tx"><b>휴대폰 카메라로 찍으세요</b><span>설치 안내가 열립니다 — 안드로이드는 앱 설치, 아이폰은 ‘홈 화면에 추가’.</span>
         <code id="qrUrl">${esc(url.replace(/^https?:\/\//,""))}</code></div></div>

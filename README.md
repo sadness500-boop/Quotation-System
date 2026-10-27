@@ -89,3 +89,4 @@ python3 tools/build.py
 - v5.2: 신규·갱신 견적 화면 오른쪽의 ‘앱 다운로드 QR’ 카드 삭제(홈 화면 QR은 유지).
 - v5.3: 홈 화면 상단 ‘앱 다운로드 QR · 누르면 크게 보기’가 다시 크게 열리도록 수정(Esc·바깥 클릭으로 닫기).
 - v5.4: 프로그램 이름을 ‘S-Tec-Quotation-System’으로 통일 — 화면 제목·브라우저 탭·홈 화면 앱 이름·안드로이드 앱 이름, PC 파일명 S-Tec-Quotation-System_v5.4.html, 앱 파일 S-Tec-Quotation-System.apk(예전 링크 S-Tec-Quotation.apk도 계속 동작).
+- v5.5: 상단 ‘앱 다운로드 QR’ → ‘다운로드 QR’. QR이 앱 설치 페이지 대신 사이트 주소(https://sadness500-boop.github.io/Quotation-System/)로 연결 — 북마크 안내·주소 복사·사이트 열기 버튼.
