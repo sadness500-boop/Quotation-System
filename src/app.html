@@ -182,7 +182,7 @@ textarea.inp{resize:vertical;min-height:110px;line-height:1.6}
 .gstrip .gs-slogan{position:relative;min-width:200px;height:20px;overflow:hidden;font-size:13px;font-weight:600;color:#dfe5ff;flex:1}
 .gstrip .gs-slogan span{position:absolute;left:0;top:0;white-space:nowrap;opacity:0;transform:translateY(12px);transition:opacity .5s,transform .5s}
 .gstrip .gs-slogan span.on{opacity:1;transform:none}
-@media (max-width:1280px){.gstrip .gs-slogan,.gstrip .gs-sep.s2{display:none}}
+@media (max-width:1680px){.gstrip .gs-slogan,.gstrip .gs-sep.s2{display:none}}
 @media (max-width:1080px){.gstrip{display:none}}
 .grow{flex:none;margin-top:14px;border-radius:14px;overflow:hidden;background:linear-gradient(165deg,#1b2a86 0%,#14206a 55%,#0f6b3a 140%);color:#fff;box-shadow:0 6px 20px rgba(20,32,106,.25);position:relative}
 .grow::after{content:"";position:absolute;right:-40px;top:-40px;width:140px;height:140px;border-radius:50%;background:radial-gradient(circle,rgba(142,229,159,.25),transparent 70%);pointer-events:none}
@@ -368,6 +368,7 @@ body:not(.is-home) .home-only{display:none!important}
 .tbq .qb{position:relative;width:50px;height:50px;background:#fff;border-radius:7px;overflow:hidden;flex:none}
 .tbq .qb svg{width:100%;height:100%;display:block}
 .tbq .qb img{position:absolute;left:50%;top:50%;width:26%;height:26%;transform:translate(-50%,-50%);background:#fff;border-radius:3px}
+.tbq.tbr{cursor:pointer}.tbq .qb.rf{display:flex;align-items:center;justify-content:center;background:linear-gradient(150deg,#ffffff,#e7eaf8);color:#1b2a86}.tbq .qb.rf svg{width:62%;height:62%}
 .tbq>span:not(.qb){display:flex;flex-direction:column;line-height:1.25;font-size:12px;opacity:.85;font-weight:500}.tbq b{font-size:13px;opacity:1}
 .tbp:hover,.tbq:hover{background:rgba(255,255,255,.18)}
 .rail-biz{display:flex;flex-direction:column}
@@ -702,7 +703,7 @@ aside.rail{position:sticky;top:calc(env(safe-area-inset-top,0px) + 82px);align-s
 <script>try{var _t=localStorage.getItem("stec_theme");if(_t==="light"||_t==="dark")document.documentElement.setAttribute("data-theme",_t)}catch(e){}</script>
 <header class="topbar">
   <button type="button" class="logo-fig" id="logoHome" title="메인화면으로" aria-label="메인화면으로"><img src="__FIGLOGO__" alt="S-Tec 에스텍 그룹"></button>
-  <div class="brand" title="에스텍 그룹 용역인력 견적시스템"><b>S-Tec-Quotation-System</b><span class="ver">Ver 5.5</span></div>
+  <div class="brand" title="에스텍 그룹 용역인력 견적시스템"><b>S-Tec-Quotation-System</b><span class="ver">Ver 5.6</span></div>
   <div class="sp"><div class="gstrip" id="gstrip" aria-hidden="true"></div></div>
   <div class="tb-home home-only" id="tbHome"></div>
   <div class="tb-actions">
@@ -2286,9 +2287,11 @@ let lastR=null;
 function renderTbHome(){
   const el=$("#tbHome"); if(!el||!state) return; const S=state.set, url=appUrl();
   el.innerHTML=`<button type="button" class="tbp" id="tbPerson" title="내 정보(사진·이름·소속) 등록"><img src="${IMG.person}" alt=""><span>견적 담당<b>${esc(S.coPerson||"내 정보 등록")}${S.coPersonTitle?` ${esc(S.coPersonTitle)}`:""}</b>${esc(S.coBranch||"")}</span></button>
-    <button type="button" class="tbq" id="tbQR" title="사이트 주소 QR 크게 보기"><span class="qb">${qrSvg(url,3)}<img src="${IMG.cube}" alt=""></span><span>다운로드 QR<b>사이트 주소 · 북마크</b>누르면 크게 보기</span></button>`;
+    <button type="button" class="tbq" id="tbQR" title="사이트 주소 QR 크게 보기"><span class="qb">${qrSvg(url,3)}<img src="${IMG.cube}" alt=""></span><span>다운로드 QR<b>사이트 주소 · 북마크</b>누르면 크게 보기</span></button>
+    <button type="button" class="tbq tbr" id="tbRefer" title="친구에게 사이트 주소 알려주기"><span class="qb rf"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="9" cy="8" r="3.5"/><path d="M2.5 20c.8-3.6 3.4-5.5 6.5-5.5s5.7 1.9 6.5 5.5"/><path d="M19 8v6M16 11h6"/></svg></span><span>친구 추천<b>사이트 주소 공유</b>누르면 QR·주소 보기</span></button>`;
   $("#tbPerson").onclick=openProfile;
-  $("#tbQR").onclick=openQRBig;
+  $("#tbQR").onclick=()=>openQRBig();
+  $("#tbRefer").onclick=()=>openQRBig("refer");
 }
 function renderPerson(){ renderTbHome();
   const S=state.set, el=$("#personCard"); if(!el) return;
@@ -2306,11 +2309,12 @@ function qrSvg(text, cell){
 }
 let installEvt=null;
 window.addEventListener("beforeinstallprompt",e=>{ e.preventDefault(); installEvt=e; const b=document.querySelector("#qrInstall"); if(b) b.hidden=false; });
-function openQRBig(){ const url=appUrl(); const ov=document.createElement("div"); ov.className="qr-ov"; ov.innerHTML=`<div class="qr-pop" role="dialog" aria-modal="true" aria-label="다운로드 QR · 사이트 주소"><div class="qr-pop-box">${qrSvg(url,8)}<img class="qr-logo" src="${IMG.cube}" alt=""></div><b>S-Tec-Quotation-System 사이트 주소</b><span>${esc(url)}</span>
-    <p class="qr-howto">휴대폰 카메라로 찍어 사이트를 연 뒤 <b>북마크(즐겨찾기)</b>에 추가하세요.<br>PC는 아래 ‘주소 복사’ 후 브라우저 주소창에 붙여넣고 <b>Ctrl+D</b>로 북마크합니다.</p>
-    <div class="row" style="gap:6px;justify-content:center"><button type="button" class="btn" data-copy>주소 복사</button><a class="btn" style="text-decoration:none;color:inherit" href="${esc(url)}" target="_blank" rel="noopener">사이트 열기</a><button type="button" class="btn pri" data-close>닫기</button></div></div>`;
+function openQRBig(mode){ const url=appUrl(), ref=mode==="refer"; const ov=document.createElement("div"); ov.className="qr-ov"; ov.innerHTML=`<div class="qr-pop" role="dialog" aria-modal="true" aria-label="${ref?"친구 추천":"다운로드 QR"} · 사이트 주소"><div class="qr-pop-box">${qrSvg(url,8)}<img class="qr-logo" src="${IMG.cube}" alt=""></div><b>${ref?"친구에게 S-Tec-Quotation-System 알려주기":"S-Tec-Quotation-System 사이트 주소"}</b><span>${esc(url)}</span>
+    <p class="qr-howto">${ref?"친구가 휴대폰 카메라로 QR을 찍으면 사이트가 열립니다. <b>북마크(즐겨찾기)</b>에 추가해 두고 쓰도록 알려 주세요.<br>‘주소 공유하기’로 카카오톡·문자에 바로 보낼 수 있습니다.":"휴대폰 카메라로 찍어 사이트를 연 뒤 <b>북마크(즐겨찾기)</b>에 추가하세요.<br>PC는 아래 ‘주소 복사’ 후 브라우저 주소창에 붙여넣고 <b>Ctrl+D</b>로 북마크합니다."}</p>
+    <div class="row" style="gap:6px;justify-content:center;flex-wrap:wrap">${ref?`<button type="button" class="btn pri" data-share>주소 공유하기</button>`:""}<button type="button" class="btn" data-copy>주소 복사</button><a class="btn" style="text-decoration:none;color:inherit" href="${esc(url)}" target="_blank" rel="noopener">사이트 열기</a><button type="button" class="btn pri" data-close>닫기</button></div></div>`;
   const close=()=>{ ov.remove(); document.removeEventListener("keydown",k); }; const k=e=>{ if(e.key==="Escape") close(); };
   ov.onclick=e=>{ if(e.target===ov||e.target.closest("[data-close]")) close(); };
+  const sh=ov.querySelector("[data-share]"); if(sh) sh.onclick=async()=>{ const text="에스텍 그룹 용역인력 견적시스템(S-Tec-Quotation-System) 사이트 주소입니다. 북마크해 두고 쓰세요."; try{ if(navigator.share){ await navigator.share({title:"S-Tec-Quotation-System",text,url}); return; } }catch(e){ if(e&&e.name==="AbortError") return; } try{ await navigator.clipboard.writeText(text+"\n"+url); toast("공유 메시지를 복사했습니다 · 카카오톡·문자에 붙여넣으세요"); }catch(e){ prompt("아래 내용을 복사하세요",text+" "+url); } };
   ov.querySelector("[data-copy]").onclick=async()=>{ try{ await navigator.clipboard.writeText(url); toast("사이트 주소를 복사했습니다 · 브라우저에서 북마크하세요"); }catch(e){ prompt("아래 주소를 복사하세요",url); } };
   document.addEventListener("keydown",k); document.body.appendChild(ov); }
 function renderQR(){
