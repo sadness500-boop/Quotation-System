@@ -434,8 +434,29 @@ body:not(.is-home) .home-only{display:none!important}
 .sugg button small{text-align:right;flex:none;max-width:55%;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
 .info .blk.detail{border-color:var(--accent)}
 .mapwrap{display:grid;grid-template-columns:minmax(0,1.35fr) minmax(0,1fr);gap:14px}
-#map{height:460px;border-radius:9px;border:1px solid var(--line);background:#cfe1ef;z-index:1}
+#map,#kmap{height:460px;border-radius:9px;border:1px solid var(--line);background:#cfe1ef;z-index:1}
 #map.tiles{background:#e9eef3}
+.mapbox{position:relative}
+#kmap{position:absolute;inset:0;border-radius:9px;border:1px solid var(--line);z-index:3;display:none;background:#e9eef3}
+.mapbox.kk #kmap{display:block}
+.map-tools{position:absolute;left:54px;top:10px;z-index:6;display:flex;gap:6px;flex-wrap:wrap}
+.mapbox.kk .map-tools{left:10px}
+.mtb{display:inline-flex;align-items:center;gap:5px;height:32px;padding:0 11px;border-radius:8px;border:1px solid rgba(0,0,0,.18);background:#fff;color:#1b2a86;font:inherit;font-size:13px;font-weight:700;cursor:pointer;box-shadow:0 2px 6px rgba(0,0,0,.18)}
+.mtb svg{width:16px;height:16px;fill:currentColor}
+.mtb .kk-dot{display:inline-flex;align-items:center;justify-content:center;width:18px;height:18px;border-radius:5px;background:#fee500;color:#3c1e1e;font-size:11px;font-weight:900}
+.mtb[aria-pressed="true"]{background:#1b2a86;color:#fff;border-color:#1b2a86}
+.mtb.off{opacity:.6}
+.mtb.busy{pointer-events:none;opacity:.7}
+.mtb.busy svg{animation:spin 1s linear infinite}
+@keyframes spin{to{transform:rotate(360deg)}}
+.myloc-box{position:absolute;left:10px;right:10px;bottom:10px;z-index:7;background:#fff;color:#18203a;border-radius:10px;padding:10px 12px;box-shadow:0 6px 20px rgba(0,0,0,.25);font-size:13px;line-height:1.5;max-width:460px}
+.myloc-box b{color:#1b2a86}.myloc-box .ml-src{color:#4a5270;font-size:12px}
+.myloc-box .row{margin-top:6px;gap:5px;flex-wrap:wrap}
+.myloc-box .ml-x{position:absolute;right:6px;top:4px;border:0;background:none;font-size:16px;cursor:pointer;color:#4a5270}
+.me-dot{width:16px;height:16px;border-radius:50%;background:#1a73e8;border:3px solid #fff;box-shadow:0 0 0 2px rgba(26,115,232,.35),0 2px 6px rgba(0,0,0,.35);animation:mepulse 2s ease-out infinite}
+@keyframes mepulse{0%{box-shadow:0 0 0 0 rgba(26,115,232,.55),0 2px 6px rgba(0,0,0,.35)}100%{box-shadow:0 0 0 14px rgba(26,115,232,0),0 2px 6px rgba(0,0,0,.35)}}
+.me-lbl{background:#1a73e8;color:#fff;font-size:11px;font-weight:700;padding:1px 6px;border-radius:6px;white-space:nowrap;transform:translate(-50%,-30px);position:relative;left:8px}
+.kmk{cursor:pointer}
 .admlbl{white-space:nowrap;transform:translate(-50%,-50%);font-family:var(--f-body);color:#5a6070;text-shadow:0 0 3px #fff,0 0 3px #fff,0 0 2px #fff;pointer-events:none}
 .admlbl.s{font-size:14px;font-weight:700;color:#4a5060;letter-spacing:.08em}
 .admlbl.m{font-size:12.5px;font-weight:600}
@@ -682,7 +703,7 @@ aside.rail{position:sticky;top:calc(env(safe-area-inset-top,0px) + 82px);align-s
   .role{grid-template-columns:minmax(0,1fr)}
   .role .fig{flex-direction:row}
   .role .fig img{width:70px}
-  #map{height:320px}
+  #map,#kmap{height:320px}
 }
 @media (prefers-reduced-motion:reduce){*{transition:none!important}}
 @media print{
@@ -703,7 +724,7 @@ aside.rail{position:sticky;top:calc(env(safe-area-inset-top,0px) + 82px);align-s
 <script>try{var _t=localStorage.getItem("stec_theme");if(_t==="light"||_t==="dark")document.documentElement.setAttribute("data-theme",_t)}catch(e){}</script>
 <header class="topbar">
   <button type="button" class="logo-fig" id="logoHome" title="메인화면으로" aria-label="메인화면으로"><img src="__FIGLOGO__" alt="S-Tec 에스텍 그룹"></button>
-  <div class="brand" title="에스텍 그룹 용역인력 견적시스템"><b>S-Tec-Quotation-System</b><span class="ver">Ver 5.6</span></div>
+  <div class="brand" title="에스텍 그룹 용역인력 견적시스템"><b>S-Tec-Quotation-System</b><span class="ver">Ver 5.7</span></div>
   <div class="sp"><div class="gstrip" id="gstrip" aria-hidden="true"></div></div>
   <div class="tb-home home-only" id="tbHome"></div>
   <div class="tb-actions">
@@ -848,7 +869,12 @@ aside.rail{position:sticky;top:calc(env(safe-area-inset-top,0px) + 82px);align-s
       <div class="card">
         <div class="mapwrap">
           <div>
-            <div id="map" role="region" aria-label="사업장 지도"></div>
+            <div class="mapbox" id="mapBox">
+              <div id="map" role="region" aria-label="사업장 지도"></div>
+              <div id="kmap" role="region" aria-label="카카오맵"></div>
+              <div class="map-tools"><button type="button" class="mtb" id="btnKakaoMap" aria-pressed="false" title="카카오맵으로 보기"><b class="kk-dot">K</b>카카오맵</button><button type="button" class="mtb" id="btnMyLoc" title="내 위치 찾기"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 8a4 4 0 1 0 0 8 4 4 0 0 0 0-8zm8.94 3A8.99 8.99 0 0 0 13 3.06V1h-2v2.06A8.99 8.99 0 0 0 3.06 11H1v2h2.06A8.99 8.99 0 0 0 11 20.94V23h2v-2.06A8.99 8.99 0 0 0 20.94 13H23v-2h-2.06zM12 19a7 7 0 1 1 0-14 7 7 0 0 1 0 14z"/></svg>내 위치</button></div>
+              <div class="myloc-box" id="myLocBox" hidden></div>
+            </div>
             <div class="mapnote" id="mapNote">◆ 에스텍시스템 사업장 · ● 에스텍베스트 사업장(보안·미화·복합) · 사각 라벨은 본부/지사</div>
           </div>
           <div class="info" id="siteInfo"></div>
@@ -1439,6 +1465,7 @@ const SIDO_KO={seoul:"서울",busan:"부산",daegu:"대구",incheon:"인천",gwa
 let admSido=[], admMuni=[], lblLayer=null, dongLayer=null, baseMode="vector";
 function initMap(){
   if(map || !window.L) return;
+  setTimeout(()=>{ updMapTools(); if(kkPref() && kkMode==="js") kmShow(true); },0);
   map = L.map("map",{zoomControl:true,minZoom:6,maxZoom:18,zoomSnap:.5}).setView([36.35,127.75],7);
   map.createPane("adm").style.zIndex=250;
   map.createPane("admLbl").style.zIndex=390; map.getPane("admLbl").style.pointerEvents="none";
@@ -1468,7 +1495,7 @@ function initMap(){
   const sat=L.layerGroup([L.tileLayer(ESRI("World_Imagery"),{maxZoom:19,maxNativeZoom:18,attribution:"&copy; Esri, Maxar"}),
     L.tileLayer(ESRI("Reference/World_Boundaries_and_Places"),{maxZoom:19,maxNativeZoom:18})]);
   const offline=L.layerGroup();
-  const onTile=()=>{ if(tileOk) return; tileOk=true; setBase("tiles"); $("#mapNote").textContent="◆ 에스텍시스템 사업장 · ● 에스텍베스트 사업장 · 사각 라벨은 본부/지사 · 오른쪽 위 [지도 종류]에서 지도 종류와 표시할 회사 선택"; };
+  const onTile=()=>{ if(tileOk) return; tileOk=true; setBase("tiles"); $("#mapNote").textContent="◆ 에스텍시스템 사업장 · ● 에스텍베스트 사업장 · 사각 라벨은 본부/지사 · 왼쪽 위 [카카오맵]·[내 위치], 오른쪽 위 [지도 종류]에서 지도·표시 회사 선택"; };
   [street,topo].forEach(t=>t.on("tileload",onTile)); sat.eachLayer(t=>t.on("tileload",onTile));
   street.addTo(map);
   const bestLy=L.layerGroup().addTo(map), sysLy=L.layerGroup().addTo(map);
@@ -1492,7 +1519,8 @@ function initMap(){
   (GROUPDB.offices||[]).filter(o=>o.t==="본사"||o.t==="본부"||o.t==="지사").forEach(o=>{
     L.marker([o.lat,o.lng],{icon:L.divIcon({className:"",html:`<div class="brmk sys">${esc(o.t==="본사"?"에스텍시스템 본사":o.n)}</div>`,iconSize:null,iconAnchor:[30,10]}),zIndexOffset:600}).addTo(sysLy);
   });
-  map.on("click",e=>{ if(!pickMode) return; pickMode=false; $("#btnPick").classList.remove("pri");
+  map.on("click",e=>{ if(myPick){ myPick=false; setMyLoc(e.latlng.lat,e.latlng.lng,0,"지도에서 직접 지정","manual"); return; }
+    if(!pickMode) return; pickMode=false; $("#btnPick").classList.remove("pri");
     setLoc(e.latlng.lat,e.latlng.lng,"지도에서 직접 지정"); });
   function setBase(mode){
     baseMode=mode;
@@ -1503,6 +1531,95 @@ function initMap(){
   }
   if(state.meta.lat) showSel();
 }
+/* ───────── 카카오맵 연동 (웹 주소 + JavaScript 키) ───────── */
+let kmap=null, kmSelOv=null, kmMe=[];
+const kkPref=()=>{ try{ return localStorage.getItem("stec_map_base")!=="leaflet"; }catch(e){ return true; } };
+const isKk=()=>$("#mapBox")&&$("#mapBox").classList.contains("kk");
+function updMapTools(){ const b=$("#btnKakaoMap"); if(!b) return; const on=isKk(); b.setAttribute("aria-pressed",String(on)); b.classList.toggle("off",kkMode!=="js");
+  b.title = kkMode==="js" ? (on?"기본 지도로 보기":"카카오맵으로 보기") : "카카오맵은 웹 주소(https://sadness500-boop.github.io/Quotation-System/)에서 볼 수 있습니다"; }
+function kmOverlay(lat,lng,html,z,onClick,yAnchor){ const el=document.createElement("div"); el.innerHTML=html; const c=el.firstElementChild; if(onClick){ c.classList.add("kmk"); c.addEventListener("click",ev=>{ ev.stopPropagation(); onClick(); }); }
+  return new kakao.maps.CustomOverlay({position:new kakao.maps.LatLng(lat,lng),content:c,zIndex:z||1,yAnchor:yAnchor??.5,xAnchor:.5}); }
+function kmBuild(){
+  if(kmap) return; const K=kakao.maps, c=map?map.getCenter():{lat:36.35,lng:127.75}, z=map?map.getZoom():7;
+  kmap=new K.Map($("#kmap"),{center:new K.LatLng(c.lat,c.lng),level:Math.max(1,Math.min(14,Math.round(19-z)))});
+  kmap.addControl(new K.MapTypeControl(),K.ControlPosition.TOPRIGHT); kmap.addControl(new K.ZoomControl(),K.ControlPosition.RIGHT);
+  SITEDB.sites.forEach(s=>{ const k = s.work.includes("/") ? "mix" : s.work.startsWith("보안")?"sec": s.work.startsWith("미화")?"cln":"etc";
+    const o=kmOverlay(s.lat,s.lng,`<div class="mk ${k}" title="${esc(s.name)} · ${esc(s.work)} ${s.total}명"></div>`,2,()=>{ state.meta.mode="renew"; renderMode(); selectSite(s.id,true); }); o.setMap(kmap); });
+  (GROUPDB.sites||[]).forEach(s=>{ const o=kmOverlay(s.lat,s.lng,`<div class="mk sys" title="에스텍시스템 · ${esc(s.name)}${s.br?" · "+esc(s.br):""}"></div>`,2,()=>pickSysSite(s)); o.setMap(kmap); });
+  SITEDB.branches.forEach(b=>kmOverlay(b.lat,b.lng,`<div class="brmk">${esc("베스트 "+b.name)}</div>`,4).setMap(kmap));
+  (GROUPDB.offices||[]).filter(o=>o.t==="본사"||o.t==="본부"||o.t==="지사").forEach(o=>kmOverlay(o.lat,o.lng,`<div class="brmk sys">${esc(o.t==="본사"?"에스텍시스템 본사":o.n)}</div>`,5).setMap(kmap));
+  K.event.addListener(kmap,"click",e=>{ if(myPick){ myPick=false; setMyLoc(e.latLng.getLat(),e.latLng.getLng(),0,"지도에서 직접 지정","manual"); return; }
+    if(!pickMode) return; pickMode=false; $("#btnPick").classList.remove("pri"); setLoc(e.latLng.getLat(),e.latLng.getLng(),"지도에서 직접 지정"); });
+}
+function kmShow(on){
+  const box=$("#mapBox"); if(!box) return;
+  if(on && kkMode!=="js"){ toast(location.protocol==="file:"?"카카오맵은 PC 파일이 아닌 웹 주소(sadness500-boop.github.io/Quotation-System)에서 볼 수 있습니다":"카카오맵에 연결되지 않았습니다 · ‘카카오맵 연결’ 설정을 확인하세요"); return; }
+  if(on){ try{ kmBuild(); }catch(e){ console.warn(e); toast("카카오맵을 불러오지 못했습니다"); return; } }
+  if(on && map){ const c=map.getCenter(); box.classList.add("kk"); kmap.relayout(); kmap.setCenter(new kakao.maps.LatLng(c.lat,c.lng)); kmap.setLevel(Math.max(1,Math.min(14,Math.round(19-map.getZoom())))); kmSel(); kmMeDraw(); }
+  else if(!on && kmap && map && isKk()){ const c=kmap.getCenter(); box.classList.remove("kk"); map.invalidateSize(); map.setView([c.getLat(),c.getLng()],Math.max(6,Math.min(18,19-kmap.getLevel()))); }
+  else box.classList.toggle("kk",!!on);
+  updMapTools();
+}
+function kmSel(){ if(!kmap) return; if(kmSelOv){ kmSelOv.setMap(null); kmSelOv=null; } const m=state.meta; if(m.lat==null) return;
+  kmSelOv=kmOverlay(m.lat,m.lng,`<div class="pin ${m.siteId?"int":""}"></div>`,10,null,1.15); kmSelOv.setMap(kmap);
+  if(isKk()){ kmap.setCenter(new kakao.maps.LatLng(m.lat,m.lng)); if(kmap.getLevel()>6) kmap.setLevel(6); } }
+
+/* ───────── 내 위치 : 휴대폰 GPS · PC IP 주소 · 브라우저(Wi-Fi) · 지도에서 직접 ───────── */
+let myLoc=null, myLayer=null, myPick=false;
+const isMobileDev=()=>NATIVE || /Android|iPhone|iPad|iPod|Mobile/i.test(navigator.userAgent||"") || (navigator.platform==="MacIntel"&&navigator.maxTouchPoints>1);
+function gpsLocate(high){ return new Promise((ok,no)=>{ if(!navigator.geolocation) return no(new Error("미지원"));
+  navigator.geolocation.getCurrentPosition(p=>ok({lat:p.coords.latitude,lng:p.coords.longitude,acc:p.coords.accuracy}),e=>no(e),{enableHighAccuracy:!!high,timeout:high?15000:10000,maximumAge:60000}); }); }
+async function ipLocate(){
+  const tries=[["https://get.geojs.io/v1/ip/geo.json",j=>({lat:+j.latitude,lng:+j.longitude,place:[j.region,j.city].filter(Boolean).join(" ")})],
+               ["https://ipwho.is/?lang=ko",j=>j.success===false?null:({lat:+j.latitude,lng:+j.longitude,place:[j.region,j.city].filter(Boolean).join(" ")})],
+               ["https://ipapi.co/json/",j=>({lat:+j.latitude,lng:+j.longitude,place:[j.region,j.city].filter(Boolean).join(" ")})]];
+  for(const [u,f] of tries){ try{ const ac=new AbortController(); const tm=setTimeout(()=>ac.abort(),6000); const r=await fetch(u,{signal:ac.signal,cache:"no-store"}); clearTimeout(tm); if(!r.ok) continue; const v=f(await r.json()); if(v&&isFinite(v.lat)&&isFinite(v.lng)&&(v.lat||v.lng)) return v; }catch(e){} }
+  throw new Error("IP 위치 조회 실패");
+}
+async function locateMe(how){
+  const b=$("#btnMyLoc"); b.classList.add("busy"); myPick=false;
+  const mobile=isMobileDev(), order = how ? [how] : (mobile ? ["gps","ip"] : ["ip","browser"]);
+  let err="";
+  for(const w of order){
+    try{
+      if(w==="ip"){ const v=await ipLocate(); setMyLoc(v.lat,v.lng,5000,`IP 주소 기반${v.place?` · ${v.place} 부근`:""}`,"ip"); b.classList.remove("busy"); return; }
+      const v=await gpsLocate(w==="gps"); setMyLoc(v.lat,v.lng,v.acc, w==="gps"?(v.acc<=100?"GPS 위치":"휴대폰 위치(기지국·Wi-Fi)"):(v.acc<=200?"브라우저 위치(Wi-Fi)":"브라우저 위치(네트워크)"), w); b.classList.remove("busy"); return;
+    }catch(e){ err = e&&e.code===1 ? "위치 권한이 거부되었습니다" : (e&&e.message)||"위치를 찾지 못했습니다"; }
+  }
+  b.classList.remove("busy");
+  const saved=(()=>{ try{ return JSON.parse(localStorage.getItem("stec_myloc")||"null"); }catch(e){ return null; } })();
+  if(saved&&!how){ setMyLoc(saved.lat,saved.lng,saved.acc||0,"저장해 둔 내 위치","saved"); toast(err+" · 저장해 둔 내 위치를 표시합니다"); return; }
+  myLocPanel(`<b>내 위치를 찾지 못했습니다</b><div class="ml-src">${esc(err)}${location.protocol==="file:"?" · PC 파일에서는 인터넷 연결이 필요합니다":""}</div>`);
+}
+function setMyLoc(lat,lng,acc,src,kind){
+  myLoc={lat:+lat,lng:+lng,acc:+acc||0,src,kind};
+  if(kind!=="saved") try{ localStorage.setItem("stec_myloc",JSON.stringify({lat:myLoc.lat,lng:myLoc.lng,acc:myLoc.acc})); }catch(e){}
+  if(map){ if(myLayer) map.removeLayer(myLayer); myLayer=L.layerGroup().addTo(map);
+    if(myLoc.acc>30) L.circle([lat,lng],{radius:Math.min(myLoc.acc,8000),color:"#1a73e8",weight:1,fillColor:"#1a73e8",fillOpacity:.12,interactive:false}).addTo(myLayer);
+    L.marker([lat,lng],{icon:L.divIcon({className:"",html:`<div class="me-dot"></div>`,iconSize:[16,16]}),zIndexOffset:1200,title:"내 위치"}).addTo(myLayer).bindTooltip("내 위치",{direction:"top",permanent:false});
+    if(!isKk()) map.setView([lat,lng], kind==="ip"?11:Math.max(map.getZoom(),14)); }
+  kmMeDraw(true);
+  const co=grpCoOf(state.meta), near=grpOffices(co).map(o=>({...o,d:hav(lat,lng,o.lat,o.lng)})).sort((a,b)=>a.d-b.d)[0];
+  const accTxt = myLoc.acc ? (myLoc.acc>=1000?`오차 약 ${(myLoc.acc/1000).toFixed(myLoc.acc>=10000?0:1)}km`:`오차 약 ${Math.round(myLoc.acc)}m`) : "";
+  myLocPanel(`<b>📍 내 위치</b> <span class="ml-src">${esc(src)}${accTxt?" · "+accTxt:""}</span>
+    ${near?`<div>가장 가까운 ${esc(co)}: <b>${esc(near.n)}</b> 직선 ${near.d.toFixed(1)}km</div>`:""}
+    <div id="myAddr" class="ml-src"></div>
+    <div class="row">${kind==="ip"||kind==="saved"?`<button type="button" class="btn sm pri" data-ml="${isMobileDev()?"gps":"browser"}">더 정확하게 찾기</button>`:""}
+      <button type="button" class="btn sm" data-ml="pick">지도에서 직접 지정</button>
+      <button type="button" class="btn sm" data-ml="use">이 위치를 사업장 위치로</button></div>`);
+  if(kkMode==="js"&&kakao.maps.services){ try{ new kakao.maps.services.Geocoder().coord2Address(lng,lat,(r,st)=>{ if(st===kakao.maps.services.Status.OK&&r[0]){ const a=r[0].road_address||r[0].address; const el=$("#myAddr"); if(el&&a) el.textContent="주소: "+(a.address_name||""); } }); }catch(e){} }
+}
+function kmMeDraw(center){ if(!kmap) return; kmMe.forEach(o=>o.setMap(null)); kmMe=[]; if(!myLoc) return; const K=kakao.maps, P=new K.LatLng(myLoc.lat,myLoc.lng);
+  if(myLoc.acc>30){ const c=new K.Circle({center:P,radius:Math.min(myLoc.acc,8000),strokeWeight:1,strokeColor:"#1a73e8",strokeOpacity:.8,fillColor:"#1a73e8",fillOpacity:.12}); c.setMap(kmap); kmMe.push(c); }
+  const o=kmOverlay(myLoc.lat,myLoc.lng,`<div class="me-dot" title="내 위치"></div>`,20); o.setMap(kmap); kmMe.push(o);
+  if(center&&isKk()){ kmap.setCenter(P); kmap.setLevel(myLoc.kind==="ip"?8:Math.min(kmap.getLevel(),4)); } }
+function myLocPanel(html){ const bx=$("#myLocBox"); bx.innerHTML=`<button type="button" class="ml-x" aria-label="닫기">✕</button>${html}`; bx.hidden=false;
+  bx.querySelector(".ml-x").onclick=()=>{ bx.hidden=true; };
+  bx.querySelectorAll("[data-ml]").forEach(b=>b.onclick=()=>{ const a=b.dataset.ml;
+    if(a==="pick"){ myPick=true; pickMode=false; $("#btnPick").classList.remove("pri"); myLocPanel(`<b>지도에서 내 위치를 누르세요</b><div class="ml-src">누른 곳이 내 위치로 저장되어 다음에도 쓸 수 있습니다.</div>`); }
+    else if(a==="use"&&myLoc){ setLoc(myLoc.lat,myLoc.lng,"내 위치("+myLoc.src+")"); bx.hidden=true; toast("내 위치를 견적 사업장 위치로 지정했습니다"); }
+    else locateMe(a); }); }
+
 function setLoc(lat,lng,src,name){
   state.meta.lat=+lat; state.meta.lng=+lng; state.meta.geoSrc=src||""; if(name!==undefined) state.meta.geoName=name;
   autoBranch(); showSel(); renderSiteInfo(); persistDraft();
@@ -1518,6 +1635,7 @@ function showSel(){
   if(m.lat==null) return;
   selLayer = L.marker([m.lat,m.lng],{icon:L.divIcon({className:"",html:`<div class="pin ${m.siteId?"int":""}"></div>`,iconSize:[30,30],iconAnchor:[15,30]}),zIndexOffset:1000}).addTo(map);
   map.setView([m.lat,m.lng], Math.max(map.getZoom(),12));
+  kmSel();
 }
 function selectSite(id, fromMap){
   const s = SITEDB.sites.find(x=>x.id===id); if(!s) return;
@@ -1743,7 +1861,7 @@ async function kakaoAuto(){
   if(jk && location.protocol==="https:"){
     try{ await loadKakaoSdk(jk); kkMode="js"; }catch(e){ kkInfo="jsfail"; }
   } else if(jk) kkInfo="needhttps";
-  renderKakao();
+  renderKakao(); updMapTools(); if(map && kkMode==="js" && kkPref() && !isKk()) kmShow(true);
 }
 function kakaoReady(){ return kkMode==="rest"||kkMode==="js"; }
 async function kakaoAny(q,size=15){
@@ -4167,6 +4285,8 @@ function boot(){
   onMeta();
   $$(".step").forEach(b=>b.onclick=()=>go(+b.dataset.step));
   $("#btnLookup").onclick=lookupOnline;
+  $("#btnKakaoMap").onclick=()=>{ const on=!isKk(); if(on&&kkMode!=="js"){ kmShow(true); return; } try{ localStorage.setItem("stec_map_base",on?"kakao":"leaflet"); }catch(e){} kmShow(on); };
+  $("#btnMyLoc").onclick=()=>locateMe();
   $("#btnPick").onclick=()=>{ pickMode=!pickMode; $("#btnPick").classList.toggle("pri",pickMode); $("#lookupMsg").textContent=pickMode?"지도에서 사업장 위치를 클릭하세요.":""; };
   $("#btnFromSite").onclick=draftFromSite;
   renderKakao(); loadAppConfig().then(kakaoAuto);
