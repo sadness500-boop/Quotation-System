@@ -730,7 +730,7 @@ aside.rail{position:sticky;top:calc(env(safe-area-inset-top,0px) + 82px);align-s
 <script>try{var _t=localStorage.getItem("stec_theme");if(_t==="light"||_t==="dark")document.documentElement.setAttribute("data-theme",_t)}catch(e){}</script>
 <header class="topbar">
   <button type="button" class="logo-fig" id="logoHome" title="메인화면으로" aria-label="메인화면으로"><img src="__FIGLOGO__" alt="S-Tec 에스텍 그룹"></button>
-  <div class="brand" title="에스텍 그룹 용역인력 견적시스템"><b>S-Tec-Quotation-System</b><span class="ver">Ver 5.9</span></div>
+  <div class="brand" title="에스텍 그룹 용역인력 견적시스템"><b>S-Tec-Quotation-System</b><span class="ver">Ver 6.0</span></div>
   <div class="sp"><div class="gstrip" id="gstrip" aria-hidden="true"></div></div>
   <div class="tb-home home-only" id="tbHome"></div>
   <div class="tb-actions">
@@ -1051,6 +1051,8 @@ const MINWAGE = Object.fromEntries(Object.entries(RATES).map(([y,r])=>[y,r.minWa
 /* 고용보험 고용안정·직업능력개발 (사업주만 부담, 상시근로자 규모별) */
 const EMP_SIZE = {u150:["150인 미만",0.25], prio:["150인 이상 우선지원대상기업",0.45], m1000:["150인 이상 1,000인 미만",0.65], o1000:["1,000인 이상 · 국가·지자체",0.85]};
 const r3 = v => Math.round(v*10000)/10000;
+/* 4대보험 기준 회사 = 에스텍시스템 (신규 영업 견적 · 갱신 견적의 익년도) — 고용: 상시근로자 1,000인 이상, 산재: 시설관리 및 사업지원 서비스업 0.8% + 출퇴근재해 */
+const SYS_INS={empSize:"o1000", indBase:0.8, label:"에스텍시스템 기준"};
 function statutory(S, year){
   const R=RATES[year]||RATES[2027];
   return {minWage:R.minWage, health:R.health, ltc:R.ltc, pension:R.pension,
@@ -1293,7 +1295,7 @@ function defaultSettings(year){
   const YR = RATES[year] || RATES[2026];
   return {
     minWage: YR.minWage,
-    health:YR.health, ltc:YR.ltc, pension:YR.pension, empSize:"o1000", emp:r3(YR.ui+EMP_SIZE.o1000[1]), indBase:0.8, indCom:YR.indCom, ind:r3(0.8+YR.indCom), wageClaim:YR.wageClaim, asb:YR.asb,
+    health:YR.health, ltc:YR.ltc, pension:YR.pension, empSize:SYS_INS.empSize, emp:r3(YR.ui+EMP_SIZE[SYS_INS.empSize][1]), indBase:SYS_INS.indBase, indCom:YR.indCom, ind:r3(SYS_INS.indBase+YR.indCom), wageClaim:YR.wageClaim, asb:YR.asb,
     otGen:1.5, otWatch:1.0, nightRate:0.5,
     specialExam:80000, disOn:true, disRate:3.1, disBase:1360000, disRatio:100,
     gift:100000, meeting:10000, condol:4000, reliefH:12, reliefDays:1.8,
@@ -2243,7 +2245,7 @@ function renderInsTable(rebindOnly){
   const fmt=(k,v)=>k==="minWage"?won(v):(+v).toString();
   const RS=state.rateSrc, PS=state.prevRateSrc, srcNote = RS && +RS.year===Y
     ? `<div class="rate-src">📄 <b>${Y}년(당해년) 요율은 올린 견적서 파일 기준</b>입니다 — ${esc(RS.file||"원본 파일")}${RS.keys.length?` · ${[...new Set(Object.values(RS.from))].map(esc).join(", ")} 시트에서 ${RS.keys.map(k=>RATE_LABEL[k]).join("·")} 요율`:""}${RS.minWage?` · 최저시급 ${won(RS.minWage)}원(${esc(RS.mwFrom||"")})`:""}. 다음 연도 갱신 견적을 만들면 ‘4. 요율·기준’의 법정 요율로 바뀝니다.</div>`
-    : PS && state.compare ? `<div class="rate-src">⚖️ <b>${Y}년(익년도) 요율은 프로그램 법정 요율</b>입니다. ${state.compare.year}년(당해년) 산출내역서는 올린 파일의 요율(${esc(PS.file||"원본")})로 작성됩니다.</div>` : "";
+    : PS && state.compare ? `<div class="rate-src">⚖️ <b>${Y}년(익년도) 4대보험 요율은 에스텍시스템 기준 법정 요율</b>입니다(고용 1,000인 이상 · 산재 시설관리·사업지원 0.8% + 출퇴근). ${state.compare.year}년(당해년) 산출내역서는 올린 파일의 요율(${esc(PS.file||"원본")})로 작성됩니다.</div>` : "";
   box.innerHTML=`${srcNote}<div class="grid g3" style="margin-bottom:10px">
      <label class="f"><span>고용보험 · 회사 상시근로자 규모</span><select class="inp" data-s="empSize">${Object.entries(EMP_SIZE).map(([k,[l,v]])=>`<option value="${k}" ${S.empSize===k?"selected":""}>${l} (+${v}%)</option>`).join("")}</select></label>
      <label class="f"><span>산재보험 · 사업종류별 요율(%)</span><input class="inp n" data-s="indBase" value="${S.indBase??0.8}"></label>
@@ -2661,7 +2663,7 @@ function rollover(){
   const n=JSON.parse(JSON.stringify(state));
   n.meta.year=Y; n.meta.date=today(); n.meta.mode="renew"; n.meta.from=shiftYear(state.meta.from); n.meta.to=shiftYear(state.meta.to);
   // 익년도 = 프로그램 ‘4. 요율·기준’의 법정 요율 (당해년 파일의 사업장별 산재·고용 기준은 쓰지 않음)
-  { const D=defaultSettings(Y); n.set.indBase=D.indBase; n.set.empSize=D.empSize; n.set.indCom=D.indCom; }
+  { const D=defaultSettings(Y); n.set.indBase=SYS_INS.indBase; n.set.empSize=SYS_INS.empSize; n.set.indCom=D.indCom; n.set.insBasis="sys"; }   // 익년도 4대보험 = 에스텍시스템 기준
   const known=applyYearRates(n.set,Y);
   delete n.rateSrc; n.prevRateSrc=state.rateSrc||null;
   if(!known){ n.set.minWage=Math.round(old.minWage*1.03); }
@@ -3516,7 +3518,10 @@ function regNo(S){ return S.coBizNo || (S.coCorpNo?`법인 ${S.coCorpNo}`:""); }
 function coLine(S, sep){ const n=S.coName||"", b=(S.coBranch||"").trim(); const nn=n.replace(/[㈜()（）주식회사\s]/g,""); return b && !nn.includes(b.replace(/\s/g,"")) ? n+(sep||" · ")+b : n; }
 function normState(st){
   if(!st || !st.meta || !st.set || !Array.isArray(st.roles)) throw new Error("견적 데이터가 아닙니다");
-  return fixBranchName(Object.assign(newState(), st, {set:Object.assign(defaultSettings(+st.meta.year), st.set)}));
+  const n=fixBranchName(Object.assign(newState(), st, {set:Object.assign(defaultSettings(+st.meta.year), st.set)}));
+  // 예전 버전에서 만든 갱신 견적(익년도)은 4대보험을 에스텍시스템 기준으로 맞춤
+  if(n.compare && n.set.insBasis!=="sys" && RATES[+n.meta.year]){ n.set.empSize=SYS_INS.empSize; n.set.indBase=SYS_INS.indBase; const s2=statutory(n.set,+n.meta.year); n.set.emp=s2.emp; n.set.ind=s2.ind; n.set.insBasis="sys"; }
+  return n;
 }
 function embedState(wb){
   const ws=wb.addWorksheet(DATA_SHEET,{state:"veryHidden"});
@@ -4205,12 +4210,13 @@ async function buildBdSheet(wb, sheetName, R, Y, m, S, logoId, logoSm, tab, opt=
 
   // ── 산출 기준: 인력별(열별) 값 ──
   const fromFile = !!(state.compare && +Y===+state.compare.year && state.prevRateSrc) || !!(state.rateSrc && +Y===+state.rateSrc.year);
-  const srcTxt = fromFile ? "올린 당해년 견적서 기준" : "법정(4. 요율·기준)";
+  const sysB = !fromFile && S.empSize===SYS_INS.empSize && +S.indBase===SYS_INS.indBase;
+  const srcTxt = fromFile ? "올린 당해년 견적서 기준" : sysB ? `${SYS_INS.label} · 법정 요율` : "법정(4. 요율·기준)";
   const RS=R.rows.map(({r})=>roleSet(r,S));
   const PR=[ // [키, 항목, 값(sx=>), 서식, 비고]
     ["minWage","최저시급 (시간당) · 참고",x=>+x.minWage,"#,##0",`원 · ${Y}년 · ${srcTxt}`],
     ["health","건강보험",x=>pct(x.health),"0.000%",`사업주분 · ${srcTxt}`],["ltc","노인장기요양 (건보료 대비)",x=>pct(x.ltc),"0.00%",""],["pension","국민연금",x=>pct(x.pension),"0.000%",""],
-    ["emp","고용보험",x=>pct(x.emp),"0.000%",fromFile?srcTxt:"실업급여 + 고용안정·직능(규모별)"],["ind","산재보험",x=>pct(x.ind),"0.000%",fromFile?srcTxt:"사업종류별 + 출퇴근재해"],["wageClaim","임금채권부담금",x=>pct(x.wageClaim),"0.000%","0이면 미반영"],["asb","석면피해구제분담금",x=>pct(x.asb),"0.0000%","0이면 미반영"],
+    ["emp","고용보험",x=>pct(x.emp),"0.000%",fromFile?srcTxt:sysB?`${SYS_INS.label} · 실업급여 + 고용안정·직능(1,000인 이상 0.85%)`:"실업급여 + 고용안정·직능(규모별)"],["ind","산재보험",x=>pct(x.ind),"0.000%",fromFile?srcTxt:sysB?`${SYS_INS.label} · 시설관리·사업지원 ${SYS_INS.indBase}% + 출퇴근재해`:"사업종류별 + 출퇴근재해"],["wageClaim","임금채권부담금",x=>pct(x.wageClaim),"0.000%","0이면 미반영"],["asb","석면피해구제분담금",x=>pct(x.asb),"0.0000%","0이면 미반영"],
     ["otGen","연장 가산배율 (일반)",x=>+x.otGen,"0.0#","연장 환산시간 = 시간 × 배율"],["otWatch","연장 배율 (감시단속)",x=>+x.otWatch,"0.0#",""],["nightRate","야간 가산율",x=>+x.nightRate,"0.0#","야간 환산시간 = 시간 × 가산율"],["leaveH","연차 1일 시간",x=>+x.leaveH||8,"0",""],
     ["exam","특수건강검진 (연/인)",x=>+x.specialExam,"#,##0",""],["disOn","장애인부담금 반영 (1=반영)",x=>x.disOn?1:0,"0",""],["disRate","장애인 의무고용률",x=>pct(x.disRate),"0.0%",""],["disBase","부담기초액",x=>+x.disBase,"#,##0",""],["disRatio","부담금 반영률",x=>pct(x.disRatio),"0%",""],["disRound","장애인부담금 10원 절상 (1=예)",x=>x.disRound===false?0:1,"0",""],
     ["gift","명절선물대 (연/인)",x=>+x.gift,"#,##0",""],["giftRound","선물대 10원 절상 (1=예)",x=>x.giftRound===false?0:1,"0",""],["meeting","직원회의비 (월)",x=>+x.meeting,"#,##0",LBL.meeting&&LBL.meeting!=="직원회의비"?`원본 항목명: ${LBL.meeting}`:""],["condol","경조비 (월)",x=>+x.condol,"#,##0",""],["reliefH","대치근무 기준시간",x=>+x.reliefH,"0.##",""],["reliefDays","대치근무 일수 (연)",x=>+x.reliefDays,"0.##",""],
