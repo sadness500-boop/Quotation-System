@@ -730,7 +730,7 @@ aside.rail{position:sticky;top:calc(env(safe-area-inset-top,0px) + 82px);align-s
 <script>try{var _t=localStorage.getItem("stec_theme");if(_t==="light"||_t==="dark")document.documentElement.setAttribute("data-theme",_t)}catch(e){}</script>
 <header class="topbar">
   <button type="button" class="logo-fig" id="logoHome" title="메인화면으로" aria-label="메인화면으로"><img src="__FIGLOGO__" alt="S-Tec 에스텍 그룹"></button>
-  <div class="brand" title="에스텍 그룹 용역인력 견적시스템"><b>S-Tec-Quotation-System</b><span class="ver">Ver 6.1</span></div>
+  <div class="brand" title="에스텍 그룹 용역인력 견적시스템"><b>S-Tec-Quotation-System</b><span class="ver">Ver 6.2</span></div>
   <div class="sp"><div class="gstrip" id="gstrip" aria-hidden="true"></div></div>
   <div class="tb-home home-only" id="tbHome"></div>
   <div class="tb-actions">
@@ -1296,7 +1296,7 @@ function defaultSettings(year){
   return {
     minWage: YR.minWage,
     health:YR.health, ltc:YR.ltc, pension:YR.pension, empSize:SYS_INS.empSize, emp:r3(YR.ui+EMP_SIZE[SYS_INS.empSize][1]), indBase:SYS_INS.indBase, indCom:YR.indCom, ind:r3(SYS_INS.indBase+YR.indCom), wageClaim:YR.wageClaim, asb:YR.asb,
-    otGen:1.5, otWatch:1.0, nightRate:0.5,
+    otGen:1.5, otWatch:1.0, nightRate:0.5, baseCap:209,
     specialExam:80000, disOn:true, disRate:3.1, disBase:1360000, disRatio:100,
     gift:100000, meeting:10000, condol:4000, reliefH:12, reliefDays:1.8,
     resTax:62500, resSites:1, edu:1.0, eduFix:0, risk:0.5, riskFix:0, leaveH:8,
@@ -1374,7 +1374,10 @@ function addonTotals(st){
 /* 개인별 산출기준: 공통 기준(S) 위에 인력별 값(r.sx)을 덮어씀 */
 function roleSet(r,S){ return r && r.sx ? Object.assign({},S,r.sx) : S; }
 /* 기본시간 외 시간 = 통상시급을 곱할 ‘환산시간’(가산 포함) */
-function otHours(r,S){ return (+r.ot||0)*(r.watch?+S.otWatch:+S.otGen); }
+/* 일반직군(감시단속 아님): 기본시간은 주40시간(+주휴) 한도, 넘는 시간은 연장근로(가산)로 산정 */
+function baseCapOf(r,S){ return (!r.watch && !r.rawBase) ? (+S.baseCap||209) : Infinity; }
+function baseEffOf(r,S){ const b=+r.base||0; return Math.min(b, baseCapOf(r,S)); }
+function otHours(r,S){ return ((+r.ot||0)+((+r.base||0)-baseEffOf(r,S)))*(r.watch?+S.otWatch:+S.otGen); }
 function nightHours(r,S){ return (+r.night||0)*(+S.nightRate); }
 function holHours(r){ return (+r.holDays||0)*8*0.5/12; }
 const INS_EX={meal:"식대",pos:"직책수당",posMeal:"직책수당+식대",none:"없음"};
@@ -1388,7 +1391,8 @@ function calcRole(r, S0, ctx){
   const L = {}, S = roleSet(r,S0);
   L.x={}; (r.extras||[]).forEach(x=>{ const k=xKey(x); L.x[k]=(L.x[k]||0)+(+x.amt||0); });
   L.xpay=xSum(r,"pay"); L.xpayOrd=xSum(r,"pay",x=>x.ord); L.xpayNoIns=xSum(r,"pay",x=>x.ins===false);
-  const wage = +r.wage||0, base = +r.base||0, ot = +r.ot||0, night = +r.night||0;
+  const wage = +r.wage||0, base = baseEffOf(r,S), ot = +r.ot||0, night = +r.night||0;
+  L.baseEff = base; L.otEx = (+r.base||0) - base;
   L.basic = RU(base*wage);
   L.pos = +r.pos||0; L.adj = +r.adj||0; L.duty = +r.duty||0; L.meal = +r.meal||0;
   const ordinary = base ? (L.basic + L.pos + L.adj + L.duty + L.xpayOrd)/base : 0;
@@ -2086,7 +2090,7 @@ function roleCard(r){
         <label class="f"><span>비고</span><input class="inp" data-f="note" value="${esc(r.note)}"></label>
       </div>
       <div class="row" style="margin-top:10px;gap:18px">
-        <label class="chk"><input type="checkbox" data-f="watch" ${r.watch?"checked":""}> 감시단속 승인(연장 가산 미적용)</label>
+        <label class="chk" ${r.cat!=="sec"?`title="보안(경비) 외 업종은 일반근로입니다 — 연장 가산 ${state.set.otGen}배, 주40시간 초과 기본시간은 연장근로로 산정"`:""}><input type="checkbox" data-f="watch" ${r.watch?"checked":""} ${r.cat!=="sec"&&!r.watch?"disabled":""}> 감시단속 승인(연장 가산 미적용)${r.cat!=="sec"?" · 일반직군":""}</label>
         <label class="chk"><input type="checkbox" data-f="laborDay" ${r.laborDay?"checked":""}> 근로자의날 유급</label>
         <label class="chk"><input type="checkbox" data-f="retire" ${r.retire?"checked":""}> 퇴직충당금 반영</label>
         <label class="chk"><input type="checkbox" data-f="addonEx" ${r.addonEx?"checked":""}> 부대비용 배분 제외</label>
@@ -2389,7 +2393,8 @@ function renderDocs(R){
       ${hrs("인원",(r,L)=>L.count,"")}
       ${hrs("시급",(r)=>won2(r.wage),`${Y}년 최저임금 ${won(S.minWage)}원 기준`)}
       ${hrs("통상시급",(r,L)=>won2(L.ordinary),"(기본급+직책+조정+직무수당) ÷ 기본시간")}
-      ${hrs("기본/연장/야간(h)",(r)=>`${r.base} / ${r.ot} / ${r.night}`,`야간가산시간 = 야간근로 × ${S.nightRate*100}%`)}
+      ${hrs("근로구분",(r)=>r.watch?"감시단속":"일반근로",`보안(경비) 감시단속 승인 외에는 일반근로 — 주40시간(기본 ${S.baseCap||209}h) 초과분은 연장 ${S.otGen}배`)}
+      ${hrs("기본/연장/야간(h)",(r,L)=>`${L.baseEff}${L.otEx?`(+${Math.round(L.otEx*100)/100})`:""} / ${r.ot} / ${r.night}`,`야간가산시간 = 야간근로 × ${S.nightRate*100}% · (+h) = 주40시간 초과로 연장에 더한 시간`)}
       ${line("기본급여","basic","시급 × 기본시간(주휴 포함)","",won2,g("직접인건비"))}
       ${line("연장근로수당","ot",`연장 환산시간(연장시간 × 일반 ${S.otGen}배 / 감시단속 ${S.otWatch}배) × 통상시급`)}
       ${line("야간가산수당","night",`야간가산 환산시간(야간근로 × ${S.nightRate*100}%) × 통상시급`)}
@@ -2680,6 +2685,10 @@ function rollover(){
     if(fpOf(i)){ r.prevL.price=fpOf(i); r.prevL.monthTotal=fpOf(i)*L0.count; r.prevInfo.filePrice=fpOf(i); }
     r.prev=priceOf(i); delete r.filePrice;
     r.wage = (+r.wage<=old.minWage+0.01) ? n.set.minWage : Math.round(r.wage*ratio*100)/100;
+    // 익년도: 보안 외 업종은 일반근로 — 연장 가산 1.5배, 주40시간 초과 기본시간은 연장근로로
+    if(r.cat!=="sec") r.watch=false;
+    if(!r.watch){ delete r.rawBase; if(r.sx && r.sx.otGen!=null){ delete r.sx.otGen; if(!Object.keys(r.sx).length) delete r.sx; } }
+    delete r.fileOtRate;
     r.id=nid();
   });
   n.vehicles.forEach(v=>v.id=nid()); n.equips.forEach(e=>e.id=nid()); n.others.forEach(o=>o.id=nid());
@@ -2774,6 +2783,28 @@ function fxMeta(wb){
     if(!M.months){ const m=t.v.match(/(?:총\s*)?(\d{1,2})\s*개월/); if(m && /학기|방학|총/.test(t.v) && +m[1]<12) M.months=+m[1]; }
   }
   return M;
+}
+/* 인력 구성(업종)으로 용역명 정하기 */
+const CAT_ORDER=["sec","cln","fac","park","spc","etc"];
+function svcFromRoles(roles){
+  const cats=CAT_ORDER.filter(k=>roles.some(r=>r.cat===k)); if(!cats.length) return "";
+  const k=cats.join("+");
+  const one={sec:SVC_TYPES[0],cln:SVC_TYPES[1],fac:SVC_TYPES[2],park:SVC_TYPES[3]};
+  if(one[k]) return one[k];
+  if(k==="spc"){ const t=roles.map(r=>(r.rank||"")+" "+(r.detail||"")).join(" ");
+    return /안내|리셉션/.test(t)?SVC_TYPES[6]:/조리/.test(t)?SVC_TYPES[9]:/방역|소독/.test(t)?SVC_TYPES[8]:/폐기물|수거/.test(t)?"폐기물수거용역 도급업무":"특수직군 용역 도급업무"; }
+  if(k==="sec+cln") return SVC_TYPES[4];
+  if(k==="sec+cln+fac") return SVC_TYPES[5];
+  const nm={sec:"보안",cln:"미화",fac:"시설",park:"주차",spc:"특수",etc:"기타"};
+  return cats.map(c=>nm[c]).join("·")+"용역 도급업무";
+}
+/* 용역명에 적힌 업종과 실제 인력 업종이 맞는지 */
+function svcMatchesRoles(svc, roles){
+  if(!svc) return false;
+  const want=new Set(roles.map(r=>r.cat)), hit=new Set();
+  [["sec",/경비|보안|방호|경호/],["cln",/미화|청소|위생|환경/],["park",/주차/],["fac",/시설|전기|기계|영선/],["spc",/안내|폐기물|수거|조리|운전|방역/],["etc",/사무|경리|행정/]].forEach(([k,re])=>{ if(re.test(svc)) hit.add(k); });
+  if(!hit.size) return true;   // 업종 낱말이 없는 용역명(예: 종합관리)은 그대로 둠
+  return [...want].every(k=>hit.has(k)||k==="etc"||k==="spc") && [...hit].every(k=>want.has(k));
 }
 function fxCat(name, group, ctxText){
   const strong=[["sec",/경비|보안|방호|순찰|경호/],["cln",/미화|청소|위생|환경관리/],["park",/주차/],["spc",/안내|폐기물|수거|조리|운전원|방역|보관장/],["fac",/시설관리|전기|기계|영선|설비|시설(?!경비)/],["etc",/사무|경리|행정/]];
@@ -2902,9 +2933,13 @@ function fxDetailed(g, sheet, meta, ctxText){
       const ordinary=(FX.isNum(V("ordinary"))&&V("ordinary")>1000)?V("ordinary"):(base?(basic+pos+adj+duty)/base:wage);
       const cat=fxCat(name+" "+shiftT.join(" "), group, ctxText+" "+titleText)||"etc";
       const gender=/女|여자|여성|여사원|안내|여\b|\(여\)/.test(name+group)?"F":/男|남자|남성|\(남\)/.test(name+group)?"M":(cat==="cln"?"F":"M");
-      let watch=CATS[cat].watch, ot=0;
+      // 근로구분: 보안(경비)만 감시단속 가능, 그 밖의 업종(미화·주차·시설·기타)은 일반근로(연장 가산 1.5배)
+      const isSec = cat==="sec";
+      let watch=isSec ? CATS.sec.watch : false, ot=0, otRate=null;
       const otH=V("otH"), otM=V("otM");
-      if(otH && otM){ const ratio=otM/(otH*wage); if(ratio<1.25){ watch=true; ot=otH; } else { watch=false; ot=otM/(ordinary*1.5); } }
+      if(otH && otM){ const ratio=otM/(otH*wage);
+        if(isSec){ if(ratio<1.25){ watch=true; ot=otH; } else { watch=false; ot=otM/(ordinary*1.5); } }
+        else { ot=otH; const k=otM/(otH*ordinary); if(Math.abs(k-1.5)>0.02) otRate=Math.abs(k-1)<0.02?1:Math.round(k*10000)/10000; } }
       else if(otM){ ot = watch ? otM/wage : otM/(ordinary*1.5); }
       else if(otH){ ot=otH; }
       ot=Math.round(ot*2)/2;
@@ -2916,6 +2951,9 @@ function fxDetailed(g, sheet, meta, ctxText){
       const lvM=V("leaveM"); if(V("leaveD")==null && lvM>0 && ordinary>0){ const d=lvM*12/(ordinary*8); leave=Math.abs(d-Math.round(d))<0.05?Math.round(d):Math.round(d*10)/10; }
       const shiftKey=fxShift([name,...shiftT].join(" "), night);
       const opt={rank:fxRank(cat,name,gender), gender, shift:shiftKey, count:Math.round(count), wage:Math.round(wage*100)/100, base, ot, night, watch, pos, duty, meal, adj, holDays, leave:Math.round(leave*100)/100};
+      // 당해년은 원본 금액 그대로 재현: 일반직군인데 원본이 연장 가산을 덜 했거나 기본시간이 주40h를 넘으면 그 방식을 표시해 두고, 익년도에 법정 방식으로 바로잡음
+      if(otRate!=null){ opt.sx=Object.assign(opt.sx||{}, {otGen:otRate}); opt.fileOtRate=otRate; }
+      if(!watch && base>209.5) opt.rawBase=true;
       if(has("laborDay")) opt.laborDay = (V("laborDay")||0)>0;
       const bon=V("bonus"); if(bon>0 && basic>0){ opt.bonusPct=Math.round(bon*12/basic*1000)/10; if(Math.abs(RU(basic*opt.bonusPct/100/12)-bon)>0.5) opt.bonusAmt=Math.round(bon*1e4)/1e4; }
       { const hv=V("health"), dv=V("directSum"), rv=V("retire")||0;   // 4대보험 산정 기준에서 빼는 항목을 원본 금액으로 판별
@@ -3111,6 +3149,8 @@ function fxBuildState(A, idx, opts={}){
   if(fps.length && fps.some(v=>v%1000)) st.set.priceRound = fps.some(v=>v%100) ? "none" : "down2";
   const s=fxSite(client); if(s){ Object.assign(st.meta,{siteId:s.id, addr:s.addr, lat:s.lat, lng:s.lng, branch:s.br, grpCo:"에스텍베스트"}); }
   st.roles=c.roles.map((x,i)=>{ const r=newRole(x.cat, {...x.opt}); if(c.kind==="summary"){ r.wage=st.set.minWage; } else r.srcCol=c.block.cols[i]; return migrateRole(r); });
+  // 용역명: 원본에 적힌 용역명이 실제 인력 업종과 다르면(예: 미화 인력인데 ‘보안용역’) 업종에 맞게 다시 정함
+  if(!svcMatchesRoles(M.svc, st.roles)) st.meta.svc=svcFromRoles(st.roles)||st.meta.svc;
   st.importSrc={name:opts.file||"", sheet:c.sheet, map:c.map, year:Y, xls:/\.(xls|csv)$/i.test(opts.file||"")};
   if(c.labels) st.labels=c.labels;
   st.others=c.others.map(o=>({...o,id:nid()}));
@@ -4177,10 +4217,10 @@ async function buildQuoteSheet(wb, sheetName, R, qr, crew, Y, m, S, prevCol, log
 /* ───────── 산출내역서 (엑셀 수식 연결) ───────── */
 const BD_BASE=[
   ["count","인원(명)","i","기초자료"],["wage","시급","i"],["base","기본시간(주휴포함)","i"],
-  ["ot","연장근로시간 (실제)","i"],["watch","감시단속(1=승인)","i"],["night","야간근로시간 (실제)","i"],["holDays","공휴일근무(일/년)","i"],
+  ["ot","연장근로시간 (실제)","i"],["watch","근로구분 (1=감시단속, 0=일반근로)","i"],["capF","주40h 초과 기본시간 연장 할증 (1=적용)","i"],["night","야간근로시간 (실제)","i"],["holDays","공휴일근무(일/년)","i"],
   ["leaveDays","연차적치일수","i"],["bonusP","상여율(연, 기본급 대비)","i"],["bonusB","상여 기준(0=기본급,1=통상임금)","i"],["bonusAmt","상여 월정액(0이면 상여율)","i"],["ldH","근로자의날 유급시간","i"],
   ["retF","퇴직충당금(1=반영)","i"],["penP","국민연금 적용률","i"],["insEx","4대보험 제외(0=식대,1=직책,2=직책+식대,3=없음)","i"],["specF","특수검진(1=적용)","i"],["addEx","부대비용 배분제외(1=제외)","i"],["months","연간 근무개월","i"],
-  ["otH","연장 환산시간 (가산 포함)","hc"],["nightH","야간가산 환산시간","hc"],["holH","공휴일 환산시간 (월)","hc"],["ordinary","통상시급","hc"],
+  ["baseEff","기본급 산정시간 (일반근로 주40h 한도)","hc"],["otH","연장 환산시간 (가산 포함)","hc"],["nightH","야간가산 환산시간","hc"],["holH","공휴일 환산시간 (월)","hc"],["ordinary","통상시급","hc"],
   ["basic","기본급여","","직접인건비"],["ot$","연장근로수당",""],["night$","야간가산수당",""],["hol","공휴일근무수당",""],["duty","직무수당",""],["meal","식대(비과세)",""],["adj","조정수당",""],["pos","직책수당",""],["sub1","소  계","s"],
   ["leave","연차수당(적치)",""],["laborDay","근로자의날",""],["bonus","상여금",""],["retire","퇴직충당금",""],["direct","직접비 계 ①","s"],
   ["health","건강보험료","","간접인건비"],["ltc","노인장기요양보험",""],["pension","국민연금",""],["emp","고용보험료",""],["ind","산재보험료",""],["wclaim","임금채권부담금",""],["asb","석면피해구제분담금",""],["special","특수건강검진",""],["dis","장애인고용부담금",""],["indirect","간접비 계 ②","s"],["labor","노무비 계 (1)","s"],
@@ -4195,8 +4235,9 @@ const BD_TOP=10;
 const bdRowOf=k=>BD_TOP+BD_ROWS.findIndex(x=>x[0]===k);
 const bdColL=i=>{ let n=3+i, s=""; while(n>0){ const m=(n-1)%26; s=String.fromCharCode(65+m)+s; n=Math.floor((n-1)/26); } return s; };
 const BD_DESC={
-  otH:"연장근로시간 × 가산배율(감시단속 승인 시 감시단속 배율)", nightH:"야간근로시간 × 야간 가산율", holH:"공휴일 일수 × 8h × 50% ÷ 12", ordinary:"(기본급여+직책+조정+직무) ÷ 기본시간",
-  basic:"ROUNDUP(시급 × 기본시간, -1)", "ot$":"ROUNDUP(연장 환산시간 × 통상시급, -1)", "night$":"ROUNDUP(야간가산 환산시간 × 통상시급, -1)",
+  baseEff:"일반근로(1=적용)면 MIN(기본시간, 기본시간 한도 209h) · 감시단속은 기본시간 그대로",
+  otH:"(연장근로시간 + 주40h 초과 기본시간) × 가산배율 (일반근로 1.5배 · 감시단속 승인 1.0배)", nightH:"야간근로시간 × 야간 가산율", holH:"공휴일 일수 × 8h × 50% ÷ 12", ordinary:"(기본급여+직책+조정+직무) ÷ 기본급 산정시간",
+  basic:"ROUNDUP(시급 × 기본급 산정시간, -1)", "ot$":"ROUNDUP(연장 환산시간 × 통상시급, -1)", "night$":"ROUNDUP(야간가산 환산시간 × 통상시급, -1)",
   hol:"ROUNDUP(공휴일 환산시간 × 통상시급, -1)", sub1:"기본급여 ~ 직책수당·기타수당 합계", leave:"ROUNDUP(통상시급 × 연차1일시간 × 적치일수 ÷ 12, -1)",
   laborDay:"ROUNDUP(유급시간 ÷ 12 × 통상시급, -1)", bonus:"월정액, 없으면 ROUNDUP(기본급(또는 통상임금) × 상여율 ÷ 12, -1)", retire:"ROUNDUP((소계+연차+근로자의날+상여금) ÷ 12, -1)", direct:"소계 + 연차 + 근로자의날 + 상여금 + 퇴직충당금",
   health:"ROUNDUP((직접비 계 − 퇴직충당금 − 제외항목) × 건강보험요율, -1)", ltc:"ROUNDUP(건강보험료 × 장기요양요율, -1)", pension:"ROUNDUP((직접비−퇴직−제외항목) × 국민연금요율 × 적용률, -1)",
@@ -4206,19 +4247,22 @@ const BD_DESC={
   addon:"부대비용 월계 ÷ 배분 인원", expense:"피복 ~ 부대비용 합계", dcost:"노무비 (1) + 경비 (2)", ga:"직접원가 × 일반관리비율", csub:"직접원가 + 일반관리비", profit:"직접원가(또는 원가소계) × 이윤율", total:"원가소계 + 기업이윤", price:"원가총계 단수처리(개인별 산출기준)"
 };
 const PRICE_RND=["down3","up3","down2","none","round3"];
+/* 제목에 붙일 업종 이름 — ‘미화(위생관리)용역 도급업무’ → ‘미화(위생관리)용역 ’ */
+function svcKind(svc){ const m=String(svc||"").match(/^(.*?용역)/); return m && m[1].length<=20 ? m[1]+" " : ""; }
 async function buildBdSheet(wb, sheetName, R, Y, m, S, logoId, logoSm, tab, opt={}){
   const nc=R.rows.length, lastC=2+nc+3+1; // +산출근거 열
   const ws=wb.addWorksheet(sheetName,{properties:{tabColor:{argb:tab}},views:[{showGridLines:false,state:"frozen",xSplit:2,ySplit:9}],pageSetup:{paperSize:9,orientation:"landscape",fitToPage:true,fitToWidth:1,fitToHeight:0,margins:{left:.3,right:.3,top:.4,bottom:.4,header:.2,footer:.2}}});
   ws.columns=[{width:11},{width:30},...R.rows.map(()=>({width:13})),{width:15},{width:13},{width:16},{width:44}];
   if(!wb._cubeId){ try{ const cb=await imgPng("figcube",220); wb._cubeId=wb.addImage({base64:cb.base64,extension:"png"}); wb._cubeSz={w:Math.round(70*cb.w/cb.h),h:70}; }catch(e){ wb._cubeId=logoId; wb._cubeSz=logoSm; } }
-  xHeader(ws,wb,wb._cubeId,`${Y}년 ${m.client||""} 산출내역서`,`${m.svc} · 용역기간 ${fmtD(m.from)} ~ ${fmtD(m.to)} · 단위: 원, VAT 별도 · 노란 칸 = 입력값(수정 시 자동 재계산) · 산출 기준은 인력별(열별)로 따로 적용`,Math.max(lastC,7),wb._cubeSz);
+  const catSum=CAT_ORDER.map(k=>{ const rs=R.rows.filter(({r})=>r.cat===k); if(!rs.length) return ""; const n=rs.reduce((a,{L})=>a+L.count,0), w=rs.some(({r})=>r.watch), g=rs.some(({r})=>!r.watch); return `${CATS[k].short} ${n}명(${w&&g?"감시단속·일반근로":w?"감시단속":"일반근로"})`; }).filter(Boolean).join(" · ");
+  xHeader(ws,wb,wb._cubeId,`${Y}년 ${m.client||""} ${svcKind(m.svc)}산출내역서`,`${m.svc} · 업종 구분: ${catSum} · 용역기간 ${fmtD(m.from)} ~ ${fmtD(m.to)} · 단위: 원, VAT 별도 · 노란 칸 = 입력값(수정 시 자동 재계산) · 산출 기준은 인력별(열별)로 따로 적용`,Math.max(lastC,7),wb._cubeSz);
   const cT=nc+3, cA=nc+4, cY=nc+5, cD=nc+6, LT=bdColL(nc), Lfirst=bdColL(0), Llast=bdColL(nc-1);
   const LBL=(state&&state.labels)||{};
   // 헤더
   const r0=7, hh=ws.getRow(r0), hh2=ws.getRow(r0+1), hh3=ws.getRow(r0+2);
   ws.mergeCells(r0,1,r0+2,2); hh.getCell(1).value="구  분";
   const head2=r=>r.rank+(r.detail?`\n${r.detail}`:"");
-  R.rows.forEach(({r,L},i)=>{ const c=3+i; hh.getCell(c).value=CATS[r.cat].short; hh2.getCell(c).value=head2(r); hh3.getCell(c).value=shiftLabel(r).replace(/\s*\(.*\)/,""); });
+  R.rows.forEach(({r,L},i)=>{ const c=3+i; hh.getCell(c).value=`${CATS[r.cat].short} · ${r.watch?"감시단속":"일반근로"}`; hh2.getCell(c).value=head2(r); hh3.getCell(c).value=shiftLabel(r).replace(/\s*\(.*\)/,""); });
   [["월간총액",cT],["평균단가",cA],["계약기간 계",cY],["산출 근거 (수식)",cD]].forEach(([t,c])=>{ ws.mergeCells(r0,c,r0+2,c); hh.getCell(c).value=t; });
   [hh,hh2,hh3].forEach((rw,ri)=>{ rw.height=ri===1?30:18; for(let c=1;c<=lastC;c++){ const cc=rw.getCell(c); cc.font=xFont({bold:true,size:9,color:{argb:XC.white}}); cc.fill=xFill(ri===0?XC.navy:"FF2A3A9C"); cc.alignment={horizontal:"center",vertical:"middle",wrapText:true}; cc.border=xBorder("FF41509F"); } });
 
@@ -4231,7 +4275,8 @@ async function buildBdSheet(wb, sheetName, R, Y, m, S, logoId, logoSm, tab, opt=
     ["minWage","최저시급 (시간당) · 참고",x=>+x.minWage,"#,##0",`원 · ${Y}년 · ${srcTxt}`],
     ["health","건강보험",x=>pct(x.health),"0.000%",`사업주분 · ${srcTxt}`],["ltc","노인장기요양 (건보료 대비)",x=>pct(x.ltc),"0.00%",""],["pension","국민연금",x=>pct(x.pension),"0.000%",""],
     ["emp","고용보험",x=>pct(x.emp),"0.000%",fromFile?srcTxt:sysB?`${SYS_INS.label} · 실업급여 + 고용안정·직능(1,000인 이상 0.85%)`:"실업급여 + 고용안정·직능(규모별)"],["ind","산재보험",x=>pct(x.ind),"0.000%",fromFile?srcTxt:sysB?`${SYS_INS.label} · 시설관리·사업지원 ${SYS_INS.indBase}% + 출퇴근재해`:"사업종류별 + 출퇴근재해"],["wageClaim","임금채권부담금",x=>pct(x.wageClaim),"0.000%","0이면 미반영"],["asb","석면피해구제분담금",x=>pct(x.asb),"0.0000%","0이면 미반영"],
-    ["otGen","연장 가산배율 (일반)",x=>+x.otGen,"0.0#","연장 환산시간 = 시간 × 배율"],["otWatch","연장 배율 (감시단속)",x=>+x.otWatch,"0.0#",""],["nightRate","야간 가산율",x=>+x.nightRate,"0.0#","야간 환산시간 = 시간 × 가산율"],["leaveH","연차 1일 시간",x=>+x.leaveH||8,"0",""],
+    ["baseCap","일반근로 기본시간 한도 (주40h+주휴)",x=>+x.baseCap||209,"0.#","일반근로(보안 외 업종)는 이 시간을 넘는 기본시간을 연장근로로 산정"],
+    ["otGen","연장 가산배율 (일반근로)",x=>+x.otGen,"0.0###",RS.some(x=>x.otGen!==S.otGen)?"연장 환산시간 = 시간 × 배율 · 1.5가 아닌 열 = 원본 견적서의 가산 방식 그대로(당해년 재현)":"연장 환산시간 = 시간 × 배율 (근로기준법 1.5배)"],["otWatch","연장 배율 (감시단속)",x=>+x.otWatch,"0.0#",""],["nightRate","야간 가산율",x=>+x.nightRate,"0.0#","야간 환산시간 = 시간 × 가산율"],["leaveH","연차 1일 시간",x=>+x.leaveH||8,"0",""],
     ["exam","특수건강검진 (연/인)",x=>+x.specialExam,"#,##0",""],["disOn","장애인부담금 반영 (1=반영)",x=>x.disOn?1:0,"0",""],["disRate","장애인 의무고용률",x=>pct(x.disRate),"0.0%",""],["disBase","부담기초액",x=>+x.disBase,"#,##0",""],["disRatio","부담금 반영률",x=>pct(x.disRatio),"0%",""],["disRound","장애인부담금 10원 절상 (1=예)",x=>x.disRound===false?0:1,"0",""],
     ["gift","명절선물대 (연/인)",x=>+x.gift,"#,##0",""],["giftRound","선물대 10원 절상 (1=예)",x=>x.giftRound===false?0:1,"0",""],["meeting","직원회의비 (월)",x=>+x.meeting,"#,##0",LBL.meeting&&LBL.meeting!=="직원회의비"?`원본 항목명: ${LBL.meeting}`:""],["condol","경조비 (월)",x=>+x.condol,"#,##0",""],["reliefH","대치근무 기준시간",x=>+x.reliefH,"0.##",""],["reliefDays","대치근무 일수 (연)",x=>+x.reliefDays,"0.##",""],
     ["resTax","주민세 사업소분 (연)",x=>+x.resTax,"#,##0",""],["resSites","주민세 개소 수",x=>+x.resSites,"0",""],
@@ -4264,16 +4309,17 @@ async function buildBdSheet(wb, sheetName, R, Y, m, S, logoId, logoSm, tab, opt=
       const lastOf=(k0,sec)=>{ const l=XR.filter(x=>x[4].sec===sec); return l.length?l[l.length-1][0]:k0; };
       const ex=`CHOOSE(${c("insEx")}+1,${c("meal")},${c("pos")},${c("pos")}+${c("meal")},0)`, ib=`(${c("direct")}-${c("retire")}-${ex}${xNo.map(z=>`-${z}`).join("")})`;
       const spF = r.special==="on" || (r.special==="auto" && +r.night>0) ? 1 : 0;
-      const inputs={count:L.count, wage:+r.wage, base:+r.base, ot:+r.ot||0, watch:r.watch?1:0, night:+r.night||0, holDays:+r.holDays||0, leaveDays:+r.leave||0, bonusP:pct(r.bonusPct||0), bonusB:r.bonusBase==="ordinary"?1:0, bonusAmt:+r.bonusAmt||0,
+      const inputs={count:L.count, wage:+r.wage, base:+r.base, ot:+r.ot||0, watch:r.watch?1:0, capF:r.rawBase?0:1, night:+r.night||0, holDays:+r.holDays||0, leaveDays:+r.leave||0, bonusP:pct(r.bonusPct||0), bonusB:r.bonusBase==="ordinary"?1:0, bonusAmt:+r.bonusAmt||0,
         ldH:r.laborDay?Math.max(0,(+r.dayH||0)-(+r.rest||0)):0, retF:r.retire?1:0, penP:pct(r.pensionPct), insEx:Math.max(0,["meal","pos","posMeal","none"].indexOf(r.insEx||"meal")), specF:spF, addEx:r.addonEx?1:0, months:L.months,
         pos:+r.pos||0, duty:+r.duty||0, meal:+r.meal||0, adj:+r.adj||0, uniform:+r.uniform||0};
       XR.forEach(x=>{ inputs[x[0]]=(L.x&&L.x[x[0]])||0; });
       const F={
-        otH:`${c("ot")}*IF(${c("watch")}=1,${Q("otWatch")},${Q("otGen")})`,
+        baseEff:`IF(AND(${c("watch")}=0,${c("capF")}=1),MIN(${c("base")},${Q("baseCap")}),${c("base")})`,
+        otH:`(${c("ot")}+${c("base")}-${c("baseEff")})*IF(${c("watch")}=1,${Q("otWatch")},${Q("otGen")})`,
         nightH:`${c("night")}*${Q("nightRate")}`,
         holH:`${c("holDays")}*8*0.5/12`,
-        ordinary:`IF(${c("base")}=0,0,(${c("basic")}+${c("pos")}+${c("adj")}+${c("duty")}${xOrd.map(z=>`+${z}`).join("")})/${c("base")})`,
-        basic:`ROUNDUP(${c("base")}*${c("wage")},-1)`,
+        ordinary:`IF(${c("baseEff")}=0,0,(${c("basic")}+${c("pos")}+${c("adj")}+${c("duty")}${xOrd.map(z=>`+${z}`).join("")})/${c("baseEff")})`,
+        basic:`ROUNDUP(${c("baseEff")}*${c("wage")},-1)`,
         "ot$":`IF(${c("otH")}=0,0,ROUNDUP(${c("otH")}*${c("ordinary")},-1))`,
         "night$":`IF(${c("nightH")}=0,0,ROUNDUP(${c("nightH")}*${c("ordinary")},-1))`,
         hol:`IF(${c("holH")}=0,0,ROUNDUP(${c("holH")}*${c("ordinary")},-1))`,
@@ -4309,8 +4355,8 @@ async function buildBdSheet(wb, sheetName, R, Y, m, S, logoId, logoSm, tab, opt=
       const resKey={ "ot$":"ot","night$":"night" }[k]||k;
       const cell=rw.getCell(3+i);
       if(typ==="x"){ cell.value=inputs[k]; cell.fill=xFill("FFFFF6D5"); cell.numFmt=FMT; return; }
-      if(typ==="i" || inputs[k]!==undefined && !F[k]){ cell.value=inputs[k]; cell.fill=xFill("FFFFF6D5"); cell.numFmt=(k==="penP"||k==="bonusP")?"0.0%":["watch","retF","specF","addEx","count","months","bonusB","insEx"].includes(k)?"0":"#,##0.####"; }
-      else { cell.value={formula:F[k],result:Math.round((L[resKey]||0)*100)/100}; cell.numFmt=k==="ordinary"||k==="otH"||k==="nightH"||k==="holH"?"#,##0.00":FMT; }
+      if(typ==="i" || inputs[k]!==undefined && !F[k]){ cell.value=inputs[k]; cell.fill=xFill("FFFFF6D5"); cell.numFmt=(k==="penP"||k==="bonusP")?"0.0%":["watch","capF","retF","specF","addEx","count","months","bonusB","insEx"].includes(k)?"0":"#,##0.####"; }
+      else { cell.value={formula:F[k],result:Math.round((L[resKey]||0)*100)/100}; cell.numFmt=k==="ordinary"||k==="baseEff"||k==="otH"||k==="nightH"||k==="holH"?"#,##0.00":FMT; }
     });
     // 합계 열
     const rng=`${Lfirst}${row}:${Llast}${row}`, cnt=`${Lfirst}${bdRowOf("count")}:${Llast}${bdRowOf("count")}`, mon=`${Lfirst}${bdRowOf("months")}:${Llast}${bdRowOf("months")}`;
