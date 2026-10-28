@@ -1197,6 +1197,12 @@ dl.kv dd{margin:0;overflow-wrap:anywhere}
 .role .top{display:flex;gap:8px;align-items:center;flex-wrap:wrap;margin-bottom:10px}
 .role .top .ttl{font-weight:700;font-size:15px;margin-right:auto}
 details.more{border-top:1px dashed var(--line);margin-top:10px;padding-top:8px}
+.sub-h{font-size:12.5px;font-weight:700;color:var(--navy);margin:12px 0 6px;padding-left:8px;border-left:3px solid var(--accent)}
+.sub-h small{font-weight:500;margin-left:6px}
+.xlist{display:flex;flex-direction:column;gap:6px}
+.xrow{display:grid;grid-template-columns:170px minmax(120px,1fr) 130px auto auto auto;gap:8px;align-items:center}
+.xrow .chk{white-space:nowrap;font-size:12.5px}
+@media (max-width:760px){.xrow{grid-template-columns:1fr 1fr}.xrow .inp{min-width:0}}
 details.more summary{cursor:pointer;font-size:12.5px;color:var(--accent);font-weight:600}
 details.more[open] summary{margin-bottom:10px}
 .calcline{font-size:12px;color:var(--muted);margin-top:8px;display:flex;gap:14px;flex-wrap:wrap}
@@ -1390,7 +1396,7 @@ aside.rail{position:sticky;top:calc(env(safe-area-inset-top,0px) + 82px);align-s
 <script>try{var _t=localStorage.getItem("stec_theme");if(_t==="light"||_t==="dark")document.documentElement.setAttribute("data-theme",_t)}catch(e){}</script>
 <header class="topbar">
   <button type="button" class="logo-fig" id="logoHome" title="메인화면으로" aria-label="메인화면으로"><img src="data:image/jpeg;base64,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" alt="S-Tec 에스텍 그룹"></button>
-  <div class="brand" title="에스텍 그룹 용역인력 견적시스템"><b>S-Tec-Quotation-System</b><span class="ver">Ver 5.8</span></div>
+  <div class="brand" title="에스텍 그룹 용역인력 견적시스템"><b>S-Tec-Quotation-System</b><span class="ver">Ver 5.9</span></div>
   <div class="sp"><div class="gstrip" id="gstrip" aria-hidden="true"></div></div>
   <div class="tb-home home-only" id="tbHome"></div>
   <div class="tb-actions">
@@ -4395,25 +4401,31 @@ function holHours(r){ return (+r.holDays||0)*8*0.5/12; }
 const INS_EX={meal:"식대",pos:"직책수당",posMeal:"직책수당+식대",none:"없음"};
 function insExAmt(r,L){ const k=r.insEx||"meal"; return k==="pos"?L.pos : k==="posMeal"?L.pos+L.meal : k==="none"?0 : L.meal; }
 function priceRoundOf(S,v){ const m=S.priceRound; return m==="down3" ? RD(v,1000) : m==="up3" ? RU(v,1000) : m==="down2" ? RD(v,100) : m==="round3" ? Math.round(v/1000)*1000 : Math.round(v); }
+/* 기타 항목: 인력별 [{sec:"pay"(직접인건비 수당)|"ind"(간접인건비)|"wel"(복리후생비)|"exp"(제비용), name, amt(월·인당), ord(통상임금 산입), ins(4대보험 산정 포함)}] */
+const XSEC={pay:"직접인건비 · 기타수당",ind:"간접인건비 · 기타",wel:"복리후생비 · 기타",exp:"제비용 · 기타"};
+const xKey=x=>`x:${x.sec}:${String(x.name||"").trim()}`;
+function xSum(r,sec,f){ return (r.extras||[]).filter(x=>x.sec===sec&&(!f||f(x))).reduce((s,x)=>s+(+x.amt||0),0); }
 function calcRole(r, S0, ctx){
   const L = {}, S = roleSet(r,S0);
+  L.x={}; (r.extras||[]).forEach(x=>{ const k=xKey(x); L.x[k]=(L.x[k]||0)+(+x.amt||0); });
+  L.xpay=xSum(r,"pay"); L.xpayOrd=xSum(r,"pay",x=>x.ord); L.xpayNoIns=xSum(r,"pay",x=>x.ins===false);
   const wage = +r.wage||0, base = +r.base||0, ot = +r.ot||0, night = +r.night||0;
   L.basic = RU(base*wage);
   L.pos = +r.pos||0; L.adj = +r.adj||0; L.duty = +r.duty||0; L.meal = +r.meal||0;
-  const ordinary = base ? (L.basic + L.pos + L.adj + L.duty)/base : 0;
+  const ordinary = base ? (L.basic + L.pos + L.adj + L.duty + L.xpayOrd)/base : 0;
   L.ordinary = ordinary;
   L.otH = otHours(r,S); L.nightH = nightHours(r,S); L.holH = holHours(r);
   L.ot = L.otH ? RU(L.otH*ordinary) : 0;          // 연장근로 환산시간 × 통상시급
   L.night = L.nightH ? RU(L.nightH*ordinary) : 0;  // 야간가산 환산시간 × 통상시급
   L.hol = L.holH ? RU(L.holH*ordinary) : 0;        // 공휴일 환산시간 × 통상시급
-  L.sub1 = L.basic+L.ot+L.night+L.pos+L.hol+L.duty+L.meal+L.adj;
+  L.sub1 = L.basic+L.ot+L.night+L.pos+L.hol+L.duty+L.meal+L.adj+L.xpay;
   L.leave = (+r.leave||0) ? RU(ordinary*(S.leaveH||8)*(+r.leave)/12) : 0;
   L.laborDay = r.laborDay ? RU(Math.max(0,(+r.dayH||0)-(+r.rest||0))/12*ordinary) : 0;
-  L.bonusBase = r.bonusBase==="ordinary" ? L.basic+L.pos+L.adj+L.duty : L.basic;
+  L.bonusBase = r.bonusBase==="ordinary" ? L.basic+L.pos+L.adj+L.duty+L.xpayOrd : L.basic;
   L.bonus = (+r.bonusAmt||0) ? +r.bonusAmt : (+r.bonusPct||0) ? RU(L.bonusBase*pct(r.bonusPct)/12) : 0;
   L.retire = r.retire ? RU((L.sub1+L.leave+L.laborDay+L.bonus)/12) : 0;
   L.direct = L.sub1+L.leave+L.laborDay+L.bonus+L.retire;
-  const ib = L.direct - L.retire - insExAmt(r,L); L.insBase = ib;
+  const ib = L.direct - L.retire - insExAmt(r,L) - L.xpayNoIns; L.insBase = ib;
   L.health = RU(ib*pct(S.health));
   L.ltc = RU(L.health*pct(S.ltc));
   L.pension = RU(ib*pct(S.pension)*pct(r.pensionPct));
@@ -4424,7 +4436,8 @@ function calcRole(r, S0, ctx){
   const sp = r.special==="on" || (r.special==="auto" && night>0);
   L.special = sp ? RU(S.specialExam/12) : 0;
   { const d=pct(S.disRate)*S.disBase*pct(S.disRatio); L.dis = S.disOn ? (S.disRound===false ? d : RU(d)) : 0; }
-  L.indirect = L.health+L.ltc+L.pension+L.emp+L.ind+L.wclaim+L.asb+L.special+L.dis;
+  L.xind=xSum(r,"ind"); L.xwel=xSum(r,"wel"); L.xexp=xSum(r,"exp");
+  L.indirect = L.health+L.ltc+L.pension+L.emp+L.ind+L.wclaim+L.asb+L.special+L.dis+L.xind;
   L.labor = L.direct + L.indirect;
   L.uniform = +r.uniform||0;
   L.gift = S.gift ? (S.giftRound===false ? S.gift/12 : RU(S.gift/12)) : 0;
@@ -4434,7 +4447,7 @@ function calcRole(r, S0, ctx){
   L.edu = +S.eduFix ? +S.eduFix : S.eduRnd==="down10" ? RD(L.labor*pct(S.edu),10) : L.labor*pct(S.edu);
   L.risk = +S.riskFix ? +S.riskFix : S.riskRnd==="down10" ? RD(L.labor*pct(S.risk),10) : L.labor*pct(S.risk);
   L.addon = r.addonEx ? 0 : (ctx.addonPerHead || 0);
-  L.expense = L.uniform+L.gift+L.meeting+L.condol+L.relief+L.resTax+L.edu+L.risk+L.addon;
+  L.expense = L.uniform+L.gift+L.meeting+L.condol+L.relief+L.resTax+L.edu+L.risk+L.addon+L.xwel+L.xexp;
   L.dcost = L.labor + L.expense;
   L.ga = S.gaRound ? RU(L.dcost*pct(S.ga)) : L.dcost*pct(S.ga);
   L.csub = L.dcost + L.ga;
@@ -5068,23 +5081,30 @@ function roleCard(r){
     </div>
     ${C.jobs?`<datalist id="dl_${r.cat}">${C.jobs.map(x=>`<option value="${esc(x)}">`).join("")}</datalist>`:""}
     <div class="calcline" data-out="line"></div>
-    <details class="more"><summary>세부 조건 (조정수당·연차·상여금·식대·국민연금·피복·전년단가 등)</summary>
+    <details class="more" ${r._open?"open":""}><summary>세부 조건 — 산출내역서 항목 (수당·연차·상여·4대보험·경비·기타수당)</summary>
+      <div class="sub-h">직접인건비 · 수당</div>
       <div class="grid g6">
-        ${F("adj","조정수당",r.adj)}
         ${F("duty","직무수당",r.duty)}
         ${F("meal","식대(비과세)",r.meal)}
+        ${F("adj","조정수당",r.adj)}
         ${F("holDays","공휴일근무(일/년)",r.holDays)}
-        ${F("leave","연차적치(일)",r.leave)}
-        ${F("bonusPct","상여금(연 %)",r.bonusPct||0)}
-        <label class="f"><span>상여금 기준</span><select class="inp" data-f="bonusBase"><option value="basic" ${r.bonusBase!=="ordinary"?"selected":""}>기본급</option><option value="ordinary" ${r.bonusBase==="ordinary"?"selected":""}>통상임금(기본급+수당)</option></select></label>
+        ${F("leave","연차적치일수",r.leave)}
+        ${F("bonusPct","상여율(연 %, 기본급 대비)",r.bonusPct||0)}
+        <label class="f"><span>상여 기준</span><select class="inp" data-f="bonusBase"><option value="basic" ${r.bonusBase!=="ordinary"?"selected":""}>기본급</option><option value="ordinary" ${r.bonusBase==="ordinary"?"selected":""}>통상임금(기본급+수당)</option></select></label>
+        ${F("bonusAmt","상여 월정액(0이면 상여율)",r.bonusAmt||0)}
         ${F("dayH","일 근무시간(구속)",r.dayH)}
         ${F("rest","일 휴게시간",r.rest)}
-        ${F("pensionPct","국민연금 적용(%)",r.pensionPct)}
-        ${F("uniform","피복장구비(월)",r.uniform)}
+        <label class="f"><span>근로자의날 유급시간</span><input class="inp n" value="${r.laborDay?Math.max(0,(+r.dayH||0)-(+r.rest||0)):0}" disabled title="일 근무시간 − 휴게시간 (근로자의날 유급 체크 시)"></label>
         ${F("months","연간 근무개월",r.months)}
-        ${F("prev","전년 단가(인당)",r.prev)}
+      </div>
+      <div class="sub-h">간접인건비 · 경비</div>
+      <div class="grid g6">
+        ${F("pensionPct","국민연금 적용률(%)",r.pensionPct)}
+        <label class="f"><span>4대보험 산정 제외</span><select class="inp" data-f="insEx">${Object.entries(INS_EX).map(([k,v])=>`<option value="${k}" ${(r.insEx||"meal")===k?"selected":""}>${v}</option>`).join("")}</select></label>
         <label class="f"><span>특수건강검진</span><select class="inp" data-f="special"><option value="auto" ${r.special==="auto"?"selected":""}>야간 시 자동</option><option value="on" ${r.special==="on"?"selected":""}>적용</option><option value="off" ${r.special==="off"?"selected":""}>미적용</option></select></label>
-        <label class="f" style="grid-column:span 2"><span>비고</span><input class="inp" data-f="note" value="${esc(r.note)}"></label>
+        ${F("uniform","피복장구비(월)",r.uniform)}
+        ${F("prev","전년 단가(인당)",r.prev)}
+        <label class="f"><span>비고</span><input class="inp" data-f="note" value="${esc(r.note)}"></label>
       </div>
       <div class="row" style="margin-top:10px;gap:18px">
         <label class="chk"><input type="checkbox" data-f="watch" ${r.watch?"checked":""}> 감시단속 승인(연장 가산 미적용)</label>
@@ -5092,6 +5112,14 @@ function roleCard(r){
         <label class="chk"><input type="checkbox" data-f="retire" ${r.retire?"checked":""}> 퇴직충당금 반영</label>
         <label class="chk"><input type="checkbox" data-f="addonEx" ${r.addonEx?"checked":""}> 부대비용 배분 제외</label>
       </div>
+      <div class="sub-h">기타 항목 <small class="hint">원본 견적서의 다른 수당·간접인건비·복리후생비·제비용을 그대로 반영 — 산출내역서에 같은 이름의 행으로 들어갑니다</small></div>
+      <div class="xlist">${(r.extras||[]).map((x,i)=>`<div class="xrow" data-xi="${i}">
+        <select class="inp" data-x="sec" title="구분">${Object.entries({pay:"수당 (직접인건비)",ind:"간접인건비",wel:"복리후생비",exp:"제비용"}).map(([k,v])=>`<option value="${k}" ${x.sec===k?"selected":""}>${v}</option>`).join("")}</select>
+        <input class="inp" data-x="name" value="${esc(x.name||"")}" placeholder="항목명 (예: 근속수당)">
+        <input class="inp n" data-x="amt" value="${esc(x.amt??0)}" inputmode="decimal" placeholder="월 금액(인당)">
+        ${x.sec==="pay"?`<label class="chk"><input type="checkbox" data-x="ord" ${x.ord?"checked":""}> 통상임금 산입</label><label class="chk"><input type="checkbox" data-x="ins" ${x.ins!==false?"checked":""}> 4대보험 산정</label>`:`<span></span><span></span>`}
+        <button type="button" class="btn sm ghost" data-x="del" aria-label="삭제">삭제</button></div>`).join("")||`<p class="hint" style="margin:0">추가된 기타 항목이 없습니다.</p>`}</div>
+      <div class="row" style="gap:6px;margin-top:8px"><button type="button" class="btn sm" data-xadd="pay">+ 기타수당 추가</button><button type="button" class="btn sm ghost" data-xadd="ind">+ 간접인건비</button><button type="button" class="btn sm ghost" data-xadd="wel">+ 복리후생비</button><button type="button" class="btn sm ghost" data-xadd="exp">+ 제비용</button></div>
     </details>
    </div></div>`;
 }
@@ -5109,7 +5137,7 @@ function renderRoles(){
       const ev = el.tagName==="SELECT"||el.type==="checkbox" ? "change" : "input";
       el.addEventListener(ev,()=>{
         if(el.type==="checkbox") r[f]=el.checked;
-        else if(["detail","note","gender","cat","shift","special","rank","bonusBase"].includes(f)) r[f]=el.value;
+        else if(["detail","note","gender","cat","shift","special","rank","bonusBase","insEx"].includes(f)) r[f]=el.value;
         else r[f]= el.value==="" ? 0 : +String(el.value).replace(/,/g,"");
         if(f==="shift"){ const s=SHIFTS[r.shift]; if(r.shift!=="custom") Object.assign(r,{base:s.base,ot:s.ot,night:s.night,dayH:s.dayH,rest:s.rest}); renderRoles(); }
         if(f==="cat"){ const C=CATS[r.cat]; r.watch=C.watch; if(!C.ranks[r.rank]) r.rank=C.def; const rd=C.ranks[r.rank]; if(rd.gender) r.gender=rd.gender; renderRoles(); }
@@ -5123,7 +5151,16 @@ function renderRoles(){
       });
     });
     card.querySelector('[data-act="del"]').onclick=()=>{ state.roles=state.roles.filter(x=>x!==r); renderRoles(); recalc(); };
-    card.querySelector('[data-act="dup"]').onclick=()=>{ const c={...r,id:nid()}; state.roles.splice(state.roles.indexOf(r)+1,0,c); renderRoles(); recalc(); };
+    const det=card.querySelector("details.more"); if(det) det.addEventListener("toggle",()=>{ r._open=det.open; });
+    card.querySelectorAll("[data-xadd]").forEach(bt=>bt.onclick=()=>{ r.extras=r.extras||[]; const sec=bt.dataset.xadd; r.extras.push({id:nid(),sec,name:{pay:"기타수당",ind:"기타 간접인건비",wel:"기타 복리후생비",exp:"기타 제비용"}[sec],amt:0,ord:false,ins:true}); r._open=true; renderRoles(); recalc();
+      const rows=document.querySelectorAll(`.role[data-rid="${r.id}"] .xrow`); const last=rows[rows.length-1]; if(last){ const n=last.querySelector('[data-x="name"]'); n.focus(); n.select(); } });
+    card.querySelectorAll(".xrow").forEach(row=>{ const x=r.extras[+row.dataset.xi];
+      row.querySelectorAll("[data-x]").forEach(el=>{ const k=el.dataset.x;
+        if(k==="del"){ el.onclick=()=>{ r.extras.splice(+row.dataset.xi,1); renderRoles(); recalc(); }; return; }
+        el.addEventListener(el.tagName==="SELECT"||el.type==="checkbox"?"change":"input",()=>{
+          if(el.type==="checkbox") x[k]=el.checked; else if(k==="amt") x.amt=el.value===""?0:+String(el.value).replace(/,/g,"")||0; else x[k]=el.value;
+          if(k==="sec") renderRoles(); recalc(); }); }); });
+    card.querySelector('[data-act="dup"]').onclick=()=>{ const c={...r,id:nid(),extras:(r.extras||[]).map(x=>({...x,id:nid()})),sx:r.sx?{...r.sx}:undefined}; state.roles.splice(state.roles.indexOf(r)+1,0,c); renderRoles(); recalc(); };
   });
 }
 function draftFromSite(){
@@ -5359,6 +5396,7 @@ function renderDocs(R){
 
   // 산출내역서
   const cols=R.rows;
+  const XU=xUnion([cols.map(c=>c.r)]), xl=sec=>XU.filter(x=>x.sec===sec).map(x=>line(x.name,L=>(L.x&&L.x[x.key])||0,`${XSEC[sec]}${sec==="pay"?` · ${x.ord?"통상임금 산입":"통상임금 제외"} · ${x.ins?"4대보험 산정":"4대보험 제외"}`:""}`)).join("");
   const line=(label,key,desc,cls="",fmt=won2,grp="<td class='g'></td>")=>{
     const vals=cols.map(({L})=>typeof key==="function"?key(L):L[key]);
     const sum=cols.reduce((s,{L},i)=>s+(vals[i]||0)*L.count,0);
@@ -5380,7 +5418,7 @@ function renderDocs(R){
       ${line("공휴일근무수당","hol","공휴일 환산시간(공휴일수 × 8h × 50% ÷ 12) × 통상시급")}
       ${line("직무수당","duty","직무별 수당")}
       ${line("식대","meal","비과세 식대 (보험 산정 제외)")}
-      ${line("조정수당","adj","임금보전")}
+      ${line("조정수당","adj","임금보전")}${xl("pay")}
       ${line("소 계","sub1","","s")}
       ${line("연차수당(적치)","leave",`통상시급 × ${S.leaveH||8}h × 적치일수 ÷ 12개월`)}
       ${line("근로자의날","laborDay","(일 근무시간 − 휴게) ÷ 12개월 × 통상시급")}
@@ -5396,16 +5434,16 @@ function renderDocs(R){
       ${S.asb?line("석면피해구제분담금","asb",`× ${S.asb}%`):""}
       ${line("특수건강검진","special",`연 ${won(S.specialExam)}원 ÷ 12개월 (야간근무자)`)}
       ${line("장애인고용부담금","dis",`${S.disRate}% × ${won(S.disBase)}원${S.disRatio!=100?` × ${S.disRatio}%`:""}`)}
-      ${line("간접비 계 ②","indirect","","s")}
+      ${xl("ind")}${line("간접비 계 ②","indirect","","s")}
       ${line("노무비 계 (1)","labor","직접비 ① + 간접비 ②","s")}
       ${line("피복장구비","uniform","에스텍 그룹 지급기준","",won2,g("경비"))}
       ${line("직원선물대","gift",`명절선물 연 ${won(S.gift)}원 ÷ 12개월`)}
       ${line("직원회의비","meeting","근무자 회의비")}
       ${line("경조비","condol","에스텍 그룹 지급기준")}
-      ${line("대치근무비","relief",`통상시급 × ${S.reliefH}h × 연 ${S.reliefDays}일 ÷ 12개월`)}
+      ${line("대치근무비","relief",`통상시급 × ${S.reliefH}h × 연 ${S.reliefDays}일 ÷ 12개월`)}${xl("wel")}
       ${line("주민세(사업소분)","resTax",`${won(S.resTax)}원 × ${S.resSites}개소 ÷ 12개월 ÷ 총인원`)}
       ${line("교육훈련비","edu",S.eduFix?`인당 고정 ${won(S.eduFix)}원`:`신임·직무교육 등 (노무비 × ${S.edu}%)`)}
-      ${line("위험부담금","risk",S.riskFix?`인당 고정 ${won(S.riskFix)}원`:`영업배상책임보험 (노무비 × ${S.risk}%)`)}
+      ${xl("exp")}${line("위험부담금","risk",S.riskFix?`인당 고정 ${won(S.riskFix)}원`:`영업배상책임보험 (노무비 × ${S.risk}%)`)}
       ${R.spread?line("부대비용 배분","addon",`차량·장비·기타 월 ${won(R.add.total)}원 ÷ 배분대상 ${R.elig}명`,"",won2):""}
       ${line("경비 계 (2)","expense","","s")}
       ${line("1. 직접원가","dcost","노무비 (1) + 경비 (2)","s",won2,"<td class='g'></td>")}
@@ -5848,6 +5886,20 @@ function fxDetailed(g, sheet, meta, ctxText){
       for(let c=0;c<=g.C;c++){ const v=g.G[r][c]; if(typeof v==="string"){ const m=v.replace(/,/g,"").match(/([\d.]+)\s*%/); if(m && +m[1]>=lo && +m[1]<=hi){ rateLoc[key]={r,c,kind:"text"}; return +m[1]; } } } }
     return null; };
   const rates={ health:rate("health",/건강보험/,2,6), ltc:rate("ltc",/장기요양/,5,20), pension:rate("pension",/국민연금/,3,10), emp:rate("emp",/고용보험/,0.5,3), ind:rate("ind",/산재/,0.3,5), wageClaim:rate("wageClaim",/임금채권/,0.01,0.3), asb:rate("asb",/석면/,0.001,0.05) };
+  // 원본의 그 밖의 항목(수당·간접인건비·복리후생비·제비용) → 인력별 기타 항목
+  const xItems=[]; let xRegions=false;
+  { const used=new Set([...Object.values(rows),...Object.values(rateRows)].filter(v=>v>=0)); const isTot=r=>/계$|소계|합계|총계|^계/.test(P(r));
+    const firstRow=(re,from)=>{ for(let r=from;r<=g.R;r++) if(re.test(P(r))) return r; return -1; };
+    const dS=rows.directSum, lS=rows.laborSum;
+    if(lS>basicRow){ xRegions=true;
+      const payEnd = dS>basicRow ? dS : Math.min(...["leaveM","bonus","retire"].map(k=>rows[k]).filter(v=>v>basicRow).concat([lS]));
+      const indS = dS>basicRow ? dS+1 : (rows.health>0?rows.health:lS), indE=(()=>{ const r=firstRow(/간접비계|간접노무비계|간접인건비계/,indS); return r>0&&r<lS?r:lS; })();
+      const wE=firstRow(/복리후생계|복리후생비계/,lS+1), eE=(()=>{ const a=firstRow(/제비용계/,lS+1), b2=firstRow(/경비계/,lS+1); return a>0?a:b2; })();
+      const regs=[["pay",basicRow+1,payEnd-1],["ind",indS,indE-1]]; if(eE>lS){ if(wE>lS && wE<eE){ regs.push(["wel",lS+1,wE-1],["exp",wE+1,eE-1]); } else regs.push(["exp",lS+1,eE-1]); }
+      regs.forEach(([sec,a,b2])=>{ for(let r=a;r<=b2;r++){ if(used.has(r)||isTot(r)) continue; const nm=String(lab[r].primary||"").replace(/^\s*[\d①-⑳]+[.)]?\s*/,"").replace(/\s+/g," ").trim(); if(!nm || nm.length>20 || /^[\d.,%\s]+$/.test(nm)) continue;
+          if(/직접인건비|간접인건비|복리후생|제비용|노무비|경비|구분/.test(FX.nz(nm)) && roleCols.every(c=>!FX.isNum(g.G[r][c]))) continue;
+          xItems.push({row:r, sec, name:nm, ord:false, ins:true}); } });
+    } }
   // 블록 → 인력
   const sheetMonths = (()=>{ const t=g.G.slice(0,4).flat().filter(v=>typeof v==="string").join(" "); const m=t.match(/(\d{1,2})\s*개월/); return m && +m[1]<12 ? +m[1] : null; })();
   const titleText = g.G.slice(0,4).flat().filter(v=>typeof v==="string").join(" ");
@@ -5867,7 +5919,7 @@ function fxDetailed(g, sheet, meta, ctxText){
       const pos=V("pos")||0, duty=V("duty")||0, meal=V("meal")||0, adj=V("adj")||0;
       if(!wage) wage = basic/209;
       let base=basic/wage; base=Math.abs(base-Math.round(base))<0.06?Math.round(base):Math.round(base*10)/10;
-      const ordinary=base?(basic+pos+adj+duty)/base:wage;
+      const ordinary=(FX.isNum(V("ordinary"))&&V("ordinary")>1000)?V("ordinary"):(base?(basic+pos+adj+duty)/base:wage);
       const cat=fxCat(name+" "+shiftT.join(" "), group, ctxText+" "+titleText)||"etc";
       const gender=/女|여자|여성|여사원|안내|여\b|\(여\)/.test(name+group)?"F":/男|남자|남성|\(남\)/.test(name+group)?"M":(cat==="cln"?"F":"M");
       let watch=CATS[cat].watch, ot=0;
@@ -5897,6 +5949,15 @@ function fxDetailed(g, sheet, meta, ctxText){
       const detailParts=[group, nm, shiftT.join(" ")].map(s=>(s||"").trim()).filter(Boolean);
       opt.detail=[...new Set(detailParts)].join(" · ").slice(0,40);
       const fp=V("price"); if(fp) opt.filePrice=Math.round(fp);
+      if(xItems.length){ opt.extras=xItems.map(x=>({id:nid(), sec:x.sec, name:x.name, amt:FX.isNum(g.G[x.row][c])?Math.round(g.G[x.row][c]*1e4)/1e4:0, ord:x.ord, ins:x.ins, _x:x}));
+        const PX=opt.extras.filter(x=>x.sec==="pay"&&x.amt), n=Math.min(PX.length,8);
+        const ordF=V("ordinary"); if(ordF>0 && n){ const diff=ordF*base-(RU(base*wage)+pos+adj+duty);
+          for(let m=0;m<(1<<n);m++){ const s=PX.filter((_,i)=>m>>i&1).reduce((a,x)=>a+x.amt,0); if(Math.abs(s-diff)<Math.max(1,base*0.02)){ PX.forEach((x,i)=>{ x.ord=!!(m>>i&1); x._x.ord=x.ord; }); break; } } }
+        const hv=V("health"), dv=V("directSum"), rv=V("retire")||0;
+        if(hv>0 && dv>0 && rates.health && n){ const C={meal, pos, posMeal:pos+meal, none:0}; let done=false;
+          for(let m=0;m<(1<<n)&&!done;m++){ const s=PX.filter((_,i)=>m>>i&1).reduce((a,x)=>a+x.amt,0);
+            for(const k of ["meal","pos","posMeal","none"]) if(RU((dv-rv-C[k]-s)*rates.health/100)===Math.round(hv)){ PX.forEach((x,i)=>{ x.ins=!(m>>i&1); x._x.ins=x.ins; }); if(k!=="meal") opt.insEx=k; else delete opt.insEx; done=true; break; } } }
+        opt.extras.forEach(x=>{ x.ord=x._x.ord; x.ins=x._x.ins; delete x._x; }); }
       return {opt, cat, src:name||`${XLSX.utils.encode_col(c)}열`};
     });
     // 공통 설정값 (첫 인력 기준)
@@ -5932,7 +5993,7 @@ function fxDetailed(g, sheet, meta, ctxText){
     // 엔진에 없는 경비 항목 → 기타 부대비용
     const known=/피복|선물|회의|경조|대치|대체|주민세|사업소|교육|위험|식사|식대|특수|검진|장애인|계$|합계|소계|원가|관리비|이윤|부가|총계|단가|금액|보험|연금|부담금|퇴직|수당|급여|근로|시간|인원|시급/;
     const others=[];
-    for(let r=basicRow;r<=g.R;r++){ const lb=lab[r].primary; const p=FX.nz(lb); if(!p || known.test(p) || r===rows.meeting) continue;
+    for(let r=basicRow;r<=g.R && !xRegions;r++){ const lb=lab[r].primary; const p=FX.nz(lb); if(!p || known.test(p) || r===rows.meeting) continue;
       if(!/차량|장비|소모품|운영비|비품|통신|무전|청소용품|자재|재료/.test(p)) continue;
       const tot=b.cols.reduce((s,c,i)=>s+(FX.isNum(g.G[r][c])?g.G[r][c]:0)*roles[i].opt.count,0);
       if(tot>0) others.push({id:nid(), grp:"원본 견적", name:lb.replace(/^\d+[.)]\s*/,""), amount:Math.round(tot), cycle:"월", months:12, qty:1, per:"", note:"원본 견적서 항목"});
@@ -7118,7 +7179,7 @@ async function buildQuoteSheet(wb, sheetName, R, qr, crew, Y, m, S, prevCol, log
   return ws._stecRefs;
 }
 /* ───────── 산출내역서 (엑셀 수식 연결) ───────── */
-const BD_ROWS=[
+const BD_BASE=[
   ["count","인원(명)","i","기초자료"],["wage","시급","i"],["base","기본시간(주휴포함)","i"],
   ["ot","연장근로시간 (실제)","i"],["watch","감시단속(1=승인)","i"],["night","야간근로시간 (실제)","i"],["holDays","공휴일근무(일/년)","i"],
   ["leaveDays","연차적치일수","i"],["bonusP","상여율(연, 기본급 대비)","i"],["bonusB","상여 기준(0=기본급,1=통상임금)","i"],["bonusAmt","상여 월정액(0이면 상여율)","i"],["ldH","근로자의날 유급시간","i"],
@@ -7129,13 +7190,18 @@ const BD_ROWS=[
   ["health","건강보험료","","간접인건비"],["ltc","노인장기요양보험",""],["pension","국민연금",""],["emp","고용보험료",""],["ind","산재보험료",""],["wclaim","임금채권부담금",""],["asb","석면피해구제분담금",""],["special","특수건강검진",""],["dis","장애인고용부담금",""],["indirect","간접비 계 ②","s"],["labor","노무비 계 (1)","s"],
   ["uniform","피복장구비","","경비"],["gift","직원선물대",""],["meeting","직원회의비",""],["condol","경조비",""],["relief","대치근무비",""],["resTax","주민세(사업소분)",""],["edu","교육훈련비",""],["risk","위험부담금",""],["addon","부대비용 배분",""],["expense","경비 계 (2)","s"],
   ["dcost","1. 직접원가","s","원가"],["ga","2. 일반관리비",""],["csub","3. 원가소계",""],["profit","4. 기업이윤",""],["total","5. 원가총계","s"],["price","6. 견적금액(인당)","k"]];
+let BD_ROWS=BD_BASE.slice();
+/* 기타 항목(원본 견적서의 다른 수당·간접인건비·복리후생비·제비용)을 산출내역서 행으로 끼워 넣기 */
+function xUnion(roleLists){ const m=new Map(); roleLists.flat().forEach(r=>(r&&r.extras||[]).forEach(x=>{ const k=xKey(x); if(!String(x.name||"").trim()) return; if(!m.has(k)) m.set(k,{key:k,sec:x.sec,name:String(x.name).trim(),ord:!!x.ord,ins:x.ins!==false}); })); return [...m.values()]; }
+function bdRowsFor(xs){ const out=[]; const after={pos:"pay",dis:"ind",relief:"wel",risk:"exp"};
+  BD_BASE.forEach(row=>{ out.push(row); const sec=after[row[0]]; if(sec) xs.filter(x=>x.sec===sec).forEach(x=>out.push([x.key,x.name,"x",null,x])); }); return out; }
 const BD_TOP=10;
 const bdRowOf=k=>BD_TOP+BD_ROWS.findIndex(x=>x[0]===k);
 const bdColL=i=>{ let n=3+i, s=""; while(n>0){ const m=(n-1)%26; s=String.fromCharCode(65+m)+s; n=Math.floor((n-1)/26); } return s; };
 const BD_DESC={
   otH:"연장근로시간 × 가산배율(감시단속 승인 시 감시단속 배율)", nightH:"야간근로시간 × 야간 가산율", holH:"공휴일 일수 × 8h × 50% ÷ 12", ordinary:"(기본급여+직책+조정+직무) ÷ 기본시간",
   basic:"ROUNDUP(시급 × 기본시간, -1)", "ot$":"ROUNDUP(연장 환산시간 × 통상시급, -1)", "night$":"ROUNDUP(야간가산 환산시간 × 통상시급, -1)",
-  hol:"ROUNDUP(공휴일 환산시간 × 통상시급, -1)", sub1:"기본급여 ~ 직책수당 합계", leave:"ROUNDUP(통상시급 × 연차1일시간 × 적치일수 ÷ 12, -1)",
+  hol:"ROUNDUP(공휴일 환산시간 × 통상시급, -1)", sub1:"기본급여 ~ 직책수당·기타수당 합계", leave:"ROUNDUP(통상시급 × 연차1일시간 × 적치일수 ÷ 12, -1)",
   laborDay:"ROUNDUP(유급시간 ÷ 12 × 통상시급, -1)", bonus:"월정액, 없으면 ROUNDUP(기본급(또는 통상임금) × 상여율 ÷ 12, -1)", retire:"ROUNDUP((소계+연차+근로자의날+상여금) ÷ 12, -1)", direct:"소계 + 연차 + 근로자의날 + 상여금 + 퇴직충당금",
   health:"ROUNDUP((직접비 계 − 퇴직충당금 − 제외항목) × 건강보험요율, -1)", ltc:"ROUNDUP(건강보험료 × 장기요양요율, -1)", pension:"ROUNDUP((직접비−퇴직−제외항목) × 국민연금요율 × 적용률, -1)",
   emp:"ROUNDUP((직접비−퇴직−제외항목) × 고용보험요율, -1)", ind:"ROUNDUP((직접비−퇴직−제외항목) × 산재보험요율, -1)", wclaim:"ROUNDUP((직접비−퇴직−제외항목) × 임금채권요율, -1)", asb:"ROUNDUP((직접비−퇴직−제외항목) × 석면요율, -1)",
@@ -7188,31 +7254,36 @@ async function buildBdSheet(wb, sheetName, R, Y, m, S, logoId, logoSm, tab, opt=
   const G=k=>`$C$${gRow[k]}`;
   const FMT='#,##0;-#,##0;"-"';
   let grp="";
-  BD_ROWS.forEach(([k,lbl0,typ,g],idx)=>{
+  BD_ROWS.forEach(([k,lbl0,typ0,g,g5],idx)=>{
+    const typ=typ0;
     const row=BD_TOP+idx, rw=ws.getRow(row); const firstOfGrp=!!g&&g!==grp; if(g) grp=g;
     const lbl=LBL[k]&&typ===""?LBL[k]:lbl0;
     rw.height=typ==="s"||typ==="k"?19:16.5;
     rw.getCell(1).value=g||""; rw.getCell(2).value=lbl;
     R.rows.forEach(({r,L},i)=>{
       const C=bdColL(i), c=x=>`${C}${bdRowOf(x)}`, Q=x=>`${C}$${pRow[x]}`;
-      const ex=`CHOOSE(${c("insEx")}+1,${c("meal")},${c("pos")},${c("pos")}+${c("meal")},0)`, ib=`(${c("direct")}-${c("retire")}-${ex})`;
+      const XR=BD_ROWS.filter(x=>x[2]==="x"), xs=f=>XR.filter(x=>f(x[4])).map(x=>c(x[0]));
+      const xOrd=xs(x=>x.sec==="pay"&&x.ord), xNo=xs(x=>x.sec==="pay"&&!x.ins);
+      const lastOf=(k0,sec)=>{ const l=XR.filter(x=>x[4].sec===sec); return l.length?l[l.length-1][0]:k0; };
+      const ex=`CHOOSE(${c("insEx")}+1,${c("meal")},${c("pos")},${c("pos")}+${c("meal")},0)`, ib=`(${c("direct")}-${c("retire")}-${ex}${xNo.map(z=>`-${z}`).join("")})`;
       const spF = r.special==="on" || (r.special==="auto" && +r.night>0) ? 1 : 0;
       const inputs={count:L.count, wage:+r.wage, base:+r.base, ot:+r.ot||0, watch:r.watch?1:0, night:+r.night||0, holDays:+r.holDays||0, leaveDays:+r.leave||0, bonusP:pct(r.bonusPct||0), bonusB:r.bonusBase==="ordinary"?1:0, bonusAmt:+r.bonusAmt||0,
         ldH:r.laborDay?Math.max(0,(+r.dayH||0)-(+r.rest||0)):0, retF:r.retire?1:0, penP:pct(r.pensionPct), insEx:Math.max(0,["meal","pos","posMeal","none"].indexOf(r.insEx||"meal")), specF:spF, addEx:r.addonEx?1:0, months:L.months,
         pos:+r.pos||0, duty:+r.duty||0, meal:+r.meal||0, adj:+r.adj||0, uniform:+r.uniform||0};
+      XR.forEach(x=>{ inputs[x[0]]=(L.x&&L.x[x[0]])||0; });
       const F={
         otH:`${c("ot")}*IF(${c("watch")}=1,${Q("otWatch")},${Q("otGen")})`,
         nightH:`${c("night")}*${Q("nightRate")}`,
         holH:`${c("holDays")}*8*0.5/12`,
-        ordinary:`IF(${c("base")}=0,0,(${c("basic")}+${c("pos")}+${c("adj")}+${c("duty")})/${c("base")})`,
+        ordinary:`IF(${c("base")}=0,0,(${c("basic")}+${c("pos")}+${c("adj")}+${c("duty")}${xOrd.map(z=>`+${z}`).join("")})/${c("base")})`,
         basic:`ROUNDUP(${c("base")}*${c("wage")},-1)`,
         "ot$":`IF(${c("otH")}=0,0,ROUNDUP(${c("otH")}*${c("ordinary")},-1))`,
         "night$":`IF(${c("nightH")}=0,0,ROUNDUP(${c("nightH")}*${c("ordinary")},-1))`,
         hol:`IF(${c("holH")}=0,0,ROUNDUP(${c("holH")}*${c("ordinary")},-1))`,
-        sub1:`SUM(${c("basic")}:${c("pos")})`,
+        sub1:`SUM(${c("basic")}:${c(lastOf("pos","pay"))})`,
         leave:`ROUNDUP(${c("ordinary")}*${Q("leaveH")}*${c("leaveDays")}/12,-1)`,
         laborDay:`ROUNDUP(${c("ldH")}/12*${c("ordinary")},-1)`,
-        bonus:`IF(${c("bonusAmt")}>0,${c("bonusAmt")},IF(${c("bonusP")}=0,0,ROUNDUP(IF(${c("bonusB")}=1,${c("basic")}+${c("pos")}+${c("adj")}+${c("duty")},${c("basic")})*${c("bonusP")}/12,-1)))`,
+        bonus:`IF(${c("bonusAmt")}>0,${c("bonusAmt")},IF(${c("bonusP")}=0,0,ROUNDUP(IF(${c("bonusB")}=1,${c("basic")}+${c("pos")}+${c("adj")}+${c("duty")}${xOrd.map(z=>`+${z}`).join("")},${c("basic")})*${c("bonusP")}/12,-1)))`,
         retire:`IF(${c("retF")}=1,ROUNDUP((${c("sub1")}+${c("leave")}+${c("laborDay")}+${c("bonus")})/12,-1),0)`,
         direct:`${c("sub1")}+${c("leave")}+${c("laborDay")}+${c("bonus")}+${c("retire")}`,
         health:`ROUNDUP(${ib}*${Q("health")},-1)`,
@@ -7222,7 +7293,7 @@ async function buildBdSheet(wb, sheetName, R, Y, m, S, logoId, logoSm, tab, opt=
         asb:`IF(${Q("asb")}=0,0,ROUNDUP(${ib}*${Q("asb")},-1))`,
         special:`IF(${c("specF")}=1,ROUNDUP(${Q("exam")}/12,-1),0)`,
         dis:`IF(${Q("disOn")}=1,IF(${Q("disRound")}=1,ROUNDUP(${Q("disRate")}*${Q("disBase")}*${Q("disRatio")},-1),${Q("disRate")}*${Q("disBase")}*${Q("disRatio")}),0)`,
-        indirect:`SUM(${c("health")}:${c("dis")})`,
+        indirect:`SUM(${c("health")}:${c(lastOf("dis","ind"))})`,
         labor:`${c("direct")}+${c("indirect")}`,
         gift:`IF(${Q("gift")}=0,0,IF(${Q("giftRound")}=1,ROUNDUP(${Q("gift")}/12,-1),${Q("gift")}/12))`, meeting:`${Q("meeting")}`, condol:`${Q("condol")}`,
         relief:`${c("ordinary")}*${Q("reliefH")}*${Q("reliefDays")}/12`,
@@ -7240,19 +7311,22 @@ async function buildBdSheet(wb, sheetName, R, Y, m, S, logoId, logoSm, tab, opt=
       };
       const resKey={ "ot$":"ot","night$":"night" }[k]||k;
       const cell=rw.getCell(3+i);
+      if(typ==="x"){ cell.value=inputs[k]; cell.fill=xFill("FFFFF6D5"); cell.numFmt=FMT; return; }
       if(typ==="i" || inputs[k]!==undefined && !F[k]){ cell.value=inputs[k]; cell.fill=xFill("FFFFF6D5"); cell.numFmt=(k==="penP"||k==="bonusP")?"0.0%":["watch","retF","specF","addEx","count","months","bonusB","insEx"].includes(k)?"0":"#,##0.####"; }
       else { cell.value={formula:F[k],result:Math.round((L[resKey]||0)*100)/100}; cell.numFmt=k==="ordinary"||k==="otH"||k==="nightH"||k==="holH"?"#,##0.00":FMT; }
     });
     // 합계 열
     const rng=`${Lfirst}${row}:${Llast}${row}`, cnt=`${Lfirst}${bdRowOf("count")}:${Llast}${bdRowOf("count")}`, mon=`${Lfirst}${bdRowOf("months")}:${Llast}${bdRowOf("months")}`;
     if(typ!=="i"&&typ!=="hc"){
-      const sum=R.rows.reduce((a,{L})=>a+(L[{ "ot$":"ot","night$":"night" }[k]||k]||0)*L.count,0);
+      const lv=(L)=> typ==="x" ? ((L.x&&L.x[k])||0) : (L[{ "ot$":"ot","night$":"night" }[k]||k]||0);
+      const sum=R.rows.reduce((a,{L})=>a+lv(L)*L.count,0);
       rw.getCell(cT).value={formula:`SUMPRODUCT(${rng},${cnt})`,result:Math.round(sum)};
       rw.getCell(cA).value={formula:`IF(${G("heads")}=0,0,${LT}${row}/${G("heads")})`,result:R.heads?Math.round(sum/R.heads):0};
-      rw.getCell(cY).value={formula:`SUMPRODUCT(${rng},${cnt},${mon})`,result:Math.round(R.rows.reduce((a,{L})=>a+(L[{ "ot$":"ot","night$":"night" }[k]||k]||0)*L.count*L.months,0))};
+      rw.getCell(cY).value={formula:`SUMPRODUCT(${rng},${cnt},${mon})`,result:Math.round(R.rows.reduce((a,{L})=>a+lv(L)*L.count*L.months,0))};
       [cT,cA,cY].forEach(c=>rw.getCell(c).numFmt=FMT);
     } else if(k==="count"){ rw.getCell(cT).value={formula:`SUM(${rng})`,result:R.heads}; rw.getCell(cT).numFmt="0"; }
-    rw.getCell(cD).value=(LBL[k]&&typ===""&&LBL[k]!==lbl0?`[원본 항목: ${LBL[k]}] `:"")+(BD_DESC[k]||(typ==="i"?"입력값":""));
+    rw.getCell(cD).value= typ==="x" ? `${XSEC[g5.sec]}${g5.sec==="pay"?` · ${g5.ord?"통상임금 산입":"통상임금 제외"} · ${g5.ins?"4대보험 산정":"4대보험 제외"}`:""} · 월정액(인당, 입력값)`
+      : (BD_DESC[k]||(typ==="i"?"입력값":(LBL[k]&&LBL[k]!==lbl0?`원본 항목명 · ${lbl0}`:"")));
     // 서식
     if(typ==="i"||typ==="hc"){
       for(let c=1;c<=lastC;c++){ const cc=rw.getCell(c); cc.border=xBorder(); if(c<=2||c>=cT) cc.fill=xFill("FFFAFBFD"); if(typ==="hc"&&c>2&&c<cT) cc.fill=xFill("FFF2F5FB");
@@ -7260,8 +7334,9 @@ async function buildBdSheet(wb, sheetName, R, Y, m, S, logoId, logoSm, tab, opt=
       if(firstOfGrp) for(let c=1;c<=lastC;c++) rw.getCell(c).border={...xBorder(),top:XMED(XC.navy)};
       if(k==="ordinary") for(let c=1;c<=lastC;c++) rw.getCell(c).border={...xBorder(),bottom:XMED(XC.navy)};
     } else {
-      styleBdRow(rw,1,lastC,typ,grp,k,firstOfGrp);
+      styleBdRow(rw,1,lastC,typ==="x"?"":typ,grp,k,firstOfGrp);
       for(let c=2;c<=lastC;c++){ const cc=rw.getCell(c); cc.font=xFont({size:typ==="s"||typ==="k"?9.5:9,bold:typ==="s"||typ==="k",color:typ==="k"?{argb:XC.white}:c===cD?{argb:XC.muted}:undefined}); }
+      if(typ==="x") R.rows.forEach((_,i)=>rw.getCell(3+i).fill=xFill("FFFFF6D5"));
       if(typ!=="s"&&typ!=="k") rw.getCell(2).alignment={horizontal:"left",vertical:"middle",indent:1};
       if(["pos","duty","meal","adj","uniform"].includes(k)) R.rows.forEach((_,i)=>rw.getCell(3+i).fill=xFill("FFFFF6D5"));
     }
@@ -7364,6 +7439,7 @@ async function exportXlsx(){
   toast("엑셀 파일을 만드는 중…");
   try{
   const R=calcAll(state), m=state.meta, S=state.set, Y=m.year;
+  BD_ROWS=bdRowsFor(xUnion([state.roles, state.roles.map(r=>r.prevRole)]));
   const wb=new ExcelJS.Workbook(); wb.creator=S.coName; wb.created=new Date();
   const logo=await imgPng("logo",360); const logoId=wb.addImage({base64:logo.base64,extension:"png"});
   const pimg=await imgPng("person",240); xPerson={id:wb.addImage({base64:pimg.base64,extension:"png"}), w:pimg.w, h:pimg.h};
