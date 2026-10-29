@@ -200,6 +200,30 @@ textarea.inp{resize:vertical;min-height:110px;line-height:1.6}
 .grow .g-sub{font-size:12px;opacity:.88;padding:8px 14px 0;letter-spacing:.02em;font-weight:500}.grow .g-sub em{font-style:normal;color:#8ee59f;font-weight:800;margin-left:4px}
 .grow .g-sub+.g-br{padding-top:6px}
 .co-hd{display:flex;align-items:center;justify-content:flex-start;gap:14px;flex-wrap:wrap;margin-bottom:8px}.co-hd h2{margin:0}.co-pick{display:flex;align-items:center;gap:8px;min-width:220px}.co-pick span{font-size:12px;color:var(--muted);white-space:nowrap}.co-pick select{min-width:180px}
+.rep-dlg{background:var(--paper);color:var(--ink);border-radius:14px;width:min(440px,100%);max-height:calc(100vh - 32px);overflow:auto;box-shadow:0 24px 60px rgba(10,6,40,.45);padding:0 20px}
+.rep-dlg .dlgH{display:flex;align-items:center;justify-content:space-between;margin:0 -20px;padding:16px 20px 14px;background:var(--bar);color:#fff}
+.rep-dlg .dlgH h3{margin:0;font-size:16px}
+.rep-dlg .dlgX{border:0;background:transparent;color:#fff;font-size:24px;line-height:1;cursor:pointer;padding:0 4px}
+.rep-dlg .dlgP{font-size:13px;color:var(--muted);margin:12px 0;line-height:1.55}
+.rep-dlg .dlgP b{color:var(--ink)}
+.repPhoto{display:flex;gap:14px;align-items:center;margin:4px 0 14px;padding:10px;border:1px solid var(--line);border-radius:10px;background:var(--field)}
+.rpImg{width:72px;height:72px;border-radius:50%;overflow:hidden;flex:none;background:#fff;border:2px solid var(--line)}
+.rpImg img{width:100%;height:100%;object-fit:cover;object-position:50% 25%;display:block}
+.rpCtl{display:grid;gap:6px;min-width:0}
+.rpCtl b{font-size:13.5px}
+.rpCtl .row{display:flex;gap:6px;flex-wrap:wrap}
+.rpCtl .btn{font-size:12.5px;padding:6px 12px}
+.rpCtl small{font-size:11.5px;color:var(--muted);line-height:1.45}
+.repGrid{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.repGrid label{display:grid;gap:4px;font-size:12px;font-weight:600;color:var(--muted)}
+.repGrid label em{color:#C0392B;font-style:normal}
+.repGrid .w2{grid-column:1/-1}
+.repGrid input{width:100%;min-width:0;border:1px solid var(--line);border-radius:6px;padding:8px 10px;font:inherit;font-size:14.5px;background:var(--field);color:var(--ink)}
+.repGrid input:focus{outline:2px solid #A79BF2;border-color:transparent}
+.repPrev{margin:12px 0 4px;padding:10px 12px;border-radius:8px;background:var(--field);border:1px dashed var(--line);font-size:12px;color:var(--muted);line-height:1.6}
+.repPrev b{color:var(--ink)}
+.rep-dlg .dlgB{display:flex;gap:8px;justify-content:flex-end;padding:8px 0 18px}
+.vh{position:absolute;width:1px;height:1px;opacity:0;overflow:hidden;clip:rect(0 0 0 0)}
 .pf-pop{background:var(--paper);color:var(--ink);border-radius:16px;padding:18px;width:min(640px,100%);max-height:calc(100vh - 40px);overflow:auto;box-shadow:0 20px 60px rgba(0,0,0,.35)}
 .pf-pop h2{margin:0}
 .pf-grid{display:grid;grid-template-columns:130px 1fr;gap:16px;margin-top:12px;align-items:start}
@@ -361,7 +385,8 @@ body:not(.is-home) .home-only{display:none!important}
 /* 홈: 상단 담당자·QR, 오른쪽 사업 분야 */
 .tb-home{display:flex;gap:10px;align-items:center}
 .tbp{display:flex;align-items:center;gap:9px;padding:4px 12px 4px 4px;border-radius:12px;background:rgba(255,255,255,.1);border:1px solid rgba(255,255,255,.2);color:#fff;cursor:pointer;font:inherit;text-align:left}
-.tbp img{width:42px;height:46px;object-fit:cover;object-position:top;border-radius:8px}
+.tbp img{width:44px;height:44px;object-fit:cover;object-position:50% 25%;border-radius:50%;background:#fff;border:2px solid rgba(255,255,255,.7)}
+.tbp.set b{color:#8FD9AE}
 .tbp span{display:flex;flex-direction:column;line-height:1.25;font-size:12px;opacity:.85;font-weight:500}
 .tbp b{font-size:14px;opacity:1}
 .tbq{display:flex;align-items:center;gap:9px;padding:4px 12px 4px 4px;border-radius:12px;background:rgba(255,255,255,.1);border:1px solid rgba(255,255,255,.2);color:#fff;cursor:zoom-in;font:inherit;text-align:left}
@@ -730,7 +755,7 @@ aside.rail{position:sticky;top:calc(env(safe-area-inset-top,0px) + 82px);align-s
 <script>try{var _t=localStorage.getItem("stec_theme");if(_t==="light"||_t==="dark")document.documentElement.setAttribute("data-theme",_t)}catch(e){}</script>
 <header class="topbar">
   <button type="button" class="logo-fig" id="logoHome" title="메인화면으로" aria-label="메인화면으로"><img src="__FIGLOGO__" alt="S-Tec 에스텍 그룹"></button>
-  <div class="brand" title="에스텍 그룹 용역인력 견적시스템"><b>S-Tec-Quotation-System</b><span class="ver">Ver 6.2</span></div>
+  <div class="brand" title="에스텍 그룹 용역인력 견적시스템"><b>S-Tec-Quotation-System</b><span class="ver">Ver 6.3</span></div>
   <div class="sp"><div class="gstrip" id="gstrip" aria-hidden="true"></div></div>
   <div class="tb-home home-only" id="tbHome"></div>
   <div class="tb-actions">
@@ -1252,44 +1277,73 @@ function getProfile(){ try{ const p=JSON.parse(localStorage.getItem("stec_profil
 function profileSettings(){
   const P=getProfile()||{}, co=P.co||CO_PRESETS[DEFAULT_CO];
   return {coKey:(P.co&&P.co.coKey)||(P.co?"":DEFAULT_CO), ...Object.fromEntries(CO_KEYS.map(k=>[k,co[k]||""])),
-    coBranch:P.org||"에스텍 그룹", coPerson:P.name||"", coPersonTitle:P.title||"", coPersonTel:P.tel||""};
+    coBranch:P.org||"에스텍 그룹", coPerson:P.name||"", coPersonTitle:P.title||"", coPersonTel:repContacts(P)};
 }
-function applyProfileImg(){ const P=getProfile(); IMG.person=(P&&P.photo)||AVATAR; Object.keys(imgCache).forEach(k=>{ if(k.startsWith("person@")) delete imgCache[k]; }); }
+/* 연락처 줄: 휴대폰 · 사무실 · 이메일 (예전 저장값 tel = 휴대폰) */
+function repContacts(P){ P=P||{}; return [P.phone??P.tel, P.office, P.email].map(v=>String(v||"").trim()).filter(Boolean).join(" · "); }
+function repLine(P){ if(!P) return ""; const who=[P.org||"에스텍 그룹", [P.title,P.name].filter(Boolean).join(" ")].join(" ").trim(); return [who, repContacts(P)].filter(Boolean).join(" · "); }
+/* 소속 이름에 계열사가 들어 있으면 그 회사를 새 견적의 기본 공급자로 */
+function coFromOrg(org){ const n=String(org||"").replace(/[㈜()주식회사\s]/g,""); return Object.keys(CO_PRESETS).sort((a,b)=>b.length-a.length).find(k=>n.includes(k))||"";
+}
+function applyProfileImg(){ const P=getProfile(); IMG.person=(P&&P.photo)||IMG.cube||AVATAR; Object.keys(imgCache).forEach(k=>{ if(k.startsWith("person@")) delete imgCache[k]; }); }
 function shrinkPhoto(file,W0,H0){ return new Promise((ok,no)=>{ const fr=new FileReader(); fr.onerror=()=>no(fr.error); fr.onload=()=>{ const im=new Image(); im.onload=()=>{ const W=W0||300, H=H0||360, c=document.createElement("canvas"); c.width=W; c.height=H; const x=c.getContext("2d"); x.fillStyle="#fff"; x.fillRect(0,0,W,H);
       const r=Math.max(W/im.naturalWidth,H/im.naturalHeight), w=im.naturalWidth*r, h=im.naturalHeight*r; x.drawImage(im,(W-w)/2,Math.min(0,(H-h)*0.25),w,h); ok(c.toDataURL("image/jpeg",0.86)); }; im.onerror=()=>no(new Error("사진을 읽지 못했습니다")); im.src=fr.result; }; fr.readAsDataURL(file); }); }
+/* 사진: 가운데를 정사각형으로 잘라 320px JPEG로 줄여 저장 */
+function squarePhoto(file){ return new Promise((ok,fail)=>{ const fr=new FileReader(); fr.onerror=()=>fail(new Error("읽기 실패"));
+  fr.onload=()=>{ const im=new Image(); im.onerror=()=>fail(new Error("이미지 형식이 아닙니다"));
+    im.onload=()=>{ const N=320, sz=Math.min(im.naturalWidth, im.naturalHeight), sx=(im.naturalWidth-sz)/2, sy=Math.max(0,(im.naturalHeight-sz)*0.3);
+      const c=document.createElement("canvas"); c.width=N; c.height=N; const g=c.getContext("2d"); g.fillStyle="#fff"; g.fillRect(0,0,N,N); g.imageSmoothingQuality="high"; g.drawImage(im,sx,sy,sz,sz,0,0,N,N);
+      ok(c.toDataURL("image/jpeg",0.86)); };
+    im.src=fr.result; };
+  fr.readAsDataURL(file); }); }
+/* 견적 담당 · 내 정보 등록 */
 function openProfile(){
-  const P=getProfile()||{}, co={...(P.co||{coKey:DEFAULT_CO,...CO_PRESETS[DEFAULT_CO]})}; let photo=P.photo||"";
+  const P=getProfile()||{org:"에스텍 그룹"}; let photo=P.photo||"";
+  const DEF=IMG.cube||AVATAR, MSG0="사진을 넣지 않으면 에스텍 로고가 보입니다. 가운데를 정사각형으로 잘라 저장합니다.";
   const ov=document.createElement("div"); ov.className="qr-ov pf-ov";
-  const f=(id,label,val,ph="")=>`<label class="f"><span>${label}</span><input class="inp" id="${id}" value="${esc(val||"")}" placeholder="${esc(ph)}"></label>`;
-  ov.innerHTML=`<div class="pf-pop" role="dialog" aria-modal="true" aria-labelledby="pfT">
-    <div class="h-row"><div><h2 id="pfT">내 정보 등록</h2><p class="sub">이 PC(휴대폰)에만 저장됩니다. 새 견적서·엑셀의 ‘견적 담당’과 공급자 칸에 들어갑니다.</p></div><button type="button" class="btn sm ghost" data-x>닫기</button></div>
-    <div class="pf-grid">
-      <div class="pf-photo"><img id="pfImg" src="${photo||AVATAR}" alt="내 사진"><label class="btn sm" for="pfFile">사진 선택</label><input type="file" id="pfFile" accept="image/*" hidden><button type="button" class="btn sm ghost" id="pfDel">사진 지우기</button></div>
-      <div class="grid g2">
-        ${f("pf_name","이름",P.name,"예: 홍길동")}${f("pf_title","직책",P.title,"예: 과장")}
-        <label class="f"><span>소속</span><input class="inp" id="pf_org" list="pfOrgs" value="${esc(P.org||"")}" placeholder="예: 에스텍베스트 동부지사"><datalist id="pfOrgs">${GROUP_COS.map(c=>`<option value="${c}">`).join("")}</datalist></label>
-        ${f("pf_tel","연락처",P.tel,"예: 010-0000-0000")}
-      </div>
+  const inp=(id,label,val,o={})=>`<label class="${o.w2?"w2":""}">${o.req?`<span>${label} <em>*</em></span>`:label}<input id="${id}" value="${esc(val||"")}" ${o.type?`type="${o.type}"`:""} ${o.im?`inputmode="${o.im}"`:""} ${o.ac?`autocomplete="${o.ac}"`:""} maxlength="${o.max||20}" placeholder="${esc(o.ph||"")}" ${o.req?"required":""}></label>`;
+  ov.innerHTML=`<form class="rep-dlg" role="dialog" aria-modal="true" aria-labelledby="dlgRepT" novalidate>
+    <div class="dlgH"><h3 id="dlgRepT">견적 담당 · 내 정보 등록</h3><button type="button" class="dlgX" data-x aria-label="닫기">×</button></div>
+    <p class="dlgP">등록한 정보는 이 기기에만 저장되고, 엑셀 견적서의 <b>담당</b> 칸과 표지 하단에 들어갑니다.</p>
+    <div class="repPhoto">
+      <span class="rpImg"><img id="rpPrev" src="${photo||DEF}" alt="내 사진"></span>
+      <div class="rpCtl"><b>내 사진</b>
+        <div class="row"><label class="btn pri" for="rPhotoFile">사진 넣기</label><input type="file" id="rPhotoFile" accept="image/*" class="vh"><button type="button" class="btn" id="rPhotoDel" ${photo?"":"hidden"}>사진 빼기</button></div>
+        <small id="rpMsg">${MSG0}</small></div>
     </div>
-    <details class="pf-co" ${P.co?"open":""}><summary>견적서 공급자(회사) 정보 — 상호·대표·사업자등록번호</summary>
-      <label class="f" style="margin:8px 0"><span>기본 공급자 (계열사) — 새 견적에 들어갈 회사</span><select class="inp" id="pc_coKey">${Object.keys(CO_PRESETS).map(k=>`<option value="${k}" ${co.coKey===k?"selected":""}>${k}</option>`).join("")}<option value="" ${co.coKey?"":"selected"}>직접 입력</option></select></label>
-      <div class="grid g2">${f("pc_coName","상호",co.coName)}${f("pc_coCeo","대표이사",co.coCeo)}${f("pc_coBizNo","사업자등록번호",co.coBizNo)}${f("pc_coCorpNo","법인등록번호",co.coCorpNo)}${f("pc_coType","업태",co.coType)}${f("pc_coItem","종목",co.coItem)}${f("pc_coLic","허가·신고",co.coLic)}</div>
-      ${f("pc_coAddr","주소",co.coAddr)}
-    </details>
-    <div class="row" style="justify-content:space-between;margin-top:12px"><button type="button" class="btn sm ghost" id="pfReset">등록 정보 지우기</button><div class="row" style="gap:8px"><button type="button" class="btn" data-x>취소</button><button type="button" class="btn pri" id="pfSave">저장</button></div></div>
-  </div>`;
+    <div class="repGrid">
+      ${inp("rName","이름",P.name,{req:1,ac:"name",ph:"홍길동"})}
+      ${inp("rTitle","직책",P.title,{ph:"과장"})}
+      ${inp("rOrg","소속",P.org,{w2:1,max:40,ph:"에스텍 그룹 영업팀"})}
+      ${inp("rPhone","휴대폰",P.phone??P.tel,{type:"tel",im:"tel",ac:"tel",ph:"010-0000-0000"})}
+      ${inp("rTel","사무실",P.office,{type:"tel",im:"tel",ph:"02-0000-0000"})}
+      ${inp("rMail","이메일",P.email,{w2:1,type:"email",ac:"email",max:60,ph:"name@s-tec.co.kr"})}
+    </div>
+    <div class="repPrev" id="repPrev"></div>
+    <div class="dlgB"><button type="submit" class="btn pri">저장</button><button type="button" class="btn" id="repDel">지우기</button><button type="button" class="btn" data-x>닫기</button></div>
+  </form>`;
   document.body.appendChild(ov);
-  const close=()=>ov.remove(); ov.querySelectorAll("[data-x]").forEach(b=>b.onclick=close); ov.onclick=e=>{ if(e.target===ov) close(); };
-  ov.querySelector("#pfFile").onchange=async e=>{ const fl=e.target.files[0]; if(!fl) return; try{ photo=await shrinkPhoto(fl); ov.querySelector("#pfImg").src=photo; }catch(err){ toast(err.message); } };
-  ov.querySelector("#pfDel").onclick=()=>{ photo=""; ov.querySelector("#pfImg").src=AVATAR; };
-  ov.querySelector("#pc_coKey").onchange=e=>{ const c=CO_PRESETS[e.target.value]; if(c) Object.entries(c).forEach(([k,v])=>{ const i=ov.querySelector("#pc_"+k); if(i) i.value=v; }); };
-  const val=id=>ov.querySelector("#"+id).value.trim();
-  ov.querySelector("#pfSave").onclick=()=>{
-    const np={name:val("pf_name"), title:val("pf_title"), org:val("pf_org"), tel:val("pf_tel"), photo,
-      co:{coKey:ov.querySelector("#pc_coKey").value, ...Object.fromEntries(CO_KEYS.map(k=>[k,val("pc_"+k)]))}};
-    try{ localStorage.setItem("stec_profile",JSON.stringify(np)); }catch(e){ toast("저장 공간이 부족해 사진을 줄여서 다시 저장해 주세요"); return; }
-    applyProfileImg(); Object.assign(state.set, profileSettings()); renderPerson(); renderSettings(); recalc(); close(); toast("내 정보를 저장했습니다 · 새 견적과 지금 견적에 반영했습니다"); };
-  ov.querySelector("#pfReset").onclick=()=>{ try{ localStorage.removeItem("stec_profile"); }catch(e){} applyProfileImg(); Object.assign(state.set, profileSettings()); renderPerson(); renderSettings(); recalc(); close(); toast("등록 정보를 지웠습니다"); };
+  const q=id=>ov.querySelector("#"+id), close=()=>ov.remove();
+  ov.querySelectorAll("[data-x]").forEach(b=>b.onclick=close); ov.onclick=e=>{ if(e.target===ov) close(); };
+  ov.addEventListener("keydown",e=>{ if(e.key==="Escape") close(); });
+  const form=()=>({name:q("rName").value.trim(), title:q("rTitle").value.trim(), org:q("rOrg").value.trim(), phone:q("rPhone").value.trim(), office:q("rTel").value.trim(), email:q("rMail").value.trim()});
+  const showPhoto=()=>{ q("rpPrev").src=photo||DEF; q("rPhotoDel").hidden=!photo; };
+  const preview=()=>{ const r=form(); q("repPrev").innerHTML = r.name ? `엑셀 견적서 <b>담당</b> 칸: <b>${esc(repLine(r))}</b>` : "이름을 입력하면 견적서에 들어갈 문구가 여기에 보입니다."; };
+  ["rName","rTitle","rOrg","rPhone","rTel","rMail"].forEach(id=>q(id).addEventListener("input",preview)); preview();
+  q("rPhotoFile").onchange=async e=>{ const fl=e.target.files&&e.target.files[0]; e.target.value=""; if(!fl) return;
+    try{ photo=await squarePhoto(fl); showPhoto(); q("rpMsg").textContent="사진을 넣었습니다. 저장을 누르면 반영됩니다."; }catch(err){ q("rpMsg").textContent="사진을 넣지 못했습니다: "+err.message; } };
+  q("rPhotoDel").onclick=()=>{ photo=""; showPhoto(); q("rpMsg").textContent="사진을 뺐습니다. 저장을 누르면 에스텍 로고로 돌아갑니다."; };
+  const apply=()=>{ applyProfileImg(); Object.assign(state.set, profileSettings()); renderPerson(); renderSettings(); recalc(); };
+  ov.querySelector("form").onsubmit=e=>{ e.preventDefault(); const r=form();
+    if(!r.name){ q("rName").focus(); q("rpMsg").textContent="이름을 넣어야 저장됩니다."; return; }
+    const ck=coFromOrg(r.org), old=getProfile()||{};
+    const co = ck ? (old.co && old.co.coKey===ck ? old.co : {coKey:ck, ...CO_PRESETS[ck]}) : (old.co||null);
+    const np={...r, photo}; if(co) np.co=co;
+    try{ localStorage.setItem("stec_profile",JSON.stringify(np)); }catch(err){ q("rpMsg").textContent="저장 공간이 부족합니다. 사진을 빼고 다시 저장해 주세요."; return; }
+    apply(); close(); toast("내 정보를 저장했습니다 · 새 견적과 지금 견적에 반영했습니다"); };
+  q("repDel").onclick=()=>{ try{ localStorage.removeItem("stec_profile"); }catch(err){} photo=""; showPhoto();
+    ["rName","rTitle","rPhone","rTel","rMail"].forEach(id=>q(id).value=""); q("rOrg").value="에스텍 그룹"; q("rpMsg").textContent=MSG0; preview(); apply(); toast("등록 정보를 지웠습니다"); };
+  setTimeout(()=>{ try{ q("rName").focus(); }catch(err){} },30);
 }
 function defaultSettings(year){
   const YR = RATES[year] || RATES[2026];
@@ -2457,7 +2511,7 @@ function renderDocs(R){
 let lastR=null;
 function renderTbHome(){
   const el=$("#tbHome"); if(!el||!state) return; const S=state.set, url=appUrl();
-  el.innerHTML=`<button type="button" class="tbp" id="tbPerson" title="내 정보(사진·이름·소속) 등록"><img src="${IMG.person}" alt=""><span>견적 담당<b>${esc(S.coPerson||"내 정보 등록")}${S.coPersonTitle?` ${esc(S.coPersonTitle)}`:""}</b>${esc(S.coBranch||"")}</span></button>
+  const RP=getProfile(); el.innerHTML=`<button type="button" class="tbp ${RP&&RP.name?"set":""}" id="tbPerson" aria-haspopup="dialog" aria-label="견적 담당 내 정보 등록" title="${esc(RP&&RP.name?repLine(RP):"견적 담당자 정보를 등록하세요")}"><img src="${IMG.person}" alt="${esc(RP&&RP.photo?RP.name+" 사진":"")}"><span>견적 담당<b>${esc(RP&&RP.name?[RP.name,RP.title].filter(Boolean).join(" "):"내 정보 등록")}</b>${esc(RP&&RP.name?(RP.org||"에스텍 그룹"):"에스텍 그룹")}</span></button>
     <button type="button" class="tbq" id="tbQR" title="사이트 주소 QR 크게 보기"><span class="qb">${qrSvg(url,3)}<img src="${IMG.cube}" alt=""></span><span>다운로드 QR<b>사이트 주소 · 북마크</b>누르면 크게 보기</span></button>
     <button type="button" class="tbq tbr" id="tbRefer" title="친구에게 사이트 주소 알려주기"><span class="qb rf"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="9" cy="8" r="3.5"/><path d="M2.5 20c.8-3.6 3.4-5.5 6.5-5.5s5.7 1.9 6.5 5.5"/><path d="M19 8v6M16 11h6"/></svg></span><span>친구 추천<b>사이트 주소 공유</b>누르면 QR·주소 보기</span></button>`;
   $("#tbPerson").onclick=openProfile;
