@@ -9,7 +9,7 @@ rd = lambda f: open(p(f), encoding="utf-8").read()
 t = rd("src/app.html")
 img = json.load(open(p("assets/img.json"), encoding="utf-8"))
 t = t.replace("/*__LEAFLET_CSS__*/", rd("src/leaflet.css"))
-t = t.replace("__CUBE__", img["cube"]).replace("__LOGO__", img["logo"]).replace("__TEAM__", img["team"]).replace("__FIGLOGO__", img["figlogo"]).replace("__POSTER__", img["videoPoster"]).replace("__BRANDSIGN__", img["brandSign"]).replace("__BRANDCASE__", img["brandCase"]).replace("__BRANDOFFICE__", img["brandOffice"]).replace("__SIGFONT__", img["sigFont"])
+t = t.replace("__CUBE__", img["cube"]).replace("__LOGO__", img["logo"]).replace("__TEAM__", img["team"]).replace("__FIGLOGO__", img["figlogo"]).replace("__POSTER__", img["videoPoster"]).replace("__BRANDSIGN__", img["brandSign"]).replace("__BRANDCASE__", img["brandCase"]).replace("__BRANDOFFICE__", img["brandOffice"]).replace("__SIGFONT__", img["sigFont"]).replace("__APPICON__", img["appIcon"])
 import base64
 t = t.replace("__VIDEO__", "data:video/mp4;base64," + base64.b64encode(open(p("assets/intro.mp4"),"rb").read()).decode())
 t = t.replace("/*__LEAFLET_JS__*/", rd("vendor/leaflet-1.9.4.min.js"))
@@ -19,6 +19,6 @@ t = t.replace("/*__SHEETJS__*/", rd("vendor/xlsx-0.18.5.core.min.js").replace("\
 t = t.replace("/*__IMG__*/{}", json.dumps(img)).replace("/*__SITES__*/{}", rd("assets/sites.json")).replace("/*__ADM__*/{}", rd("assets/adm.json")).replace("/*__GROUP__*/{}", rd("assets/group.json"))
 os.makedirs(p("dist"), exist_ok=True)
 open(p("dist/artifact.html"), "w", encoding="utf-8").write(t)
-html = '<!doctype html>\n<html lang="ko"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover"><meta name="theme-color" content="#1b2a86"><link rel="manifest" href="manifest.webmanifest"><link rel="apple-touch-icon" href="icon-192.png"><meta name="apple-mobile-web-app-capable" content="yes"><meta name="apple-mobile-web-app-title" content="에스텍 견적"></head><body>\n' + t + '\n</body></html>'
+html = '<!doctype html>\n<html lang="ko"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover"><meta name="theme-color" content="#1b2a86"><link rel="manifest" href="manifest.webmanifest"><link rel="icon" type="image/png" href="favicon.png"><link rel="apple-touch-icon" href="apple-touch-icon.png"><meta name="apple-mobile-web-app-capable" content="yes"><meta name="apple-mobile-web-app-title" content="에스텍 견적"></head><body>\n' + t + '\n</body></html>'
 open(p("index.html"), "w", encoding="utf-8").write(html)
 print(f"index.html {len(html)//1024} KB")
