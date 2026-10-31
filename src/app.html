@@ -750,12 +750,68 @@ aside.rail{position:sticky;top:calc(env(safe-area-inset-top,0px) + 82px);align-s
   .tscroll{overflow:visible}
   body::before{display:none}
 }
+
+/* ── S-Tec 브랜드 레이어 (v6.4): 남색 바탕에 로고의 녹색을 곳곳에 ── */
+:root{--sg:#1f7a2e;--sg2:#2b8a3e;--sg-soft:#e4f3e7;--sg-ink:#17602a;--stripes:linear-gradient(var(--sg) 0 0) 0 0/100% 3px no-repeat,linear-gradient(var(--sg) 0 0) 2px 5px/calc(100% - 2px) 3px no-repeat,linear-gradient(var(--sg) 0 0) 4px 10px/calc(100% - 4px) 3px no-repeat}
+@media (prefers-color-scheme: dark){:root:not([data-theme="light"]){--sg:#3fae5a;--sg2:#5fcf7a;--sg-soft:#183524;--sg-ink:#7fe09a}}
+:root[data-theme="dark"]{--sg:#3fae5a;--sg2:#5fcf7a;--sg-soft:#183524;--sg-ink:#7fe09a}
+/* 상단 바: 오른쪽으로 녹색이 스며들고, 아래에 로고 줄무늬 같은 녹색 선 */
+.topbar{background:linear-gradient(100deg,var(--bar) 0%,var(--bar) 55%,#17327a 78%,#155b3c 100%);box-shadow:inset 0 -3px 0 #2b8a3e,0 2px 10px rgba(10,20,60,.25)}
+body::before{background:linear-gradient(100deg,var(--bar) 55%,#155b3c)}
+.brand b::after{content:"";display:inline-block;width:18px;height:11px;margin-left:8px;vertical-align:1px;background:linear-gradient(#5fcf7a 0 0) 0 0/100% 3px no-repeat,linear-gradient(#5fcf7a 0 0) 3px 4px/15px 3px no-repeat,linear-gradient(#5fcf7a 0 0) 6px 8px/12px 3px no-repeat;opacity:.95}
+/* 카드 제목 앞 녹색 세 줄 (S-Tec 로고 줄무늬) */
+.card h2,.sec-h h2,.grp-hd h2{display:flex;align-items:center;gap:9px}
+.card h2::before,.sec-h h2::before,.grp-hd h2::before{content:"";flex:none;width:16px;height:13px;background:var(--stripes)}
+.co-hd h2{display:flex;align-items:center;gap:9px}
+/* 단계 메뉴: 지금 단계 = 남색 번호 + 왼쪽 녹색 표시, 마친 단계 = 녹색 */
+.step[aria-selected="true"]{box-shadow:inset 3px 0 0 var(--sg);border-left-color:var(--sg)}
+.step[aria-selected="true"] b{color:var(--ink)}
+.step:hover .k{box-shadow:0 0 0 2px var(--sg-soft)}
+/* 입력·포커스·체크: 녹색 */
+:focus-visible{outline-color:var(--sg2)}
+.inp:focus{border-color:var(--sg2);box-shadow:0 0 0 3px var(--sg-soft)}
+.chk input,input[type=checkbox],input[type=radio]{accent-color:var(--sg)}
+label.f>span em{color:var(--sg)}
+.sub-h{color:var(--sg-ink);border-left-color:var(--sg)}
+details.more summary{color:var(--sg-ink)}
+/* 버튼: 보조 버튼은 녹색으로 반응, 주 버튼은 남색→녹색 */
+.btn:hover{border-color:var(--sg2);color:var(--sg-ink)}
+.btn.pri{background:linear-gradient(135deg,var(--navy) 0%,var(--navy) 60%,#1f5f4a 100%);border-color:var(--navy)}
+.btn.pri:hover{background:linear-gradient(135deg,var(--navy),#1f7a2e);color:#fff;border-color:#1f7a2e}
+.doc-tabs button[aria-selected="true"]{background:var(--sg);border-color:var(--sg);color:#fff}
+.org-seg button[aria-expanded="true"]{background:var(--sg)}
+.pill{background:var(--sg-soft);color:var(--sg-ink)}
+.cat:hover{border-color:var(--sg2)}
+.nq-card:hover,.nq-card.on{border-color:var(--sg2)}.nq-card.on{background:var(--sg-soft);box-shadow:0 0 0 3px rgba(43,138,62,.18)}
+.rn-drop.on,.rn-drop:hover{border-color:var(--sg2);background:rgba(43,138,62,.06)}.rn-drop b{color:var(--sg-ink)}
+.tl li::before{background:var(--sg2);box-shadow:0 0 0 3px var(--sg-soft)}
+.rate-src{background:var(--sg-soft)}
+.enjoy-card:hover{border-color:var(--sg2)}.enjoy-card em{color:var(--sg-ink)}
+.rb-list .biz[data-href]:hover{border-color:var(--sg2)}.rb-go{color:var(--sg-ink)}
+.rb-sub a:hover{background:var(--sg);border-color:var(--sg)}
+.org-col.me{border-color:var(--sg2);box-shadow:0 0 0 2px rgba(43,138,62,.18)}
+.sugg button:hover,.sugg button.on{background:var(--sg-soft)}
+.eq-ref.on{border-color:var(--sg2);box-shadow:0 0 0 2px var(--sg-soft)}
+.kpi div:nth-child(even),.grp-num:nth-child(even){background:linear-gradient(135deg,#1f7a2e,#155b3c)}
+.rep-dlg .dlgH{background:linear-gradient(100deg,var(--bar) 60%,#155b3c);box-shadow:inset 0 -3px 0 #2b8a3e}
+.tbp.set b{color:#8FD9AE}
+/* 견적서 화면(종이): 남색 표 머리에 녹색 밑줄, 금액 상자 오른쪽 녹색 */
+.paper table.q th,.paper table.bd th,.paper table.cmp th{box-shadow:inset 0 -3px 0 #2b8a3e}
+.paper table.q tfoot tr.sub td{border-top-color:#2b8a3e}
+.paper .q-amt{border-color:#1f7a2e}
+.paper h3.q-h{color:#1b2a86}.paper h3.q-h::before{content:"";flex:none;border-radius:0;width:16px;height:13px;background:linear-gradient(#2b8a3e 0 0) 0 0/100% 3px no-repeat,linear-gradient(#2b8a3e 0 0) 2px 5px/14px 3px no-repeat,linear-gradient(#2b8a3e 0 0) 4px 10px/12px 3px no-repeat}
+.paper .df{border-top-color:#2b8a3e}
+.paper table.bd td.g,.paper table.cmp td.g{color:#1f7a2e}
+:root[data-theme="dark"] .rb-sub a,:root[data-theme="dark"] .rb-go{color:var(--sg-ink)}
+@media (prefers-color-scheme: dark){:root:not([data-theme="light"]) .rb-sub a,:root:not([data-theme="light"]) .rb-go{color:var(--sg-ink)}}
+:root[data-theme="dark"] .role .top .pill{filter:brightness(2.1) saturate(.9)}
+@media (prefers-color-scheme: dark){:root:not([data-theme="light"]) .role .top .pill{filter:brightness(2.1) saturate(.9)}}
 </style>
 
 <script>try{var _t=localStorage.getItem("stec_theme");if(_t==="light"||_t==="dark")document.documentElement.setAttribute("data-theme",_t)}catch(e){}</script>
 <header class="topbar">
   <button type="button" class="logo-fig" id="logoHome" title="메인화면으로" aria-label="메인화면으로"><img src="__FIGLOGO__" alt="S-Tec 에스텍 그룹"></button>
-  <div class="brand" title="에스텍 그룹 용역인력 견적시스템"><b>S-Tec-Quotation-System</b><span class="ver">Ver 6.3</span></div>
+  <div class="brand" title="에스텍 그룹 용역인력 견적시스템"><b>S-Tec-Quotation-System</b><span class="ver">Ver 6.4</span></div>
   <div class="sp"><div class="gstrip" id="gstrip" aria-hidden="true"></div></div>
   <div class="tb-home home-only" id="tbHome"></div>
   <div class="tb-actions">
@@ -4318,7 +4374,7 @@ async function buildBdSheet(wb, sheetName, R, Y, m, S, logoId, logoSm, tab, opt=
   const head2=r=>r.rank+(r.detail?`\n${r.detail}`:"");
   R.rows.forEach(({r,L},i)=>{ const c=3+i; hh.getCell(c).value=`${CATS[r.cat].short} · ${r.watch?"감시단속":"일반근로"}`; hh2.getCell(c).value=head2(r); hh3.getCell(c).value=shiftLabel(r).replace(/\s*\(.*\)/,""); });
   [["월간총액",cT],["평균단가",cA],["계약기간 계",cY],["산출 근거 (수식)",cD]].forEach(([t,c])=>{ ws.mergeCells(r0,c,r0+2,c); hh.getCell(c).value=t; });
-  [hh,hh2,hh3].forEach((rw,ri)=>{ rw.height=ri===1?30:18; for(let c=1;c<=lastC;c++){ const cc=rw.getCell(c); cc.font=xFont({bold:true,size:9,color:{argb:XC.white}}); cc.fill=xFill(ri===0?XC.navy:"FF2A3A9C"); cc.alignment={horizontal:"center",vertical:"middle",wrapText:true}; cc.border=xBorder("FF41509F"); } });
+  [hh,hh2,hh3].forEach((rw,ri)=>{ rw.height=ri===1?30:18; for(let c=1;c<=lastC;c++){ const cc=rw.getCell(c); cc.font=xFont({bold:true,size:9,color:{argb:XC.white}}); cc.fill=xFill(ri===0?XC.navy:ri===2?XC.green:"FF2A3A9C"); cc.alignment={horizontal:"center",vertical:"middle",wrapText:true}; cc.border=xBorder("FF41509F"); } });
 
   // ── 산출 기준: 인력별(열별) 값 ──
   const fromFile = !!(state.compare && +Y===+state.compare.year && state.prevRateSrc) || !!(state.rateSrc && +Y===+state.rateSrc.year);
