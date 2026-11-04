@@ -895,7 +895,7 @@ aside.rail{gap:14px}
 <script>try{var _t=localStorage.getItem("stec_theme");if(_t==="light"||_t==="dark")document.documentElement.setAttribute("data-theme",_t)}catch(e){}</script>
 <header class="topbar">
   <button type="button" class="logo-fig" id="logoHome" title="메인화면으로" aria-label="메인화면으로"><img src="__APPICON__" alt="S-Tec 견적 시스템 앱 아이콘"></button>
-  <div class="brand" title="에스텍 그룹 용역인력 견적시스템"><b>S-Tec-Quotation-System</b><span class="ver">Ver 7.3</span></div>
+  <div class="brand" title="에스텍 그룹 용역인력 견적시스템"><b>S-Tec-Quotation-System</b><span class="ver">Ver 7.4</span></div>
   <div class="sp"><div class="gstrip" id="gstrip" aria-hidden="true"></div></div>
   <div class="tb-home home-only" id="tbHome"></div>
   <div class="tb-actions">
@@ -3431,7 +3431,7 @@ function fxDetailed(g, sheet, meta, ctxText){
     const rowsAll={}; Object.entries(RK).forEach(([k,bk])=>{ if(rows[k]>=0) rowsAll[bk]=rows[k]; });
     [["ltc","ltc"],["emp","emp"],["ind","ind"]].forEach(([k,bk])=>{ if(rateRows[k]>=0 && rowsAll[bk]==null) rowsAll[bk]=rateRows[k]; });
     xItems.forEach(x=>{ rowsAll[xKey(x)]=x.row; });
-    const map={kind:"detail", sheet, cols:b.cols, otherCols, labelEnd, rows:{wage:rows.wage, count:countRow, price:rows.price, basic:basicRow, ordinary:rows.ordinary}, rowsAll, rateRows, rateLoc, lastRow:g.R};
+    const map={kind:"detail", sheet, cols:b.cols, otherCols, labelEnd, hdrStart, rows:{wage:rows.wage, count:countRow, price:rows.price, basic:basicRow, ordinary:rows.ordinary}, rowsAll, rateRows, rateLoc, lastRow:g.R};
     return {kind:"detail", sheet, block:b, year:b.year, roles, set, others, map, labels, rowsFound:Object.keys(rows).filter(k=>rows[k]>=0)};
   });
   return out;
@@ -3848,6 +3848,85 @@ function replaceRateInFormula(f, oldP, newP){
   pctLiterals(oldP).forEach(lit=>{ const isPct=lit.endsWith("%"); const re=new RegExp(`(^|[^\\d.$A-Z])${lit.replace(/[.%]/g,"\\$&")}(?![\\d])`,"g"); g=g.replace(re,(m,a)=>a+(isPct?`${+(+newP).toFixed(4)}%`:nd)); });
   return g;
 }
+/* 당해년 산출내역서 = 불러온 원본 견적서의 항목·수식을 그대로 (직접비·간접비·복리후생비·제비용 등 모든 행)
+   원본 표(구분 머리글 ~ 견적금액)를 같은 열 위치로 옮기고, 수식은 행 번호만 옮긴 만큼 바꿔서 원본과 똑같이 계산되게 함 */
+function mirrorShiftF(f, dr, srcSheet){
+  const parts=String(f).split('"');
+  for(let i=0;i<parts.length;i+=2){ let t=parts[i];
+    if(/\[\d*\]|\[[^\]]*\.xls/i.test(t)) return null;   // 다른 파일 참조
+    let bad=false;
+    t=t.replace(/('(?:[^']|'')+'|[A-Za-z0-9_ㄱ-힣.]+)!/g,(m,q)=>{ const n=q.replace(/^'|'$/g,"").replace(/''/g,"'"); if(n===srcSheet) return ""; bad=true; return m; });
+    if(bad) return null;
+    t=t.replace(/(^|[^A-Za-z0-9_.$ㄱ-힣])(\$?)([A-Z]{1,3})(\$?)(\d+)(?![\d(A-Za-z_])/g,(m,a,d1,c,d2,r)=>a+d1+c+d2+(+r+dr));
+    parts[i]=t; }
+  return parts.join('"');
+}
+function mirrorRefRows(f){ const out=[]; String(f).split('"').forEach((t,i)=>{ if(i%2) return; t.replace(/(^|[^A-Za-z0-9_.$ㄱ-힣])\$?([A-Z]{1,3})\$?(\d+)(?![\d(A-Za-z_])/g,(m,a,c,r)=>{ out.push([+r-1, XLSX.utils.decode_col(c)]); return m; }); }); return out; }
+async function buildMirrorBdSheet(wb, sheetName, prev, logoId, tab){
+  const src=state.importSrc; if(!src || !src.map || src.map.kind!=="detail") return null;
+  const buf=src.id ? await idbGet(src.id) : null; if(!buf) return null;
+  let x; try{ x=XLSX.read(new Uint8Array(buf),{type:"array",cellFormula:true,cellNF:true,cellStyles:true}); }catch(e){ return null; }
+  const sh=x.Sheets[src.sheet]; if(!sh || !sh["!ref"]) return null;
+  const M=src.map, E=XLSX.utils.encode_cell, rg=XLSX.utils.decode_range(sh["!ref"]);
+  const at=(r,c)=>sh[E({r,c})];
+  const empty=(r)=>{ for(let c=0;c<=rg.e.c;c++){ const v=at(r,c); if(v && v.v!=null && v.v!=="" ) return false; if(v && v.f) return false; } return true; };
+  // 표 범위(행): 구분 머리글 ~ 견적금액(그 아래 이어지는 합계 줄까지)
+  const ctr=M.rows.count;
+  let R0=M.hdrStart;
+  if(R0==null){ R0=ctr; for(let r=ctr-1;r>=Math.max(0,ctr-6);r--){ let hit=false; for(let c=0;c<=Math.min(rg.e.c,(M.labelEnd||2)+1);c++){ const v=at(r,c); if(v && typeof v.v==="string" && /^구분$/.test(FX.nz(v.v))) hit=true; } if(hit){ R0=r; break; } } if(R0===ctr){ while(R0>0 && M.cols.some(c=>{ const v=at(R0-1,c); return v && typeof v.v==="string"; })) R0--; } }
+  let R1=Math.max(M.rows.price??-1, ...Object.values(M.rowsAll||{}).filter(v=>v!=null&&v>=0));
+  if(!(R1>R0)) return null;
+  while(R1<rg.e.r && !empty(R1+1)){ const fs=[]; for(let c=0;c<=rg.e.c;c++){ const v=at(R1+1,c); if(v&&v.f) fs.push(v.f); } if(fs.some(f=>/\[\d*\]|!/.test(f))) break; R1++; }
+  // 수식이 가리키는 행·열이 모두 들어가도록 넓힘
+  let C1=Math.max(...M.cols); for(let r=R0;r<=R1;r++) for(let c=0;c<=rg.e.c;c++){ const v=at(r,c); if(v && ((v.v!=null&&v.v!=="")||v.f)) C1=Math.max(C1,c); }
+  for(let it=0;it<5;it++){ let ch=false;
+    for(let r=R0;r<=R1;r++) for(let c=0;c<=C1;c++){ const v=at(r,c); if(!v||!v.f) continue; mirrorRefRows(v.f).forEach(([rr,cc])=>{ if(rr<R0&&rr>=0){ R0=rr; ch=true; } if(rr>R1){ R1=rr; ch=true; } if(cc>C1){ C1=cc; ch=true; } }); }
+    if(!ch) break; }
+  C1=Math.min(C1,60); if(R1-R0>400) return null;
+  const TOP=7, dr=TOP-(R0+1), lastC=C1+1;
+  const ws=wb.addWorksheet(sheetName,{properties:{tabColor:{argb:tab}},views:[{showGridLines:false,state:"frozen",xSplit:(M.labelEnd||0)+1,ySplit:TOP-1+Math.max(1,ctr-R0+1)}],pageSetup:{paperSize:9,orientation:"landscape",fitToPage:true,fitToWidth:1,fitToHeight:0,margins:{left:.3,right:.3,top:.4,bottom:.4,header:.2,footer:.2}}});
+  const cw=sh["!cols"]||[];
+  for(let c=0;c<=C1;c++){ const w=cw[c]; let wd=w&&(w.wch||(w.width)||(w.wpx&&w.wpx/7)); if(!wd) wd = c<=(M.labelEnd||0) ? 8 : M.cols.includes(c) ? 14 : 13; ws.getColumn(c+1).width=Math.max(4,Math.min(60,wd)); if(w&&w.hidden) ws.getColumn(c+1).hidden=true; }
+  // 다른 연도 블록(익년 등) 열은 숨김 — 계산에는 그대로 쓰임
+  const oc=(M.otherCols||[]); if(oc.length){ const myF=Math.min(...M.cols), myL=Math.max(...M.cols);
+    oc.forEach(c=>{ if(c<=C1) ws.getColumn(c+1).hidden=true; });
+    const oF=Math.min(...oc); if(oF>myL){ for(let c=oF;c<=C1;c++) ws.getColumn(c+1).hidden=true; } else { for(let c=Math.max(...oc)+1;c<myF;c++) ws.getColumn(c+1).hidden=true; } }
+  if(!wb._cubeId){ try{ const cb=await imgPng("figcube",220); wb._cubeId=wb.addImage({base64:cb.base64,extension:"png"}); wb._cubeSz={w:Math.round(70*cb.w/cb.h),h:70}; }catch(e){ wb._cubeId=logoId; wb._cubeSz={w:90,h:40}; } }
+  const m=prev.m;
+  xHeader(ws,wb,wb._cubeId,`${prev.Y}년 산출내역서 (원본 그대로)`,`${m.client||""} · ${m.svc} · 불러온 원본: ${src.name||""} [${src.sheet}] · 항목·금액·수식을 원본과 똑같이 옮김 · 단위: 원, VAT 별도 · 노란 칸 = 원본 입력값`,Math.max(lastC,7),wb._cubeSz);
+  const firstItem=M.rows.basic, labelEnd=M.labelEnd||0;
+  const isTot=t=>/계\s*$|소\s*계|합\s*계|총\s*계|원가|관리비|이\s*윤|이\s*익|단\s*가|금\s*액/.test(t);
+  const nzs=v=>typeof v==="string"?v.replace(/\s+/g,""):"";
+  let nF=0, nV=0;
+  for(let r=R0;r<=R1;r++){
+    const row=ws.getRow(r+1+dr); const ri=sh["!rows"]&&sh["!rows"][r]; if(ri&&ri.hpt) row.height=Math.max(13,Math.min(60,ri.hpt)); if(ri&&ri.hidden) row.hidden=true;
+    const head = r<firstItem && r<=ctr && r>=R0;
+    const lblTxt=[...Array(labelEnd+1).keys()].map(c=>{ const v=at(r,c); return v&&typeof v.v==="string"?v.v:""; }).join(" ");
+    const tot=!head && isTot(nzs(lblTxt).replace(/^\d+\.?/,""));
+    const price=r===M.rows.price;
+    for(let c=0;c<=C1;c++){ const v=at(r,c), d=row.getCell(c+1);
+      if(v){ if(v.f){ const f2=mirrorShiftF(v.f,dr,src.sheet); const res=v.t==="e"?undefined:v.v; if(f2){ d.value={formula:f2, result:res}; nF++; } else if(res!=null) d.value=res; }
+        else if(v.v!=null && v.v!=="" && v.t!=="e"){ d.value=v.v; if(typeof v.v==="number") nV++; } }
+      const num = d.value!=null && (typeof d.value==="number" || (typeof d.value==="object" && d.value.formula && typeof d.value.result!=="string"));
+      const roleC = c>labelEnd;
+      d.font=xFont({size:9, bold:head||tot||price, color:head?{argb:XC.white}:undefined});
+      d.border=xBorder(head?"FF41509F":"FFD6DAE5");
+      d.alignment={vertical:"middle", horizontal: head ? "center" : (num?"right":(roleC?"left":"left")), wrapText: !num};
+      if(head) d.fill=xFill(r===ctr?XC.green:(r===R0?XC.navy:"FF2A3A9C"));
+      else if(price) d.fill=xFill("FFFFF1B8");
+      else if(tot) d.fill=xFill("FFEAF0FB");
+      else if(roleC && typeof d.value==="number" && M.cols.includes(c)) d.fill=xFill("FFFFF9DB");
+      if(num){ const z=v&&v.z&&v.z!=="General"?v.z:null; const rv=typeof d.value==="number"?d.value:d.value.result; d.numFmt= z || (typeof rv==="number" && Math.abs(rv-Math.round(rv))>1e-9 ? "#,##0.0#" : '#,##0;-#,##0;"-"'); }
+    }
+  }
+  (sh["!merges"]||[]).forEach(mg=>{ if(mg.s.r<R0||mg.e.r>R1||mg.e.c>C1) return; try{ ws.mergeCells(mg.s.r+1+dr,mg.s.c+1,mg.e.r+1+dr,mg.e.c+1); }catch(e){} });
+  const nt=ws.getRow(R1+dr+3).getCell(1);
+  nt.value=`※ 이 시트는 불러온 당해년 견적서의 항목(직접비·간접비·복리후생비·제비용 등)과 수식을 그대로 옮긴 것입니다 · 원본 수식 ${nF}개 · 원본 파일의 다른 시트를 가리키던 수식은 원본 계산값으로 넣었습니다.`;
+  nt.font=xFont({size:8.5,color:{argb:XC.muted}});
+  ws.headerFooter.oddFooter=`&L&8${state.set.coName} 산출내역서(${prev.Y}·원본)&R&8&P / &N`;
+  wb._mirror={sheet:sheetName, dr, priceRow:M.rows.price!=null?M.rows.price+1+dr:null, col:c=>xlCol(c)};
+  return wb._mirror;
+}
 async function addCustomerSheets(wb, R, prev, Y){
   const src=state.importSrc; if(!src || !src.map) return null;
   const buf=src.id ? await idbGet(src.id) : null; if(!buf) return "nofile";
@@ -3919,10 +3998,11 @@ async function addCustomerSheets(wb, R, prev, Y){
   };
   const P=M.kind==="detail"&&M.rows.price!=null?M.rows.price+1:null;
   const prevIdx=i=>state.roles.slice(0,i+1).filter(r=>r.prevL).length-1; // 당해년 산출내역서 열 순서
+  const MI=wb._mirror, p6=i=>{ const r0=state.roles[i]; if(MI && MI.priceRow && r0.srcCol!=null) return `'${MI.sheet}'!${MI.col(r0.srcCol)}${MI.priceRow}`; const k=prevIdx(i); return ref(N6,bdColL(Math.max(0,k)),bdRowOf("price")).replace(/\$/g,""); };
   box(ws8,`◆ 에스텍 그룹 견적시스템 대조 — ${prev.Y}년 당해년 (자동 연동)`,[
     ["원본 견적서 인당 단가",(i,col,r0)=> col?[`${col}${P}`, state.roles[i].prev]:[`${xlCol(M.cPrice)}${r0.srcRow+1}${r0.srcUnit==="month"?`/${r0.prevL?r0.prevL.count:r0.count}`:""}`, r0.prev]],
-    [`에스텍 그룹 산출내역서(${prev.Y}) 단가`,(i)=>{ const k=prevIdx(i); return [ref(N6,bdColL(Math.max(0,k)),bdRowOf("price")).replace(/\$/g,""), state.roles[i].prev]; }],
-    ["차이",(i,col,r0)=>{ const k=prevIdx(i); const a=col?`${col}${P}`:`${xlCol(M.cPrice)}${r0.srcRow+1}${r0.srcUnit==="month"?`/${r0.prevL?r0.prevL.count:r0.count}`:""}`; return [`${ref(N6,bdColL(Math.max(0,k)),bdRowOf("price")).replace(/\$/g,"")}-${a}`,0]; },true]]);
+    [`에스텍 그룹 산출내역서(${prev.Y}) 단가`,(i)=>[p6(i), state.roles[i].prev]],
+    ["차이",(i,col,r0)=>{ const a=col?`${col}${P}`:`${xlCol(M.cPrice)}${r0.srcRow+1}${r0.srcUnit==="month"?`/${r0.prevL?r0.prevL.count:r0.count}`:""}`; return [`${p6(i)}-${a}`,0]; },true]]);
   box(ws9,`◆ 에스텍 그룹 견적시스템 대조 — ${Y}년 익년도 (자동 연동 · ${M.rowsAll?"항목별 금액":"시급·인원"}은 '${N3}' 시트와 연결)`,[
     ["고객사 양식 인당 단가 (이 시트)",(i,col,r0)=> col?[`${col}${P}`, R.rows[i].L.price]:[`${xlCol(M.cPrice)}${r0.srcRow+1}${r0.srcUnit==="month"?`/${r0.count}`:""}`, R.rows[i].L.price]],
     [`에스텍 그룹 산출내역서(${Y}) 단가`,(i)=>[ref(N3,bdColL(i),bdRowOf("price")).replace(/\$/g,""), R.rows[i].L.price]],
@@ -4972,7 +5052,8 @@ async function exportXlsx(){
   await buildBdSheet(wb, `산출내역서${tagC}`, R, Y, m, S, logoId, logoSm, XC.navy, {addRef:"부대비용월계"});
   if(prev){
     await addCompareSheet(wb, logoId, logoSm);
-    await buildBdSheet(wb, `산출내역서(${prev.Y})`, prev.R, prev.Y, prev.m, prev.S, logoId, logoSm, "FF8A93AD");
+    let mir=null; try{ mir=await buildMirrorBdSheet(wb, `산출내역서(${prev.Y})`, prev, logoId, "FF8A93AD"); }catch(e){ console.warn("mirror",e); const w=wb.getWorksheet(`산출내역서(${prev.Y})`); if(w) wb.removeWorksheet(w.id); mir=null; wb._mirror=null; }
+    if(!mir) await buildBdSheet(wb, `산출내역서(${prev.Y})`, prev.R, prev.Y, prev.m, prev.S, logoId, logoSm, "FF8A93AD");
   }
   linkCover(coverRefs, qRefs, prev && qRefs.prev ? {sheet:qRefs.sheet, month:qRefs.prev} : null);
   await buildAddonSheet(wb, R, m, S, logoId, logoSm, `산출내역서${tagC}`);
