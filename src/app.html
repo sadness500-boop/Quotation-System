@@ -885,7 +885,7 @@ aside.rail{gap:14px}
 <script>try{var _t=localStorage.getItem("stec_theme");if(_t==="light"||_t==="dark")document.documentElement.setAttribute("data-theme",_t)}catch(e){}</script>
 <header class="topbar">
   <button type="button" class="logo-fig" id="logoHome" title="메인화면으로" aria-label="메인화면으로"><img src="__APPICON__" alt="S-Tec 견적 시스템 앱 아이콘"></button>
-  <div class="brand" title="에스텍 그룹 용역인력 견적시스템"><b>S-Tec-Quotation-System</b><span class="ver">Ver 7.0</span></div>
+  <div class="brand" title="에스텍 그룹 용역인력 견적시스템"><b>S-Tec-Quotation-System</b><span class="ver">Ver 7.1</span></div>
   <div class="sp"><div class="gstrip" id="gstrip" aria-hidden="true"></div></div>
   <div class="tb-home home-only" id="tbHome"></div>
   <div class="tb-actions">
@@ -1604,6 +1604,10 @@ function baseCapOf(r,S){ return (!r.watch && !r.rawBase) ? (+S.baseCap||209) : I
 function baseEffOf(r,S){ const b=+r.base||0; return Math.min(b, baseCapOf(r,S)); }
 function otHours(r,S){ return ((+r.ot||0)+((+r.base||0)-baseEffOf(r,S)))*(r.watch?+S.otWatch:+S.otGen); }
 function nightHours(r,S){ return (+r.night||0)*(+S.nightRate); }
+/* 야간수당 시급 기준: ""=통상시급, noX=통상시급(기타수당 제외), bp=(기본급+직책)÷시간, b=기본급÷시간, w=시급 */
+const NIGHT_B=["","noX","bp","b","w"];
+function nightRateOf(r,L,base,ordinary){ const k=r.nightBase||""; if(!base) return 0;
+  return k==="noX" ? (L.basic+L.pos+L.adj+L.duty)/base : k==="bp" ? (L.basic+L.pos)/base : k==="b" ? L.basic/base : k==="w" ? (+r.wage||0) : ordinary; }
 function holHours(r){ return (+r.holDays||0)*8*0.5/12; }
 const INS_EX={meal:"식대",pos:"직책수당",posMeal:"직책수당+식대",none:"없음"};
 function insExAmt(r,L){ const k=r.insEx||"meal"; return k==="pos"?L.pos : k==="posMeal"?L.pos+L.meal : k==="none"?0 : L.meal; }
@@ -1614,36 +1618,38 @@ const xKey=x=>`x:${x.sec}:${String(x.name||"").trim()}`;
 function xSum(r,sec,f){ return (r.extras||[]).filter(x=>x.sec===sec&&(!f||f(x))).reduce((s,x)=>s+(+x.amt||0),0); }
 function calcRole(r, S0, ctx){
   const L = {}, S = roleSet(r,S0);
+  const U = S.itemRnd==="none" ? (v=>v) : RU;   // 항목별 10원 절상 (원본 양식이 단수처리 없이 계산하면 none)
   L.x={}; (r.extras||[]).forEach(x=>{ const k=xKey(x); L.x[k]=(L.x[k]||0)+(+x.amt||0); });
   L.xpay=xSum(r,"pay"); L.xpayOrd=xSum(r,"pay",x=>x.ord); L.xpayNoIns=xSum(r,"pay",x=>x.ins===false);
   const wage = +r.wage||0, base = baseEffOf(r,S), ot = +r.ot||0, night = +r.night||0;
   L.baseEff = base; L.otEx = (+r.base||0) - base;
-  L.basic = RU(base*wage);
+  L.basic = U(base*wage);
   L.pos = +r.pos||0; L.adj = +r.adj||0; L.duty = +r.duty||0; L.meal = +r.meal||0;
   const ordinary = base ? (L.basic + L.pos + L.adj + L.duty + L.xpayOrd)/base : 0;
   L.ordinary = ordinary;
   L.otH = otHours(r,S); L.nightH = nightHours(r,S); L.holH = holHours(r);
-  L.ot = L.otH ? RU(L.otH*ordinary) : 0;          // 연장근로 환산시간 × 통상시급
-  L.night = L.nightH ? RU(L.nightH*ordinary) : 0;  // 야간가산 환산시간 × 통상시급
-  L.hol = L.holH ? RU(L.holH*ordinary) : 0;        // 공휴일 환산시간 × 통상시급
+  L.ot = L.otH ? U(L.otH*ordinary) : 0;          // 연장근로 환산시간 × 통상시급
+  L.nightRateBase = nightRateOf(r, L, base, ordinary);
+  L.night = L.nightH ? U(L.nightH*L.nightRateBase) : 0;  // 야간가산 환산시간 × 통상시급
+  L.hol = L.holH ? U(L.holH*ordinary) : 0;        // 공휴일 환산시간 × 통상시급
   L.sub1 = L.basic+L.ot+L.night+L.pos+L.hol+L.duty+L.meal+L.adj+L.xpay;
-  L.leave = (+r.leave||0) ? RU(ordinary*(S.leaveH||8)*(+r.leave)/12) : 0;
-  L.laborDay = r.laborDay ? RU(Math.max(0,(+r.dayH||0)-(+r.rest||0))/12*ordinary) : 0;
+  L.leave = (+r.leave||0) ? U(ordinary*(S.leaveH||8)*(+r.leave)/12) : 0;
+  L.laborDay = r.laborDay ? U(Math.max(0,(+r.dayH||0)-(+r.rest||0))/12*ordinary) : 0;
   L.bonusBase = r.bonusBase==="ordinary" ? L.basic+L.pos+L.adj+L.duty+L.xpayOrd : L.basic;
-  L.bonus = (+r.bonusAmt||0) ? +r.bonusAmt : (+r.bonusPct||0) ? RU(L.bonusBase*pct(r.bonusPct)/12) : 0;
-  L.retire = r.retire ? RU((L.sub1+L.leave+L.laborDay+L.bonus)/12) : 0;
+  L.bonus = (+r.bonusAmt||0) ? +r.bonusAmt : (+r.bonusPct||0) ? U(L.bonusBase*pct(r.bonusPct)/12) : 0;
+  L.retire = r.retire ? U((L.sub1+L.leave+L.laborDay+L.bonus)/12) : 0;
   L.direct = L.sub1+L.leave+L.laborDay+L.bonus+L.retire;
   const ib = L.direct - L.retire - insExAmt(r,L) - L.xpayNoIns; L.insBase = ib;
-  L.health = RU(ib*pct(S.health));
-  L.ltc = RU(L.health*pct(S.ltc));
-  L.pension = RU(ib*pct(S.pension)*pct(r.pensionPct));
-  L.emp = RU(ib*pct(S.emp));
-  L.ind = RU(ib*pct(S.ind));
-  L.wclaim = +S.wageClaim ? RU(ib*pct(S.wageClaim)) : 0;
-  L.asb = +S.asb ? RU(ib*pct(S.asb)) : 0;
+  L.health = U(ib*pct(S.health));
+  L.ltc = U(L.health*pct(S.ltc));
+  L.pension = U(ib*pct(S.pension)*pct(r.pensionPct));
+  L.emp = U(ib*pct(S.emp));
+  L.ind = U(ib*pct(S.ind));
+  L.wclaim = +S.wageClaim ? U(ib*pct(S.wageClaim)) : 0;
+  L.asb = +S.asb ? U(ib*pct(S.asb)) : 0;
   const sp = r.special==="on" || (r.special==="auto" && night>0);
-  L.special = sp ? RU(S.specialExam/12) : 0;
-  { const d=pct(S.disRate)*S.disBase*pct(S.disRatio); L.dis = S.disOn ? (S.disRound===false ? d : RU(d)) : 0; }
+  L.special = sp ? U(S.specialExam/12) : 0;
+  { const d=pct(S.disRate)*(S.disMode==="ord" ? ordinary*(+S.disOrdH||209) : S.disBase)*pct(S.disRatio); L.dis = S.disOn ? (S.disRound===false ? d : RU(d)) : 0; }
   L.xind=xSum(r,"ind"); L.xwel=xSum(r,"wel"); L.xexp=xSum(r,"exp");
   L.indirect = L.health+L.ltc+L.pension+L.emp+L.ind+L.wclaim+L.asb+L.special+L.dis+L.xind;
   L.labor = L.direct + L.indirect;
@@ -1652,8 +1658,10 @@ function calcRole(r, S0, ctx){
   L.meeting = +S.meeting||0; L.condol = +S.condol||0;
   L.relief = ordinary*S.reliefH*S.reliefDays/12;
   L.resTax = ctx.heads ? S.resTax*S.resSites/12/ctx.heads : 0;
-  L.edu = +S.eduFix ? +S.eduFix : S.eduRnd==="down10" ? RD(L.labor*pct(S.edu),10) : L.labor*pct(S.edu);
-  L.risk = +S.riskFix ? +S.riskFix : S.riskRnd==="down10" ? RD(L.labor*pct(S.risk),10) : L.labor*pct(S.risk);
+  L.welX = L.uniform+L.gift+L.meeting+L.condol+L.relief+L.xwel;   // 복리후생성 경비 (교육·위험 산정기준에 포함하는 양식용)
+  const eB = L.labor + (S.eduBase==="laborWel" ? L.welX : 0);
+  L.edu = +S.eduFix ? +S.eduFix : S.eduRnd==="down10" ? RD(eB*pct(S.edu),10) : eB*pct(S.edu);
+  L.risk = +S.riskFix ? +S.riskFix : S.riskRnd==="down10" ? RD(eB*pct(S.risk),10) : eB*pct(S.risk);
   L.addon = r.addonEx ? 0 : (ctx.addonPerHead || 0);
   L.expense = L.uniform+L.gift+L.meeting+L.condol+L.relief+L.resTax+L.edu+L.risk+L.addon+L.xwel+L.xexp;
   L.dcost = L.labor + L.expense;
@@ -3197,18 +3205,20 @@ function fxDetailed(g, sheet, meta, ctxText){
   find("otM",/시간외|연장/,{ex:/시간$|근로시간|근무시간/,min:401});
   find("nightH",/심야|야간/,{ex:/수당|휴게|검진|특수/,max:400});
   find("nightM",/심야|야간/,{ex:/시간$|휴게|검진|특수/,min:401});
-  find("holM",/공휴일|휴일수당|휴일근무/,{ex:/일수$|근무일수|휴일일수|시간/});
+  find("holM",/공휴일|휴일수당|휴일근무|휴일근로수당/,{ex:/일수$|근무일수|휴일일수|시간/});
   find("pos",/직책/); find("duty",/직무|업무지원|업무수당/,{ex:/직책/}); find("meal",/식대|식사보조|식비/); find("adj",/조정|임금보전|보전수당/);
   find("leaveD",/적치일수|연차일수|년차일수|유급일수/,{max:40});
   find("laborDay",/근로자의날/); find("retire",/퇴직/); find("pension",/국민연금/); find("bonus",/상여/,{ex:/율|률|%/});
   find("uniform",/피복/); find("gift",/선물/); find("meeting",/회의비|사업장운영비|복리운영비/);
-  find("leaveM",/연차|년차/,{ex:/일수|시간|적치일/,min:1000}); find("directSum",/직접비계|직접인건비계|직접노무비계/); find("laborSum",/노무비계/);
-  find("health",/건강보험/,{ex:/장기|요양/}); find("wclaimM",/임금채권/); find("asbM",/석면/); find("resTax",/주민세|사업소분/); find("csub",/원가소계/); find("total5",/원가총계/);
-  find("sub1",/^소계$/,{from:basicRow}); find("indSum",/간접비계|간접노무비계|간접인건비계/); find("expSum",/^경비계$|경비합계/); find("condol",/경조/); find("relief",/대치|대체근무/);
+  find("leaveM",/연차|년차/,{ex:/일수|시간|적치일/,min:1000}); find("directSum",/직접비계|직접인건비계|직접노무비계|^인건비계$/); find("lwSum",/직접노무비합계|^노무비합계$/); find("welSum",/복리후생비계|복리후생계/); find("jeSum",/제비용계/); find("laborSum",/노무비계/);
+  find("health",/건강보험/,{ex:/장기|요양/}); find("wclaimM",/임금채권/); find("asbM",/석면/); find("resTax",/주민세|사업소분/); find("csub",/원가소계|원가합계/); find("total5",/원가총계/);
+  find("sub1",/^소계$|급료및수당계|^급여계$|^수당계$/,{from:basicRow}); find("indSum",/간접비계|간접노무비계|간접인건비계/); find("expSum",/^경비계$|경비합계/); find("condol",/경조/); find("relief",/대치|대체근무/);
   find("special",/특수검진|특수건강|야간특수/); find("dis",/장애인/); find("edu",/교육훈련/); find("risk",/위험부담/);
   find("dcost",/직접원가/); if(!(rows.dcost>=0)) find("dcost",/직접비합계|직접비총계/);
-  find("ga",/일반관리비/); find("profit",/이윤/);
+  find("ga",/일반관리비/); find("profit",/이윤/); if(!(rows.profit>=0)) find("profit",/세전이익|^이익$|기업이익/);
   for(const re of [/인당단가|인당도급|1인당/,/견적금액|계약단가|견적단가|도급단가|인당금액/]){ if(rows.price==null){ for(let r=basicRow;r<=g.R;r++){ const p=P(r)||F(r); if(re.test(p) && roleCols.some(c=>FX.isNum(g.G[r][c]) && g.G[r][c]>100000)){ rows.price=r; break; } } } }
+  // ‘계’ 한 글자로 된 견적금액 행 (이윤 다음 줄, 천·백원 단위 금액)
+  if(rows.price==null && rows.profit>=0){ for(let r=rows.profit+1;r<=Math.min(g.R,rows.profit+3);r++){ const v=roleCols.map(c=>g.G[r][c]); if(v.every(x=>FX.isNum(x)&&x>100000&&x%100===0)){ rows.price=r; break; } } }
   // 요율 (행 안의 % 글자 또는 소수 숫자)
   const rateRows={}, rateLoc={};
   const rate=(key,re,lo,hi)=>{ for(let r=basicRow;r<=g.R;r++){ if(!re.test(P(r)||F(r))) continue; if(rateRows[key]==null) rateRows[key]=r;
@@ -3221,13 +3231,23 @@ function fxDetailed(g, sheet, meta, ctxText){
   { const used=new Set([...Object.values(rows),...Object.values(rateRows)].filter(v=>v>=0)); const isTot=r=>/계$|소계|합계|총계|^계/.test(P(r));
     const firstRow=(re,from)=>{ for(let r=from;r<=g.R;r++) if(re.test(P(r))) return r; return -1; };
     const dS=rows.directSum, lS=rows.laborSum;
+    const S1=rows.sub1, wS=rows.welSum, jS=rows.jeSum;
+    let regs=null;
     if(lS>basicRow){ xRegions=true;
       const payEnd = dS>basicRow ? dS : Math.min(...["leaveM","bonus","retire"].map(k=>rows[k]).filter(v=>v>basicRow).concat([lS]));
       const indS = dS>basicRow ? dS+1 : (rows.health>0?rows.health:lS), indE=(()=>{ const r=firstRow(/간접비계|간접노무비계|간접인건비계/,indS); return r>0&&r<lS?r:lS; })();
       const wE=firstRow(/복리후생계|복리후생비계/,lS+1), eE=(()=>{ const a=firstRow(/제비용계/,lS+1), b2=firstRow(/경비계/,lS+1); return a>0?a:b2; })();
-      const regs=[["pay",basicRow+1,payEnd-1],["ind",indS,indE-1]]; if(eE>lS){ if(wE>lS && wE<eE){ regs.push(["wel",lS+1,wE-1],["exp",wE+1,eE-1]); } else regs.push(["exp",lS+1,eE-1]); }
+      regs=[["pay",basicRow+1,payEnd-1],["ind",indS,indE-1]]; if(eE>lS){ if(wE>lS && wE<eE){ regs.push(["wel",lS+1,wE-1],["exp",wE+1,eE-1]); } else regs.push(["exp",lS+1,eE-1]); }
+    }
+    else if(S1>basicRow && (wS>S1 || jS>S1)){ xRegions=true;   // ‘급료및수당 계 / 복리후생비 계 / 제비용 계’ 양식
+      regs=[["pay",basicRow+1,S1-1]];
+      if(wS>S1){ const ws0=Math.max(rows.directSum>S1?rows.directSum+1:S1+1, rows.health>S1?rows.health:S1+1); regs.push(["wel",ws0,wS-1]); }
+      if(jS>S1){ const js0=(rows.lwSum>(wS||S1)?rows.lwSum:(wS||S1))+1; regs.push(["exp",js0,jS-1]); }
+    }
+    if(regs){
       regs.forEach(([sec,a,b2])=>{ for(let r=a;r<=b2;r++){ if(used.has(r)||isTot(r)) continue; const nm=String(lab[r].primary||"").replace(/^\s*[\d①-⑳]+[.)]?\s*/,"").replace(/\s+/g," ").trim(); if(!nm || nm.length>20 || /^[\d.,%\s]+$/.test(nm)) continue;
           if(/직접인건비|간접인건비|복리후생|제비용|노무비|경비|구분/.test(FX.nz(nm)) && roleCols.every(c=>!FX.isNum(g.G[r][c]))) continue;
+          if(roleCols.every(c=>g.G[r][c]==null||g.G[r][c]==="")) continue;
           xItems.push({row:r, sec, name:nm, ord:false, ins:true}); } });
     } }
   // 블록 → 인력
@@ -3262,9 +3282,14 @@ function fxDetailed(g, sheet, meta, ctxText){
       else if(otM){ ot = watch ? otM/wage : otM/(ordinary*1.5); }
       else if(otH){ ot=otH; }
       ot=Math.round(ot*2)/2;
-      let night=0; const nM=V("nightM"), nH=V("nightH");
-      if(nM) night=nM/(0.5*ordinary); else if(nH){ const lb=P(rows.nightH); night=/가산|할증/.test(lb)?nH*2:nH; }
-      night=Math.round(night);
+      let night=0, nightAsIs=false, nightBase=""; const nM=V("nightM"), nH=V("nightH");
+      if(nM && nH){ // 원본 금액 = 시간 × 배율 × 시급 기준 — 맞는 조합을 찾음
+        const bs=basic, rt=[["",ordinary],["noX",(bs+pos+adj+duty)/base],["bp",(bs+pos)/base],["b",bs/base],["w",wage]];
+        let hit=null; for(const [m,asIs] of [[1,true],[0.5,false]]) for(const [k,v] of rt){ const x=nH*m*v; if(!hit && (Math.abs(x-nM)<0.6 || RU(x)===Math.round(nM))) hit={asIs,k}; }
+        if(hit){ night=hit.asIs?nH:nH; nightAsIs=hit.asIs; nightBase=hit.k; if(!hit.asIs) night=nH; }
+        else night=nM/(0.5*ordinary); }
+      else if(nM) night=nM/(0.5*ordinary); else if(nH){ const lb=P(rows.nightH); night=/가산|할증/.test(lb)?nH*2:nH; }
+      night=nightAsIs?Math.round(night*100)/100:Math.round(night);
       const holM=V("holM"); const holDays=holM?Math.round(holM*12/(wage*4)*10)/10:0;
       let leave=V("leaveD")??15;
       const lvM=V("leaveM"); if(V("leaveD")==null && lvM>0 && ordinary>0){ const d=lvM*12/(ordinary*8); leave=Math.abs(d-Math.round(d))<0.05?Math.round(d):Math.round(d*10)/10; }
@@ -3273,10 +3298,11 @@ function fxDetailed(g, sheet, meta, ctxText){
       // 당해년은 원본 금액 그대로 재현: 일반직군인데 원본이 연장 가산을 덜 했거나 기본시간이 주40h를 넘으면 그 방식을 표시해 두고, 익년도에 법정 방식으로 바로잡음
       if(otRate!=null){ opt.sx=Object.assign(opt.sx||{}, {otGen:otRate}); opt.fileOtRate=otRate; }
       if(!watch && base>209.5) opt.rawBase=true;
-      if(has("laborDay")) opt.laborDay = (V("laborDay")||0)>0;
+      opt.laborDay = has("laborDay") ? (V("laborDay")||0)>0 : false;   // 원본에 근로자의날 항목이 없으면 미반영
+      if(nightAsIs) opt.sx=Object.assign(opt.sx||{},{nightRate:1}); if(nightBase) opt.nightBase=nightBase;
       const bon=V("bonus"); if(bon>0 && basic>0){ opt.bonusPct=Math.round(bon*12/basic*1000)/10; if(Math.abs(RU(basic*opt.bonusPct/100/12)-bon)>0.5) opt.bonusAmt=Math.round(bon*1e4)/1e4; }
       { const hv=V("health"), dv=V("directSum"), rv=V("retire")||0;   // 4대보험 산정 기준에서 빼는 항목을 원본 금액으로 판별
-        if(hv>0 && dv>0 && rates.health){ const C={meal, pos, posMeal:pos+meal, none:0}, hit=["meal","pos","posMeal","none"].find(k=>RU((dv-rv-C[k])*rates.health/100)===Math.round(hv)); if(hit && hit!=="meal") opt.insEx=hit; } }
+        if(hv>0 && dv>0 && rates.health){ const C={meal, pos, posMeal:pos+meal, none:0}, hit=["meal","pos","posMeal","none"].find(k=>{ const x=(dv-rv-C[k])*rates.health/100; return RU(x)===Math.round(hv)||Math.abs(x-hv)<0.6; }); if(hit && hit!=="meal") opt.insEx=hit; } }
       if(has("retire")) opt.retire = (V("retire")||0)>0;
       if(has("pension")) opt.pensionPct = (V("pension")||0)>0 ? 100 : 0;
       if(has("uniform")) opt.uniform = V("uniform")||0;
@@ -3293,7 +3319,7 @@ function fxDetailed(g, sheet, meta, ctxText){
         const hv=V("health"), dv=V("directSum"), rv=V("retire")||0;
         if(hv>0 && dv>0 && rates.health && n){ const C={meal, pos, posMeal:pos+meal, none:0}; let done=false;
           for(let m=0;m<(1<<n)&&!done;m++){ const s=PX.filter((_,i)=>m>>i&1).reduce((a,x)=>a+x.amt,0);
-            for(const k of ["meal","pos","posMeal","none"]) if(RU((dv-rv-C[k]-s)*rates.health/100)===Math.round(hv)){ PX.forEach((x,i)=>{ x.ins=!(m>>i&1); x._x.ins=x.ins; }); if(k!=="meal") opt.insEx=k; else delete opt.insEx; done=true; break; } } }
+            for(const k of ["meal","pos","posMeal","none"]){ const x=(dv-rv-C[k]-s)*rates.health/100; if(RU(x)===Math.round(hv)||Math.abs(x-hv)<0.6){ PX.forEach((x,i)=>{ x.ins=!(m>>i&1); x._x.ins=x.ins; }); if(k!=="meal") opt.insEx=k; else delete opt.insEx; done=true; break; } } } }
         opt.extras.forEach(x=>{ x.ord=x._x.ord; x.ins=x._x.ins; delete x._x; }); }
       return {opt, cat, src:name||`${XLSX.utils.encode_col(c)}열`};
     });
@@ -3305,24 +3331,38 @@ function fxDetailed(g, sheet, meta, ctxText){
     if(rows.gift>=0 && v0("gift")!=null){ set.gift=Math.round(v0("gift")*12/1000)*1000; if(Math.abs(v0("gift")-RU(v0("gift")))>0.01) set.giftRound=false; }
     const heads0=roles.reduce((s,x)=>s+(+x.opt.count||0),0);
     if(rows.resTax>=0 && v0("resTax")>0 && heads0){ set.resTax=Math.round(v0("resTax")*12*heads0/10)*10; set.resSites=1; }
-    if(rows.wclaimM>=0 && b.cols.every(c=>!(+g.G[rows.wclaimM][c]))) set.wageClaim=0;
+    if(!(rows.wclaimM>=0) || b.cols.every(c=>!(+g.G[rows.wclaimM][c]))) set.wageClaim=0;
+    if(rows.resTax>=0 && !(v0("resTax")>0)) set.resTax=0;
+    // 원본이 단수처리 없이(소수점까지) 계산하는 양식인지
+    { const chk=["basic","health","pension","leaveM","retire"].map(k=>v0(k)).filter(v=>v!=null&&v!==0); if(chk.some(v=>Math.abs(v-Math.round(v))>0.001 || Math.round(v)%10!==0)) set.itemRnd="none"; }
     if(!(rows.asbM>=0) || b.cols.every(c=>!(+g.G[rows.asbM][c]))) set.asb=0;
     const vals=k=>b.cols.map(c=>{ const r=rows[k]; const v=r>=0?g.G[r][c]:null; return FX.isNum(v)?v:null; });
     // 교육훈련비·위험부담금: 노무비 대비 비율(단수 처리 포함)을 원본 금액으로 판별, 안 맞으면 인력별 고정액
     const rateOf=(k,setK,fixK,rndK)=>{ const E=vals(k), Lb=vals("laborSum"); if(!(rows[k]>=0) || E.every(v=>v==null)) return;
-      if(Lb.every(v=>v>0) && E.every(v=>v!=null)){ const p=Math.round(E[0]/Lb[0]*1000)/10;
-        if(p>0 && E.every((v,i)=>Math.abs(RD(Lb[i]*p/100,10)-v)<0.5)){ set[setK]=p; set[fixK]=0; set[rndK]="down10"; return; }
-        if(p>0 && E.every((v,i)=>Math.abs(Lb[i]*p/100-v)<0.5)){ set[setK]=p; set[fixK]=0; set[rndK]=""; return; } }
+      for(const [bk,mode] of [["laborSum","labor"],["lwSum","laborWel"]]){ const Lb2=vals(bk); if(!(Lb2.every(v=>v>0) && E.every(v=>v!=null))) continue; const p=Math.round(E[0]/Lb2[0]*1000)/10;
+        if(p>0 && E.every((v,i)=>Math.abs(RD(Lb2[i]*p/100,10)-v)<0.5)){ set[setK]=p; set[fixK]=0; set[rndK]="down10"; set.eduBase=mode; return; }
+        if(p>0 && E.every((v,i)=>Math.abs(Lb2[i]*p/100-v)<0.5)){ set[setK]=p; set[fixK]=0; set[rndK]=""; set.eduBase=mode; return; } }
       if(E.every(v=>v===E[0])) { set[fixK]=Math.round(E[0]); return; }
       set[fixK]=Math.round(E[0]); roles.forEach((x,i)=>{ if(E[i]!=null && E[i]!==E[0]){ x.opt.sx=Object.assign(x.opt.sx||{}, {[fixK]:Math.round(E[i])}); } }); };
     rateOf("edu","edu","eduFix","eduRnd"); rateOf("risk","risk","riskFix","riskRnd");
-    { const dv=v0("dis"); if(dv>0 && Math.abs(dv-RU(dv))>0.01){ set.disRound=false; set.disRate=3.1; set.disRatio=100; set.disBase=Math.round(dv/0.031); } }
+    { const D=vals("dis"), O=vals("ordinary"), dv=D[0];
+      if(dv>0 && Math.abs(dv-RU(dv))>0.01){ set.disRound=false; set.disRate=3.1; set.disRatio=100; set.disBase=Math.round(dv/0.031); }
+      // 인력마다 금액이 다르고 통상시급에 비례하면 ‘통상시급 × 시간 × 의무고용률’ 방식
+      if(D.length>1 && D.every(v=>v>0) && O.every(v=>v>0) && D.some(v=>Math.abs(v-dv)>1)){ const k=D.map((v,i)=>v/(O[i]*0.031)); if(k.every(x=>Math.abs(x-k[0])<0.01)){ set.disMode="ord"; set.disOrdH=Math.round(k[0]*100)/100; set.disRate=3.1; set.disRatio=100; } }
+      else if(dv>0 && O[0]>0){ const k=dv/(O[0]*0.031); if(Math.abs(k*100-Math.round(k*100))<0.01 && [209,125.4,104.5,167.2].some(x=>Math.abs(x-k)<0.01)){ set.disMode="ord"; set.disOrdH=Math.round(k*100)/100; set.disRate=3.1; set.disRatio=100; } } }
     if(rows.meeting>=0 && v0("meeting")!=null) set.meeting=Math.round(v0("meeting"));
-    if(rows.condol>=0 && v0("condol")!=null) set.condol=Math.round(v0("condol"));
+    if(rows.condol>=0 && v0("condol")!=null) set.condol=set.itemRnd==="none"?v0("condol"):Math.round(v0("condol"));
     if(rows.relief>=0 && v0("relief")!=null) set.reliefDays=Math.round(v0("relief")*12/(ord0*12)*100)/100;
+    else if(rows.relief>=0) set.reliefDays=0;   // 항목은 있으나 금액이 비어 있음
     if(rows.special>=0){ const mx=Math.max(0,...b.cols.map(c=>FX.isNum(g.G[rows.special][c])?g.G[rows.special][c]:0)); if(mx) set.specialExam=Math.round(mx*12/1000)*1000; }
     if(rows.dis>=0) set.disOn = (v0("dis")||0)>0;
-    const dc=v0("dcost"); if(dc){ if(v0("ga")!=null) set.ga=Math.round(v0("ga")/dc*1000)/10; if(v0("profit")!=null) set.profit=Math.round(v0("profit")/dc*100000)/1000; }
+    const dc=v0("dcost"); if(dc){ if(v0("ga")!=null){ set.ga=Math.round(v0("ga")/dc*1000)/10; const gv=v0("ga"); if(Math.abs(gv-Math.round(gv))>0.001 || Math.round(gv)%10!==0) set.gaRound=false; }
+      // 이윤: 직접원가 / 원가소계 중 요율이 딱 떨어지는 쪽을 기준으로, 인력별 요율이 다르면 인력별로
+      const PF=vals("profit"), CS=vals("csub"), DC=vals("dcost");
+      if(PF[0]!=null){ const nice=v=>Math.abs(v*1000-Math.round(v*1000)); const rS=CS[0]>0?PF[0]/CS[0]*100:null, rD=PF[0]/DC[0]*100;
+        const useSub = rS!=null && nice(rS)<nice(rD); if(useSub) set.profitBase="sub";
+        const rates=PF.map((v,i)=>{ const bse=useSub?CS[i]:DC[i]; return v!=null&&bse>0?Math.round(v/bse*100*1000)/1000:null; });
+        set.profit=rates[0]; roles.forEach((x,i)=>{ if(rates[i]!=null && Math.abs(rates[i]-rates[0])>0.0001) x.opt.sx=Object.assign(x.opt.sx||{},{profit:rates[i]}); }); } }
     { const cs=v0("csub"), pf=v0("profit"), pr=v0("price"); if(cs>0 && pf!=null && pr>0 && pr%1000===0){ const raw=cs+pf; if(pr>raw+0.5 && pr===RU(raw,1000)) set.priceRound="up3"; else if(pr===Math.round(raw/1000)*1000 && pr!==RD(raw,1000)) set.priceRound="round3"; } }
     // 원본 항목 이름 (산출내역서에 그대로 표시)
     const LBL={basic:"basic",otM:"ot$",nightM:"night$",holM:"hol",duty:"duty",meal:"meal",adj:"adj",pos:"pos",leaveM:"leave",laborDay:"laborDay",bonus:"bonus",retire:"retire",health:"health",pension:"pension",special:"special",dis:"dis",uniform:"uniform",gift:"gift",meeting:"meeting",condol:"condol",relief:"relief",resTax:"resTax",edu:"edu",risk:"risk"};
@@ -4605,7 +4645,7 @@ async function buildQuoteSheet(wb, sheetName, R, qr, crew, Y, m, S, prevCol, log
 /* ───────── 산출내역서 (엑셀 수식 연결) ───────── */
 const BD_BASE=[
   ["count","인원(명)","i","기초자료"],["wage","시급","i"],["base","기본시간(주휴포함)","i"],
-  ["ot","연장근로시간 (실제)","i"],["watch","근로구분 (1=감시단속, 0=일반근로)","i"],["capF","주40h 초과 기본시간 연장 할증 (1=적용)","i"],["night","야간근로시간 (실제)","i"],["holDays","공휴일근무(일/년)","i"],
+  ["ot","연장근로시간 (실제)","i"],["watch","근로구분 (1=감시단속, 0=일반근로)","i"],["capF","주40h 초과 기본시간 연장 할증 (1=적용)","i"],["night","야간근로시간 (실제)","i"],["nightB","야간수당 시급 기준 (0=통상,1=통상-기타수당,2=기본+직책,3=기본급,4=시급)","i"],["holDays","공휴일근무(일/년)","i"],
   ["leaveDays","연차적치일수","i"],["bonusP","상여율(연, 기본급 대비)","i"],["bonusB","상여 기준(0=기본급,1=통상임금)","i"],["bonusAmt","상여 월정액(0이면 상여율)","i"],["ldH","근로자의날 유급시간","i"],
   ["retF","퇴직충당금(1=반영)","i"],["penP","국민연금 적용률","i"],["insEx","4대보험 제외(0=식대,1=직책,2=직책+식대,3=없음)","i"],["specF","특수검진(1=적용)","i"],["addEx","부대비용 배분제외(1=제외)","i"],["months","연간 근무개월","i"],
   ["baseEff","기본급 산정시간 (일반근로 주40h 한도)","hc"],["otH","연장 환산시간 (가산 포함)","hc"],["nightH","야간가산 환산시간","hc"],["holH","공휴일 환산시간 (월)","hc"],["ordinary","통상시급","hc"],
@@ -4665,9 +4705,11 @@ async function buildBdSheet(wb, sheetName, R, Y, m, S, logoId, logoSm, tab, opt=
     ["emp","고용보험",x=>pct(x.emp),"0.000%",fromFile?srcTxt:sysB?`${SYS_INS.label} · 실업급여 + 고용안정·직능(1,000인 이상 0.85%)`:"실업급여 + 고용안정·직능(규모별)"],["ind","산재보험",x=>pct(x.ind),"0.000%",fromFile?srcTxt:sysB?`${SYS_INS.label} · 시설관리·사업지원 ${SYS_INS.indBase}% + 출퇴근재해`:"사업종류별 + 출퇴근재해"],["wageClaim","임금채권부담금",x=>pct(x.wageClaim),"0.000%","0이면 미반영"],["asb","석면피해구제분담금",x=>pct(x.asb),"0.0000%","0이면 미반영"],
     ["baseCap","일반근로 기본시간 한도 (주40h+주휴)",x=>+x.baseCap||209,"0.#","일반근로(보안 외 업종)는 이 시간을 넘는 기본시간을 연장근로로 산정"],
     ["otGen","연장 가산배율 (일반근로)",x=>+x.otGen,"0.0###",RS.some(x=>x.otGen!==S.otGen)?"연장 환산시간 = 시간 × 배율 · 1.5가 아닌 열 = 원본 견적서의 가산 방식 그대로(당해년 재현)":"연장 환산시간 = 시간 × 배율 (근로기준법 1.5배)"],["otWatch","연장 배율 (감시단속)",x=>+x.otWatch,"0.0#",""],["nightRate","야간 가산율",x=>+x.nightRate,"0.0#","야간 환산시간 = 시간 × 가산율"],["leaveH","연차 1일 시간",x=>+x.leaveH||8,"0",""],
-    ["exam","특수건강검진 (연/인)",x=>+x.specialExam,"#,##0",""],["disOn","장애인부담금 반영 (1=반영)",x=>x.disOn?1:0,"0",""],["disRate","장애인 의무고용률",x=>pct(x.disRate),"0.0%",""],["disBase","부담기초액",x=>+x.disBase,"#,##0",""],["disRatio","부담금 반영률",x=>pct(x.disRatio),"0%",""],["disRound","장애인부담금 10원 절상 (1=예)",x=>x.disRound===false?0:1,"0",""],
+    ["itemRnd","항목별 10원 절상 (1=예, 0=단수처리 없음)",x=>x.itemRnd==="none"?0:1,"0","원본 양식이 소수점까지 계산하면 0"],
+    ["exam","특수건강검진 (연/인)",x=>+x.specialExam,"#,##0",""],["disOn","장애인부담금 반영 (1=반영)",x=>x.disOn?1:0,"0",""],["disRate","장애인 의무고용률",x=>pct(x.disRate),"0.0%",""],["disBase","부담기초액",x=>+x.disBase,"#,##0",""],["disRatio","부담금 반영률",x=>pct(x.disRatio),"0%",""],["disMode","장애인부담금 기준 (0=부담기초액, 1=통상시급×시간)",x=>x.disMode==="ord"?1:0,"0",""],["disOrdH","통상시급 기준 시간 (209h×고용률 등)",x=>+x.disOrdH||209,"0.##",""],["disRound","장애인부담금 10원 절상 (1=예)",x=>x.disRound===false?0:1,"0",""],
     ["gift","명절선물대 (연/인)",x=>+x.gift,"#,##0",""],["giftRound","선물대 10원 절상 (1=예)",x=>x.giftRound===false?0:1,"0",""],["meeting","직원회의비 (월)",x=>+x.meeting,"#,##0",LBL.meeting&&LBL.meeting!=="직원회의비"?`원본 항목명: ${LBL.meeting}`:""],["condol","경조비 (월)",x=>+x.condol,"#,##0",""],["reliefH","대치근무 기준시간",x=>+x.reliefH,"0.##",""],["reliefDays","대치근무 일수 (연)",x=>+x.reliefDays,"0.##",""],
     ["resTax","주민세 사업소분 (연)",x=>+x.resTax,"#,##0",""],["resSites","주민세 개소 수",x=>+x.resSites,"0",""],
+    ["eduBase","교육·위험 산정기준 (0=노무비, 1=노무비+복리후생 경비)",x=>x.eduBase==="laborWel"?1:0,"0","원본 양식이 ‘직접노무비(인건비+복리후생비)’ 기준이면 1"],
     ["edu","교육훈련비율 (노무비 대비)",x=>pct(x.edu),"0.0%",""],["eduFix","교육훈련비 고정액",x=>+x.eduFix||0,"#,##0","0이면 비율 적용"],["eduRnd","교육훈련비 10원 절사 (1=예)",x=>x.eduRnd==="down10"?1:0,"0",""],
     ["risk","위험부담율 (노무비 대비)",x=>pct(x.risk),"0.0%",""],["riskFix","위험부담금 고정액",x=>+x.riskFix||0,"#,##0","0이면 비율 적용"],["riskRnd","위험부담금 10원 절사 (1=예)",x=>x.riskRnd==="down10"?1:0,"0",""],
     ["ga","일반관리비율",x=>pct(x.ga),"0.0#%",""],["gaRound","일반관리비 10원 절상 (1=예)",x=>x.gaRound?1:0,"0",""],["profit","기업이윤율",x=>pct(x.profit),"0.0##%",""],["profitSub","이윤 기준 (0=직접원가, 1=원가소계)",x=>x.profitBase==="sub"?1:0,"0",""],
@@ -4697,40 +4739,43 @@ async function buildBdSheet(wb, sheetName, R, Y, m, S, logoId, logoSm, tab, opt=
       const lastOf=(k0,sec)=>{ const l=XR.filter(x=>x[4].sec===sec); return l.length?l[l.length-1][0]:k0; };
       const ex=`CHOOSE(${c("insEx")}+1,${c("meal")},${c("pos")},${c("pos")}+${c("meal")},0)`, ib=`(${c("direct")}-${c("retire")}-${ex}${xNo.map(z=>`-${z}`).join("")})`;
       const spF = r.special==="on" || (r.special==="auto" && +r.night>0) ? 1 : 0;
-      const inputs={count:L.count, wage:+r.wage, base:+r.base, ot:+r.ot||0, watch:r.watch?1:0, capF:r.rawBase?0:1, night:+r.night||0, holDays:+r.holDays||0, leaveDays:+r.leave||0, bonusP:pct(r.bonusPct||0), bonusB:r.bonusBase==="ordinary"?1:0, bonusAmt:+r.bonusAmt||0,
+      const inputs={count:L.count, wage:+r.wage, base:+r.base, ot:+r.ot||0, watch:r.watch?1:0, capF:r.rawBase?0:1, night:+r.night||0, nightB:Math.max(0,NIGHT_B.indexOf(r.nightBase||"")), holDays:+r.holDays||0, leaveDays:+r.leave||0, bonusP:pct(r.bonusPct||0), bonusB:r.bonusBase==="ordinary"?1:0, bonusAmt:+r.bonusAmt||0,
         ldH:r.laborDay?Math.max(0,(+r.dayH||0)-(+r.rest||0)):0, retF:r.retire?1:0, penP:pct(r.pensionPct), insEx:Math.max(0,["meal","pos","posMeal","none"].indexOf(r.insEx||"meal")), specF:spF, addEx:r.addonEx?1:0, months:L.months,
         pos:+r.pos||0, duty:+r.duty||0, meal:+r.meal||0, adj:+r.adj||0, uniform:+r.uniform||0};
       XR.forEach(x=>{ inputs[x[0]]=(L.x&&L.x[x[0]])||0; });
+      const U=x=>`IF(${Q("itemRnd")}=1,ROUNDUP(${x},-1),${x})`, eB=`(${c("labor")}+IF(${Q("eduBase")}=1,${c("uniform")}+${c("gift")}+${c("meeting")}+${c("condol")}+${c("relief")}${xs(x=>x.sec==="wel").map(z=>`+${z}`).join("")},0))`;
+      const NR=`CHOOSE(${c("nightB")}+1,${c("ordinary")},(${c("basic")}+${c("pos")}+${c("adj")}+${c("duty")})/${c("baseEff")},(${c("basic")}+${c("pos")})/${c("baseEff")},${c("basic")}/${c("baseEff")},${c("wage")})`;
+      const DB=`${Q("disRate")}*IF(${Q("disMode")}=1,${c("ordinary")}*${Q("disOrdH")},${Q("disBase")})*${Q("disRatio")}`;
       const F={
         baseEff:`IF(AND(${c("watch")}=0,${c("capF")}=1),MIN(${c("base")},${Q("baseCap")}),${c("base")})`,
         otH:`(${c("ot")}+${c("base")}-${c("baseEff")})*IF(${c("watch")}=1,${Q("otWatch")},${Q("otGen")})`,
         nightH:`${c("night")}*${Q("nightRate")}`,
         holH:`${c("holDays")}*8*0.5/12`,
         ordinary:`IF(${c("baseEff")}=0,0,(${c("basic")}+${c("pos")}+${c("adj")}+${c("duty")}${xOrd.map(z=>`+${z}`).join("")})/${c("baseEff")})`,
-        basic:`ROUNDUP(${c("baseEff")}*${c("wage")},-1)`,
-        "ot$":`IF(${c("otH")}=0,0,ROUNDUP(${c("otH")}*${c("ordinary")},-1))`,
-        "night$":`IF(${c("nightH")}=0,0,ROUNDUP(${c("nightH")}*${c("ordinary")},-1))`,
-        hol:`IF(${c("holH")}=0,0,ROUNDUP(${c("holH")}*${c("ordinary")},-1))`,
+        basic:U(`${c("baseEff")}*${c("wage")}`),
+        "ot$":`IF(${c("otH")}=0,0,${U(`${c("otH")}*${c("ordinary")}`)})`,
+        "night$":`IF(${c("nightH")}=0,0,${U(`${c("nightH")}*${NR}`)})`,
+        hol:`IF(${c("holH")}=0,0,${U(`${c("holH")}*${c("ordinary")}`)})`,
         sub1:`SUM(${c("basic")}:${c(lastOf("pos","pay"))})`,
-        leave:`ROUNDUP(${c("ordinary")}*${Q("leaveH")}*${c("leaveDays")}/12,-1)`,
-        laborDay:`ROUNDUP(${c("ldH")}/12*${c("ordinary")},-1)`,
-        bonus:`IF(${c("bonusAmt")}>0,${c("bonusAmt")},IF(${c("bonusP")}=0,0,ROUNDUP(IF(${c("bonusB")}=1,${c("basic")}+${c("pos")}+${c("adj")}+${c("duty")}${xOrd.map(z=>`+${z}`).join("")},${c("basic")})*${c("bonusP")}/12,-1)))`,
-        retire:`IF(${c("retF")}=1,ROUNDUP((${c("sub1")}+${c("leave")}+${c("laborDay")}+${c("bonus")})/12,-1),0)`,
+        leave:U(`${c("ordinary")}*${Q("leaveH")}*${c("leaveDays")}/12`),
+        laborDay:U(`${c("ldH")}/12*${c("ordinary")}`),
+        bonus:`IF(${c("bonusAmt")}>0,${c("bonusAmt")},IF(${c("bonusP")}=0,0,${U(`IF(${c("bonusB")}=1,${c("basic")}+${c("pos")}+${c("adj")}+${c("duty")}${xOrd.map(z=>`+${z}`).join("")},${c("basic")})*${c("bonusP")}/12`)}))`,
+        retire:`IF(${c("retF")}=1,${U(`(${c("sub1")}+${c("leave")}+${c("laborDay")}+${c("bonus")})/12`)},0)`,
         direct:`${c("sub1")}+${c("leave")}+${c("laborDay")}+${c("bonus")}+${c("retire")}`,
-        health:`ROUNDUP(${ib}*${Q("health")},-1)`,
-        ltc:`ROUNDUP(${c("health")}*${Q("ltc")},-1)`,
-        pension:`ROUNDUP(${ib}*${Q("pension")}*${c("penP")},-1)`,
-        emp:`ROUNDUP(${ib}*${Q("emp")},-1)`, ind:`ROUNDUP(${ib}*${Q("ind")},-1)`, wclaim:`IF(${Q("wageClaim")}=0,0,ROUNDUP(${ib}*${Q("wageClaim")},-1))`,
-        asb:`IF(${Q("asb")}=0,0,ROUNDUP(${ib}*${Q("asb")},-1))`,
-        special:`IF(${c("specF")}=1,ROUNDUP(${Q("exam")}/12,-1),0)`,
-        dis:`IF(${Q("disOn")}=1,IF(${Q("disRound")}=1,ROUNDUP(${Q("disRate")}*${Q("disBase")}*${Q("disRatio")},-1),${Q("disRate")}*${Q("disBase")}*${Q("disRatio")}),0)`,
+        health:U(`${ib}*${Q("health")}`),
+        ltc:U(`${c("health")}*${Q("ltc")}`),
+        pension:U(`${ib}*${Q("pension")}*${c("penP")}`),
+        emp:U(`${ib}*${Q("emp")}`), ind:U(`${ib}*${Q("ind")}`), wclaim:`IF(${Q("wageClaim")}=0,0,${U(`${ib}*${Q("wageClaim")}`)})`,
+        asb:`IF(${Q("asb")}=0,0,${U(`${ib}*${Q("asb")}`)})`,
+        special:`IF(${c("specF")}=1,${U(`${Q("exam")}/12`)},0)`,
+        dis:`IF(${Q("disOn")}=1,IF(${Q("disRound")}=1,ROUNDUP(${DB},-1),${DB}),0)`,
         indirect:`SUM(${c("health")}:${c(lastOf("dis","ind"))})`,
         labor:`${c("direct")}+${c("indirect")}`,
         gift:`IF(${Q("gift")}=0,0,IF(${Q("giftRound")}=1,ROUNDUP(${Q("gift")}/12,-1),${Q("gift")}/12))`, meeting:`${Q("meeting")}`, condol:`${Q("condol")}`,
         relief:`${c("ordinary")}*${Q("reliefH")}*${Q("reliefDays")}/12`,
         resTax:`IF(${G("heads")}=0,0,${Q("resTax")}*${Q("resSites")}/12/${G("heads")})`,
-        edu:`IF(${Q("eduFix")}>0,${Q("eduFix")},IF(${Q("eduRnd")}=1,ROUNDDOWN(${c("labor")}*${Q("edu")},-1),${c("labor")}*${Q("edu")}))`,
-        risk:`IF(${Q("riskFix")}>0,${Q("riskFix")},IF(${Q("riskRnd")}=1,ROUNDDOWN(${c("labor")}*${Q("risk")},-1),${c("labor")}*${Q("risk")}))`,
+        edu:`IF(${Q("eduFix")}>0,${Q("eduFix")},IF(${Q("eduRnd")}=1,ROUNDDOWN(${eB}*${Q("edu")},-1),${eB}*${Q("edu")}))`,
+        risk:`IF(${Q("riskFix")}>0,${Q("riskFix")},IF(${Q("riskRnd")}=1,ROUNDDOWN(${eB}*${Q("risk")},-1),${eB}*${Q("risk")}))`,
         addon:`IF(OR(${G("spread")}=0,${c("addEx")}=1,${G("elig")}=0),0,${G("addTot")}/${G("elig")})`,
         expense:`SUM(${c("uniform")}:${c("addon")})`,
         dcost:`${c("labor")}+${c("expense")}`,
@@ -4743,7 +4788,7 @@ async function buildBdSheet(wb, sheetName, R, Y, m, S, logoId, logoSm, tab, opt=
       const resKey={ "ot$":"ot","night$":"night" }[k]||k;
       const cell=rw.getCell(3+i);
       if(typ==="x"){ cell.value=inputs[k]; cell.fill=xFill("FFFFF6D5"); cell.numFmt=FMT; return; }
-      if(typ==="i" || inputs[k]!==undefined && !F[k]){ cell.value=inputs[k]; cell.fill=xFill("FFFFF6D5"); cell.numFmt=(k==="penP"||k==="bonusP")?"0.0%":["watch","capF","retF","specF","addEx","count","months","bonusB","insEx"].includes(k)?"0":"#,##0.####"; }
+      if(typ==="i" || inputs[k]!==undefined && !F[k]){ cell.value=inputs[k]; cell.fill=xFill("FFFFF6D5"); cell.numFmt=(k==="penP"||k==="bonusP")?"0.0%":["watch","capF","nightB","retF","specF","addEx","count","months","bonusB","insEx"].includes(k)?"0":"#,##0.####"; }
       else { cell.value={formula:F[k],result:Math.round((L[resKey]||0)*100)/100}; cell.numFmt=k==="ordinary"||k==="baseEff"||k==="otH"||k==="nightH"||k==="holH"?"#,##0.00":FMT; }
     });
     // 합계 열
