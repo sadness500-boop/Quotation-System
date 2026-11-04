@@ -287,6 +287,22 @@ textarea.inp{resize:vertical;min-height:110px;line-height:1.6}
 .stage-media video.sv,.stage-media .sv-fx{position:absolute;inset:0;width:100%;height:100%;aspect-ratio:auto;max-height:none;object-fit:cover}
 .stage-media video.sv{pointer-events:none}
 .stage-cap{z-index:2}
+.sh-edit{display:inline;border:0;background:none;padding:0;margin-left:6px;color:var(--sg-ink);font:inherit;font-size:12px;font-weight:700;cursor:pointer;text-decoration:underline}
+.sh-dlg{background:var(--paper);color:var(--ink);border-radius:14px;width:min(880px,100%);max-height:calc(100vh - 32px);overflow:auto;box-shadow:0 24px 60px rgba(10,6,40,.45);padding:0 20px 18px}
+.sh-dlg .dlgH{display:flex;align-items:center;justify-content:space-between;margin:0 -20px 12px;padding:16px 20px 14px;background:linear-gradient(100deg,var(--bar) 60%,#155b3c);color:#fff;box-shadow:inset 0 -3px 0 #2b8a3e}
+.sh-dlg .dlgH h3{margin:0;font-size:16px}.sh-dlg .dlgX{border:0;background:transparent;color:#fff;font-size:24px;cursor:pointer}
+.sh-dlg h4{margin:14px 0 6px;font-size:13.5px;color:var(--sg-ink)}
+.sh-pre{display:flex;flex-wrap:wrap;gap:6px;margin:6px 0}
+.sh-pre button{font-size:12px}
+.sh-strip{display:flex;flex-wrap:wrap;gap:3px;margin:8px 0 2px}
+.sh-strip span{min-width:30px;padding:4px 0;text-align:center;border-radius:6px;font-size:12.5px;font-weight:700;color:#fff;background:#8a93a6}
+.sh-strip span small{display:block;font-size:9.5px;font-weight:500;opacity:.85}
+.sh-strip .bad{background:#c0392b}
+.sh-codes td,.sh-codes th{padding:4px 5px}.sh-codes .inp{padding:5px 6px}
+.sh-res{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:8px;margin-top:10px}
+.sh-res div{border:1px solid var(--line);border-radius:10px;padding:8px 10px;background:var(--field)}
+.sh-res b{display:block;font-size:20px;color:var(--navy-ink)}.sh-res small{color:var(--muted);font-size:11.5px}
+@media (max-width:640px){.sh-res{grid-template-columns:1fr 1fr}}
 .stage-btns{position:absolute;right:18px;bottom:18px;z-index:3;display:flex;gap:10px}
 .vround{width:44px;height:44px;border-radius:50%;border:1.5px solid rgba(255,255,255,.7);background:rgba(10,16,48,.45);color:#fff;display:grid;place-items:center;cursor:pointer;backdrop-filter:blur(4px);transition:background .2s,transform .2s;padding:0}
 .vround i{font-style:normal;font-size:15px;line-height:1}
@@ -869,7 +885,7 @@ aside.rail{gap:14px}
 <script>try{var _t=localStorage.getItem("stec_theme");if(_t==="light"||_t==="dark")document.documentElement.setAttribute("data-theme",_t)}catch(e){}</script>
 <header class="topbar">
   <button type="button" class="logo-fig" id="logoHome" title="메인화면으로" aria-label="메인화면으로"><img src="__APPICON__" alt="S-Tec 견적 시스템 앱 아이콘"></button>
-  <div class="brand" title="에스텍 그룹 용역인력 견적시스템"><b>S-Tec-Quotation-System</b><span class="ver">Ver 6.9</span></div>
+  <div class="brand" title="에스텍 그룹 용역인력 견적시스템"><b>S-Tec-Quotation-System</b><span class="ver">Ver 7.0</span></div>
   <div class="sp"><div class="gstrip" id="gstrip" aria-hidden="true"></div></div>
   <div class="tb-home home-only" id="tbHome"></div>
   <div class="tb-actions">
@@ -1087,6 +1103,11 @@ aside.rail{gap:14px}
         <div class="h-row"><div><h2>미화·보안 장비</h2><p class="sub">신규 구매는 (구매가 × (1+공구수선율)) ÷ 상각개월, 보유 장비는 구매가 × 수선율 ÷ 12개월</p></div>
           <div class="row"><button type="button" class="eq-thumb" id="eqPrev" title="장비 사진 보기"></button><select class="inp" id="eqCat" style="width:auto" title="장비를 고르면 사진이 뜹니다"></select><button class="btn" id="btnAddEq">+ 장비 추가</button></div></div>
         <div id="eqList"></div>
+      </div>
+      <div class="card">
+        <div class="h-row"><div><h2>교육·자격 비용</h2><p class="sub">특수경비·경비 신임/직무교육, 미화 관리자교육, 소방·전기 등 시설 자격 법정교육, 산업안전 정기교육 등. 인원 연동은 해당 직종 인원 수만큼 자동 계산합니다. 단가는 참고값이니 교육기관 견적에 맞게 고치세요.</p></div>
+          <div class="row"><select class="inp" id="eduSel" style="width:auto;max-width:330px" aria-label="교육 항목 선택"></select><button class="btn" id="btnAddEdu">+ 추가</button><button class="btn" id="btnEduRec" title="투입 직종에 맞는 법정·직무 교육을 한 번에 추가">직종 맞춤 교육</button></div></div>
+        <div id="eduList"></div>
       </div>
       <div class="card">
         <div class="h-row"><div><h2>기타 부대비용</h2><p class="sub">통신·보호구·보험·소모품·법정 청소·교육 등 용역 운영비. 월/연/1회(상각) 단위, 수량 또는 인원 연동으로 계산합니다. 목록 단가는 참고값이니 현장 조건에 맞게 고치세요.</p></div>
@@ -1345,8 +1366,7 @@ const ETC_CAT = [
   ["시설관리", [
     ["공구·계측기 소모품",100000,"월",12,0,"","fac"],
     ["시설 점검 자재 (전구·필터 등)",200000,"월",12,0,"고객사 부담 시 제외",""]]],
-  ["교육·채용", [
-    ["경비원 신임교육 (일반경비 24h)",70000,"1회",12,0,"신규 배치 인원 수 입력",""],
+  ["채용", [
     ["채용 공고·배치 비용",300000,"1회",12,0,"",""]]],
   ["복리·사무", [
     ["정수기 렌탈",30000,"월",12,0,"",""],
@@ -1524,14 +1544,50 @@ function eqMonthly(e){
   return e.mode === "new" ? amt*(1+pct(e.rep))/((+e.months)||60) : amt*pct(e.rep)/12;
 }
 function headsOf(st){ return st.roles.reduce((s,r)=>s+(+r.count||0),0); }
-function etcQty(o, heads){ return o.per==="head" ? (heads||0) : (o.qty==null ? 1 : +o.qty||0); }
+/* 교육·자격 비용 (참고 단가 — 교육기관 견적에 맞게 고쳐 쓰세요). [이름, 단가, 주기, 상각개월, 인원연동(head=전체·cat=해당 직종), 비고, 대상 직종] */
+const EDU_CAT = [
+  ["보안·경비", [
+    ["일반경비원 신임교육 (24시간)",70000,"1회",12,"cat","경비업법 · 신규 배치자, 이직률 감안 연 1회 상각","sec"],
+    ["일반경비원 직무교육 (매월 2시간)",10000,"월",12,"cat","경비업법 시행령 · 매월","sec"],
+    ["특수경비원 신임교육 (88시간)",400000,"1회",12,"cat","국가중요시설 배치 시",""],
+    ["특수경비원 직무교육 (매월 6시간)",30000,"월",12,"cat","국가중요시설 배치 시",""],
+    ["기계경비 신임교육 (36시간)",150000,"1회",12,"cat","기계경비 출동요원",""],
+    ["신변보호(경호) 신임교육 (24시간)",100000,"1회",12,"cat","경호·수행 인력",""],
+    ["경비지도사 보수교육",150000,"1회",24,"","현장 경비지도사 선임 시",""]]],
+  ["미화·위생", [
+    ["미화 관리자(반장) 직무교육",150000,"연",12,"","관리자·반장 대상","cln"],
+    ["화학물질(세제) 취급·MSDS 교육",20000,"연",12,"cat","산업안전보건법 · 물질안전보건자료","cln"],
+    ["고소·곤돌라·사다리 작업 안전교육",100000,"1회",12,"","외벽·고소 작업자",""],
+    ["방역·소독 종사자 위생교육",50000,"연",12,"","감염병예방법 · 방역업 종사자",""]]],
+  ["시설·자격", [
+    ["소방안전관리자 실무교육 (2년 1회)",80000,"1회",24,"","화재예방법 · 선임자 법정교육","fac"],
+    ["소방안전관리자 2급 강습 (자격 취득)",300000,"1회",12,"","신규 선임 대비",""],
+    ["전기안전관리자 직무교육 (3년 1회)",200000,"1회",36,"","전기안전관리법 · 선임자","fac"],
+    ["에너지(보일러) 관리자 교육 (3년 1회)",120000,"1회",36,"","에너지이용합리화법",""],
+    ["냉동·고압가스 안전관리자 교육 (3년 1회)",150000,"1회",36,"","고압가스안전관리법",""],
+    ["승강기 관리교육 (3년 1회)",50000,"1회",36,"","승강기안전관리법 · 관리주체",""],
+    ["가스안전관리자 교육 (3년 1회)",100000,"1회",36,"","도시가스사업법",""],
+    ["시설관리 기능 향상 교육 (전기·설비)",200000,"연",12,"cat","자체·위탁 교육","fac"]]],
+  ["주차", [
+    ["주차관리원 서비스·안전교육",20000,"연",12,"cat","고객응대·차량유도 안전","park"]]],
+  ["공통·법정", [
+    ["산업안전보건 정기교육 (분기 6시간)",15000,"월",12,"head","산업안전보건법 · 근로자 전원","sec cln park fac spc etc"],
+    ["관리감독자 안전보건교육 (연 16시간)",100000,"연",12,"","현장 관리감독자","sec cln park fac spc etc"],
+    ["직장 내 괴롭힘·성희롱 예방교육",10000,"연",12,"head","법정 의무교육",""],
+    ["개인정보보호 교육",10000,"연",12,"head","개인정보 취급 현장",""],
+    ["심폐소생술(CPR)·응급처치 교육",30000,"연",12,"head","AED 비치 현장",""],
+    ["신규 채용자 안전보건교육 (8시간)",30000,"1회",12,"head","산업안전보건법 · 채용 시, 연 1회 상각",""]]]
+];
+const EDU_CATN={sec:"보안",cln:"미화",park:"주차",fac:"시설",spc:"특수",etc:"기타"};
+function catHeads(st, cats){ const C=String(cats||"").split(" ").filter(Boolean); return (st||state).roles.reduce((s,r)=>s+(C.includes(r.cat)?(+r.count||0):0),0); }
+function etcQty(o, heads){ return o.per==="head" ? (heads||0) : o.per==="cat" ? catHeads(state,o.cats) : (o.qty==null ? 1 : +o.qty||0); }
 function etcMonthly(o, heads){
   const a = +o.amount||0;
   return (o.cycle==="월" ? a : o.cycle==="연" ? a/12 : a/((+o.months)||12)) * etcQty(o, heads);
 }
 function etcBasis(o, heads){
   const q=etcQty(o,heads);
-  return `${won(o.amount)}원 / ${o.cycle}${o.cycle==="1회"?` ÷ ${o.months}개월`:o.cycle==="연"?" ÷ 12개월":""}${q!==1||o.per==="head"?` × ${q}${o.per==="head"?"명(인원 연동)":""}`:""}`;
+  return `${won(o.amount)}원 / ${o.cycle}${o.cycle==="1회"?` ÷ ${o.months}개월`:o.cycle==="연"?" ÷ 12개월":""}${q!==1||o.per?` × ${q}${o.per==="head"?"명(인원 연동)":o.per==="cat"?`명(${String(o.cats||"").split(" ").map(c=>EDU_CATN[c]||c).join("·")} 인원 연동)`:""}`:""}`;
 }
 function addonTotals(st){
   const veh = st.vehicles.reduce((s,v)=>s+vehMonthly(v).total,0);
@@ -1645,7 +1701,7 @@ function monthsBetween(a,b){
 }
 
 /* ───────── 유틸 ───────── */
-function shiftLabel(r){ if(r.shift!=="custom") return SHIFTS[r.shift]?.label||""; return (+r.night>0?"교대":"주간 고정")+` (${r.dayH}h)`; }
+function shiftLabel(r){ if(r.shift==="custom" && r.pattern) return `${r.pattern.name||("패턴 "+r.pattern.text)} (${patDays(r.pattern.text).length}일 주기)`; if(r.shift!=="custom") return SHIFTS[r.shift]?.label||""; return (+r.night>0?"교대":"주간 고정")+` (${r.dayH}h)`; }
 const $ = s => document.querySelector(s), $$ = s => [...document.querySelectorAll(s)];
 const won = v => (Math.round(v)||0).toLocaleString("ko-KR");
 const won2 = v => { const x = Math.round(v*100)/100; return Number.isInteger(x)? x.toLocaleString("ko-KR") : x.toLocaleString("ko-KR",{maximumFractionDigits:2}); };
@@ -2204,6 +2260,94 @@ function geoDetailBlk(g){
     <p class="hint" style="margin:8px 0 0">${g.src==="카카오맵"?"카카오맵 장소 정보 기준입니다.":"인터넷 지도(OpenStreetMap) 공개 정보 기준입니다."} 규모·인원은 아래 링크(사람인·DART)로 확인하세요.</p></div>`;
 }
 
+/* ───────── 근무 시간·패턴 계산기 ───────── */
+const PAT_COL={주:"#c07a12",야:"#1b2a86",당:"#7a4fc0",토:"#2b8a3e",휴:"#8a93a6",비:"#8a93a6"};
+const PAT_DEF_CODES=()=>[
+  {c:"주",n:"주간",s:"08:00",e:"20:00",b:1,nb:0},
+  {c:"야",n:"야간",s:"20:00",e:"08:00",b:2,nb:1},
+  {c:"당",n:"당직(24h)",s:"08:00",e:"08:00",b:6,nb:3},
+  {c:"토",n:"토요 단축",s:"09:00",e:"13:00",b:0,nb:0},
+  {c:"휴",n:"휴무",s:"",e:"",b:0,nb:0},
+  {c:"비",n:"비번",s:"",e:"",b:0,nb:0}];
+const PAT_PRESETS=[
+  ["주5일 (09~18)","주주주주주휴휴",{주:["09:00","18:00",1,0]}],
+  ["주6일 (토 4h)","주주주주주토휴",{주:["09:00","18:00",1,0]}],
+  ["3조2교대","주주야야휴휴",{}],
+  ["4조2교대","주주야야휴휴휴휴",{}],
+  ["5조2교대","주주야야휴휴휴휴휴휴",{}],
+  ["격일제 (24h 맞교대)","당비",{}],
+  ["3조 격일 (당비휴)","당비휴",{}],
+  ["주주야야휴 주주야야야휴휴 (12일)","주주야야휴주주야야야휴휴",{}]];
+const SHIFT_PAT={day5_8:["주주주주주휴휴",{주:["09:00","18:00",1,0]}],day5_9:["주주주주주휴휴",{주:["09:00","19:00",1,0]}],day5_10:["주주주주주휴휴",{주:["09:00","20:00",1,0]}],
+  day5_11:["주주주주주휴휴",{주:["08:00","20:00",1,0]}],day5_12:["주주주주주휴휴",{주:["08:00","21:00",1,0]}],day6:["주주주주주토휴",{주:["09:00","18:00",1,0]}],
+  s32:["주주야야휴휴",{}],s42:["주주야야휴휴휴휴",{}],s52:["주주야야휴휴휴휴휴휴",{}],alt24:["당비",{}],part:["주주주주주휴휴",{주:["09:00","14:00",0,0]}],custom:["주주주주주휴휴",{주:["09:00","18:00",1,0]}]};
+function patDays(t){ return [...String(t||"").replace(/[\s,·\-_/]/g,"")]; }
+const tmin=v=>{ const m=String(v||"").match(/^(\d{1,2}):(\d{2})/); return m? (+m[1])*60+(+m[2]) : null; };
+function codeHours(d){ const a=tmin(d.s), b=tmin(d.e); if(a==null||b==null) return {span:0,work:0,night:0,off:true};
+  let span=(b-a+1440)%1440; if(span===0) span=1440;
+  let nm=0; for(let t=0;t<span;t+=5){ const m=(a+t)%1440; if(m>=1320||m<360) nm+=5; }
+  const work=Math.max(0,span/60-(+d.b||0)), night=Math.max(0,Math.min(nm/60-(+d.nb||0),work));
+  return {span:span/60,work,night,off:false}; }
+function calcPattern(P){
+  const days=patDays(P.text), map=Object.fromEntries(P.codes.map(d=>[d.c,d])), L=days.length;
+  if(!L) return {err:"근무 패턴을 입력하세요"};
+  const bad=days.filter(c=>!map[c]); if(bad.length) return {err:`정해지지 않은 코드: ${[...new Set(bad)].join(", ")} — 아래 표에 코드를 추가하세요`, bad:new Set(bad)};
+  let W=0,reg=0,otD=0,N=0,wd=0; const per={};
+  days.forEach(c=>{ const h=codeHours(map[c]); if(h.off||h.work<=0) return; wd++; W+=h.work; reg+=Math.min(8,h.work); otD+=Math.max(0,h.work-8); N+=h.night; per[c]=(per[c]||0)+1; });
+  const WK=365/12/7, weekReg=reg*7/L, regW=Math.min(40,weekReg), otW=Math.max(0,weekReg-40), hol=regW>=15?regW/40*8:0;
+  let base=Math.round((regW+hol)*WK*10)/10; if(Math.abs(base-209)<1) base=209;
+  const ot=Math.round((otD*7/L+otW)*WK*10)/10, night=Math.round(N*365/12/L*10)/10;
+  const holDays=P.hol? Math.round((+P.holN||0)*wd/L*10)/10 : 0;
+  const top=Object.entries(per).sort((a,b)=>b[1]-a[1])[0], td=top?codeHours(map[top[0]]):null;
+  return {L,wd,W,weekH:W*7/L,base,ot,night,holDays,dayH:td?Math.round(td.span*10)/10:8,rest:td?+map[top[0]].b||0:0};
+}
+function openShiftEditor(r){
+  const pre=SHIFT_PAT[r.shift]||SHIFT_PAT.custom;
+  const P=r.pattern? JSON.parse(JSON.stringify(r.pattern)) : (()=>{ const codes=PAT_DEF_CODES(); Object.entries(pre[1]).forEach(([c,v])=>{ const d=codes.find(x=>x.c===c); [d.s,d.e,d.b,d.nb]=v; }); const t=pre[0]; return {name:r.shift==="custom"?"":SHIFTS[r.shift].label, text:t, codes, hol:/[야당]/.test(t), holN:15}; })();
+  const ov=document.createElement("div"); ov.className="qr-ov";
+  ov.innerHTML=`<div class="sh-dlg" role="dialog" aria-modal="true" aria-labelledby="shT"><div class="dlgH"><h3 id="shT">근무 시간·패턴 조정 — ${esc(CATS[r.cat].label)} · ${esc(r.rank)}</h3><button type="button" class="dlgX" data-x aria-label="닫기">×</button></div>
+    <p class="hint" style="margin:0">근무조별 <b>시작·종료 시각(10분 단위)</b>과 <b>휴게시간</b>을 정하고, 하루씩 근무 코드를 이어 쓴 <b>근무 패턴</b>을 입력하면 월 기본·연장·야간 시간을 자동 계산합니다. 예: <b>주주야야휴주주야야야휴휴</b> (12일 주기)</p>
+    <h4>① 근무 패턴</h4>
+    <div class="row" style="gap:8px;flex-wrap:wrap"><input class="inp" id="shText" style="flex:1;min-width:240px;font-size:16px;letter-spacing:.12em" value="${esc(P.text)}" placeholder="예: 주주야야휴휴"><input class="inp" id="shName" style="width:220px" value="${esc(P.name||"")}" placeholder="근무형태 이름 (예: 12일 교대)"></div>
+    <div class="sh-pre">${PAT_PRESETS.map((x,i)=>`<button type="button" class="btn sm" data-pp="${i}">${esc(x[0])}</button>`).join("")}</div>
+    <div class="sh-strip" id="shStrip"></div>
+    <h4>② 근무 코드 (근무조별 시간)</h4>
+    <div class="tscroll"><table class="t sh-codes"><thead><tr><th>코드</th><th>이름</th><th>시작</th><th>종료</th><th class="n">휴게(h)</th><th class="n">그중 야간휴게(h)</th><th class="n">근무(h)</th><th class="n">야간(h)</th><th></th></tr></thead><tbody id="shCodes"></tbody></table></div>
+    <button type="button" class="btn sm" id="shAdd" style="margin-top:6px">+ 근무 코드 추가</button> <small class="hint">시작·종료를 비우면 휴무로 계산합니다. 야간 = 22:00~06:00.</small>
+    <h4>③ 공휴일</h4>
+    <label class="chk"><input type="checkbox" id="shHol" ${P.hol?"checked":""}> 공휴일에도 패턴대로 근무 (교대·격일 근무)</label> · 연 공휴일 수 <input class="inp n" id="shHolN" value="${+P.holN||15}" style="width:60px;display:inline-block">일
+    <h4>④ 계산 결과 (월 평균)</h4>
+    <div id="shRes"></div>
+    <div class="row" style="justify-content:flex-end;gap:8px;margin-top:14px"><button type="button" class="btn" data-x>취소</button><button type="button" class="btn pri" id="shApply">이 근무형태로 적용</button></div></div>`;
+  document.body.appendChild(ov);
+  const q=id=>ov.querySelector("#"+id), close=()=>ov.remove();
+  ov.querySelectorAll("[data-x]").forEach(b=>b.onclick=close); ov.onclick=e=>{ if(e.target===ov) close(); };
+  let last=null;
+  const paint=()=>{ P.text=q("shText").value; P.name=q("shName").value.trim(); P.hol=q("shHol").checked; P.holN=+q("shHolN").value||0;
+    const R0=calcPattern(P), map=Object.fromEntries(P.codes.map(d=>[d.c,d]));
+    q("shStrip").innerHTML=patDays(P.text).map((c,i)=>`<span style="background:${map[c]?(codeHours(map[c]).off?"#8a93a6":PAT_COL[c]||"#2a7f8f"):"#c0392b"}" class="${map[c]?"":"bad"}" title="${i+1}일차">${esc(c)}<small>${i+1}</small></span>`).join("");
+    q("shCodes").querySelectorAll("tr").forEach((tr,i)=>{ const h=codeHours(P.codes[i]); tr.querySelector("[data-w]").textContent=h.off?"휴무":h.work.toFixed(2).replace(/\.?0+$/,""); tr.querySelector("[data-n]").textContent=h.off?"-":h.night.toFixed(2).replace(/\.?0+$/,""); });
+    if(R0.err){ q("shRes").innerHTML=`<p style="color:#c0392b;font-weight:700">${esc(R0.err)}</p>`; q("shApply").disabled=true; last=null; return; }
+    q("shApply").disabled=false; last=R0; const f=v=>(Math.round(v*10)/10).toLocaleString("ko-KR");
+    q("shRes").innerHTML=`<div class="sh-res"><div><small>월 기본시간 (주휴 포함)</small><b>${f(R0.base)}h</b></div><div><small>월 연장근로</small><b>${f(R0.ot)}h</b></div><div><small>월 야간근로</small><b>${f(R0.night)}h</b></div><div><small>공휴일 근무 (연)</small><b>${f(R0.holDays)}일</b></div></div>
+      <p class="hint" style="margin:8px 0 0">${R0.L}일 주기 · 근무 ${R0.wd}일 / 휴무 ${R0.L-R0.wd}일 · 주 평균 실근로 ${f(R0.weekH)}시간 · 1일 8시간·주 40시간 초과분 = 연장근로 · 월 = 365÷12일 기준${r.watch?" · <b>감시단속 승인</b>: 연장은 가산 없이(1.0배) 계산됩니다":""}</p>`;
+  };
+  const drawCodes=()=>{ q("shCodes").innerHTML=P.codes.map((d,i)=>`<tr data-i="${i}"><td><input class="inp" data-k="c" value="${esc(d.c)}" maxlength="1" style="width:42px;text-align:center;font-weight:700"></td><td><input class="inp" data-k="n" value="${esc(d.n)}" style="width:110px"></td>
+      <td><input class="inp" type="time" step="600" data-k="s" value="${esc(d.s)}" style="width:110px"></td><td><input class="inp" type="time" step="600" data-k="e" value="${esc(d.e)}" style="width:110px"></td>
+      <td><input class="inp n" data-k="b" value="${d.b}" inputmode="decimal" style="width:64px"></td><td><input class="inp n" data-k="nb" value="${d.nb}" inputmode="decimal" style="width:64px"></td><td class="n num" data-w></td><td class="n num" data-n></td><td><button type="button" class="btn sm ghost" data-del>삭제</button></td></tr>`).join("");
+    q("shCodes").querySelectorAll("tr").forEach(tr=>{ const d=P.codes[+tr.dataset.i];
+      tr.querySelectorAll("[data-k]").forEach(i=>i.addEventListener("input",()=>{ const k=i.dataset.k; d[k]= (k==="b"||k==="nb")? (+i.value||0) : i.value.trim(); paint(); }));
+      tr.querySelector("[data-del]").onclick=()=>{ P.codes.splice(+tr.dataset.i,1); drawCodes(); paint(); }; }); };
+  q("shAdd").onclick=()=>{ const used=new Set(P.codes.map(d=>d.c)); const c=["A","B","C","D","E","오","석"].find(x=>!used.has(x))||"X"; P.codes.push({c,n:"새 근무조",s:"09:00",e:"18:00",b:1,nb:0}); drawCodes(); paint(); };
+  ov.querySelectorAll("[data-pp]").forEach(b=>b.onclick=()=>{ const x=PAT_PRESETS[+b.dataset.pp]; q("shText").value=x[1]; q("shName").value=x[0]; const D=PAT_DEF_CODES(); Object.entries(x[2]).forEach(([c,v])=>{ const d=D.find(z=>z.c===c); [d.s,d.e,d.b,d.nb]=v; });
+    P.codes.forEach(d=>{ if(!D.some(z=>z.c===d.c)) D.push(d); }); P.codes=D; q("shHol").checked=/[야당]/.test(x[1]); drawCodes(); paint(); });
+  ["shText","shName","shHolN"].forEach(id=>q(id).addEventListener("input",paint)); q("shHol").addEventListener("change",paint);
+  q("shApply").onclick=()=>{ if(!last) return; P.text=patDays(P.text).join("");
+    Object.assign(r,{shift:"custom",pattern:JSON.parse(JSON.stringify(P)),base:last.base,ot:last.ot,night:last.night,holDays:last.holDays,dayH:last.dayH,rest:last.rest});
+    close(); renderRoles(); recalc(); toast(`근무형태를 적용했습니다 · 기본 ${last.base}h · 연장 ${last.ot}h · 야간 ${last.night}h (월)`); };
+  drawCodes(); paint();
+}
+
 /* ───────── 렌더: STEP 2 인력 ───────── */
 function renderCats(){
   $("#cats").innerHTML=Object.entries(CATS).map(([k,c])=>`<button class="cat" data-cat="${k}"><img src="${IMG[c.img(k==="cln"||k==="spc"?"F":"M","")]}" alt=""><b>${c.label}</b><small>${rankList(k).join(" · ")}</small></button>`).join("");
@@ -2223,7 +2367,7 @@ function roleCard(r){
       <label class="f"><span>직책</span><select class="inp" data-f="rank">${rankList(r.cat).map(k=>`<option ${k===r.rank?"selected":""}>${k}</option>`).join("")}</select></label>
       <label class="f"><span>${C.jobs?"직무·근무지":"근무지·구분"}</span><input class="inp" data-f="detail" value="${esc(r.detail)}" placeholder="${C.jobs?C.jobs.slice(0,2).join(", ")+" 등":"예: 본관, 울산공장"}" ${C.jobs?`list="dl_${r.cat}"`:""}></label>
       <label class="f"><span>성별(그림)</span><select class="inp" data-f="gender"><option value="M" ${r.gender==="M"?"selected":""}>남</option><option value="F" ${r.gender==="F"?"selected":""}>여</option></select></label>
-      <label class="f" style="grid-column:span 2"><span>근무형태</span><select class="inp" data-f="shift">${Object.entries(SHIFTS).map(([k,s])=>`<option value="${k}" ${k===r.shift?"selected":""}>${s.label}</option>`).join("")}</select></label>
+      <label class="f" style="grid-column:span 2"><span>근무형태 <button type="button" class="linkbtn sh-edit" data-act="shiftEdit" title="근무 시작·종료 시각, 휴게시간, 특수 근무 패턴(예: 주주야야휴…)을 직접 정해 기본·연장·야간 시간을 자동 계산">⏱ 시간·패턴 조정</button></span><select class="inp" data-f="shift">${Object.entries(SHIFTS).map(([k,s])=>`<option value="${k}" ${k===r.shift?"selected":""}>${k==="custom"&&r.pattern?esc(shiftLabel(r)):s.label}</option>`).join("")}</select></label>
       ${F("count","인원(명)",r.count)}
       ${F("wage","시급(원)",r.wage)}
       ${F("base","기본시간(주휴포함)",r.base)}
@@ -2291,7 +2435,7 @@ function renderRoles(){
         if(el.type==="checkbox") r[f]=el.checked;
         else if(["detail","note","gender","cat","shift","special","rank","bonusBase","insEx"].includes(f)) r[f]=el.value;
         else r[f]= el.value==="" ? 0 : +String(el.value).replace(/,/g,"");
-        if(f==="shift"){ const s=SHIFTS[r.shift]; if(r.shift!=="custom") Object.assign(r,{base:s.base,ot:s.ot,night:s.night,dayH:s.dayH,rest:s.rest}); renderRoles(); }
+        if(f==="shift"){ const s=SHIFTS[r.shift]; if(r.shift!=="custom"){ Object.assign(r,{base:s.base,ot:s.ot,night:s.night,dayH:s.dayH,rest:s.rest}); delete r.pattern; } renderRoles(); }
         if(f==="cat"){ const C=CATS[r.cat]; r.watch=C.watch; if(!C.ranks[r.rank]) r.rank=C.def; const rd=C.ranks[r.rank]; if(rd.gender) r.gender=rd.gender; renderRoles(); }
         if(f==="rank"){ const rd=CATS[r.cat].ranks[r.rank]||{}; if(rd.gender) r.gender=rd.gender;
           if(rd.shift && rd.shift!==r.shift){ r.shift=rd.shift; const s=SHIFTS[r.shift]; Object.assign(r,{base:s.base,ot:s.ot,night:s.night,dayH:s.dayH,rest:s.rest}); toast(`${r.rank} 기본 근무형태(${s.label})로 바꿨습니다`); }
@@ -2312,7 +2456,8 @@ function renderRoles(){
         el.addEventListener(el.tagName==="SELECT"||el.type==="checkbox"?"change":"input",()=>{
           if(el.type==="checkbox") x[k]=el.checked; else if(k==="amt") x.amt=el.value===""?0:+String(el.value).replace(/,/g,"")||0; else x[k]=el.value;
           if(k==="sec") renderRoles(); recalc(); }); }); });
-    card.querySelector('[data-act="dup"]').onclick=()=>{ const c={...r,id:nid(),extras:(r.extras||[]).map(x=>({...x,id:nid()})),sx:r.sx?{...r.sx}:undefined}; state.roles.splice(state.roles.indexOf(r)+1,0,c); renderRoles(); recalc(); };
+    card.querySelector('[data-act="shiftEdit"]').onclick=e=>{ e.preventDefault(); openShiftEditor(r); };
+    card.querySelector('[data-act="dup"]').onclick=()=>{ const c={...r,id:nid(),pattern:r.pattern?JSON.parse(JSON.stringify(r.pattern)):undefined,extras:(r.extras||[]).map(x=>({...x,id:nid()})),sx:r.sx?{...r.sx}:undefined}; state.roles.splice(state.roles.indexOf(r)+1,0,c); renderRoles(); recalc(); };
   });
 }
 function draftFromSite(){
@@ -2358,21 +2503,26 @@ function renderAddons(){
     tr.querySelector("[data-edel]").onclick=()=>{ state.equips=state.equips.filter(x=>x!==e); renderAddons(); recalc(); };
     tr.querySelector("[data-epic]").onclick=()=>openEqPopup(e.name, e.price);
   });
-  const ol=$("#etcList");
-  const HD=headsOf(state);
-  ol.innerHTML = state.others.length ? `<div class="tscroll"><table class="t"><thead><tr><th>항목</th><th class="n">단가</th><th>주기</th><th class="n">상각(개월)</th><th class="n">수량</th><th>인원 연동</th><th class="n">월 환산</th><th>비고</th><th></th></tr></thead><tbody>${state.others.map(o=>`<tr data-oid="${o.id}">
-    <td>${o.grp?`<small class="hint" style="display:block">${esc(o.grp)}</small>`:""}<span class="eq-namecell"><button type="button" class="eq-thumb" data-opic title="사진 보기">${eqPic(o.name,34)}</button><input class="inp" data-o="name" value="${esc(o.name)}" style="min-width:160px"></span></td><td><input class="inp n" data-o="amount" value="${o.amount}" style="width:110px"></td>
+  const HD=headsOf(state), isEdu=o=>o.grp==="교육·자격"||o.edu;
+  const perCell=o=> o.per==="cat" ? `<select class="inp" data-o="perSel" style="min-width:92px"><option value="">수량</option><option value="head">전체 인원</option><option value="cat" selected>${esc(String(o.cats||"").split(" ").map(c=>EDU_CATN[c]||c).join("·"))} 인원</option></select>`
+    : `<label class="chk" style="white-space:nowrap"><input type="checkbox" data-o="per" ${o.per==="head"?"checked":""}> 인당</label>`;
+  const tbl=(list,empty)=> list.length ? `<div class="tscroll"><table class="t"><thead><tr><th>항목</th><th class="n">단가</th><th>주기</th><th class="n">상각(개월)</th><th class="n">수량</th><th>인원 연동</th><th class="n">월 환산</th><th>비고</th><th></th></tr></thead><tbody>${list.map(o=>`<tr data-oid="${o.id}">
+    <td>${o.grp?`<small class="hint" style="display:block">${esc(o.grp)}${o.sub?` · ${esc(o.sub)}`:""}</small>`:""}<span class="eq-namecell"><button type="button" class="eq-thumb" data-opic title="사진 보기">${eqPic(o.name,34)}</button><input class="inp" data-o="name" value="${esc(o.name)}" style="min-width:160px"></span></td><td><input class="inp n" data-o="amount" value="${o.amount}" style="width:110px"></td>
     <td><select class="inp" data-o="cycle" style="min-width:70px">${["월","연","1회"].map(c=>`<option ${o.cycle===c?"selected":""}>${c}</option>`).join("")}</select></td>
     <td><input class="inp n" data-o="months" value="${o.months}" style="width:60px" ${o.cycle!=="1회"?"disabled":""}></td>
-    <td><input class="inp n" data-o="qty" value="${etcQty(o,HD)}" style="width:56px" ${o.per==="head"?"disabled":""}></td>
-    <td><label class="chk" style="white-space:nowrap"><input type="checkbox" data-o="per" ${o.per==="head"?"checked":""}> 인당</label></td>
-    <td class="n num"><b>${won(etcMonthly(o,HD))}</b></td><td><input class="inp" data-o="note" value="${esc(o.note||"")}" style="min-width:140px"></td><td><button class="btn sm ghost" data-odel>삭제</button></td></tr>`).join("")}</tbody></table></div>` : `<p class="hint">위 목록에서 항목을 고르거나 ‘직종 맞춤 추천’을 누르세요. 예: 청소 소모품(인당·월), 무전기 구입(1회·36개월), 저수조 청소(연)</p>`;
-  ol.querySelectorAll("[data-oid]").forEach(tr=>{
+    <td><input class="inp n" data-o="qty" value="${etcQty(o,HD)}" style="width:56px" ${o.per?"disabled":""}></td>
+    <td>${perCell(o)}</td>
+    <td class="n num"><b>${won(etcMonthly(o,HD))}</b></td><td><input class="inp" data-o="note" value="${esc(o.note||"")}" style="min-width:140px"></td><td><button class="btn sm ghost" data-odel>삭제</button></td></tr>`).join("")}</tbody></table></div>` : `<p class="hint">${empty}</p>`;
+  const bindTbl=el=>el.querySelectorAll("[data-oid]").forEach(tr=>{
     const o=state.others.find(x=>x.id===tr.dataset.oid);
-    tr.querySelectorAll("[data-o]").forEach(i=>i.addEventListener("change",()=>{ const k=i.dataset.o; if(k==="per") o.per=i.checked?"head":""; else o[k]= ["name","cycle","note"].includes(k)? i.value : +i.value||0; renderAddons(); recalc(); }));
+    tr.querySelectorAll("[data-o]").forEach(i=>i.addEventListener("change",()=>{ const k=i.dataset.o; if(k==="per") o.per=i.checked?"head":""; else if(k==="perSel"){ if(i.value!=="cat"){ if(o.per==="cat") o.qty=catHeads(state,o.cats)||1; o.per=i.value; } } else o[k]= ["name","cycle","note"].includes(k)? i.value : +i.value||0; renderAddons(); recalc(); }));
     tr.querySelector("[data-odel]").onclick=()=>{ state.others=state.others.filter(x=>x!==o); renderAddons(); recalc(); };
     tr.querySelector("[data-opic]").onclick=()=>openEqPopup(o.name||"기타 부대비용", o.amount, null, `/ ${o.cycle}`);
   });
+  const ol=$("#etcList"), el2=$("#eduList");
+  ol.innerHTML=tbl(state.others.filter(o=>!isEdu(o)),"위 목록에서 항목을 고르거나 ‘직종 맞춤 추천’을 누르세요. 예: 청소 소모품(인당·월), 무전기 구입(1회·36개월), 저수조 청소(연)"); bindTbl(ol);
+  if(el2){ const ed=state.others.filter(isEdu); const tot=ed.reduce((t,o)=>t+etcMonthly(o,HD),0);
+    el2.innerHTML=tbl(ed,"위 목록에서 교육을 고르거나 ‘직종 맞춤 교육’을 누르세요. 예: 특수경비원 직무교육(보안 인원·월), 소방안전관리자 실무교육(1회·24개월), 산업안전 정기교육(전원·월)")+(ed.length?`<div class="addsum"><span>교육·자격 월계 <b>${won(tot)}원</b>${HD?` · 인당 ${won(tot/HD)}원`:""} <small class="hint">(기타 부대비용 합계에 포함)</small></span></div>`:""); bindTbl(el2); }
   const A=addonTotals(state), elig=state.roles.reduce((s,r)=>s+(r.addonEx?0:(+r.count||0)),0);
   $("#addonSum").innerHTML=`<span>차량 ${won(A.veh)}</span><span>장비 ${won(A.eq)}</span><span>기타 ${won(A.etc)}</span><span>부대비용 월계 <b>${won(A.total)}원</b>${state.addonMode==="spread"&&elig?` · 배분대상 ${elig}명, 인당 ${won(A.total/elig)}원`:""}</span>`;
   $("#am_spread").checked=state.addonMode==="spread"; $("#am_sep").checked=state.addonMode==="separate"; $("#am_margin").checked=!!state.addonMargin;
@@ -4822,6 +4972,14 @@ function boot(){
     const have=new Set(state.others.map(o=>o.name)); let n=0;
     ETC_CAT.forEach(([g,L])=>L.forEach(x=>{ if(x[6] && x[6].split(" ").some(c=>cats.has(c)) && !have.has(x[0])){ state.others.push(etcItem(g,x)); n++; } }));
     renderAddons(); recalc(); toast(n?`투입 직종에 맞는 항목 ${n}개를 추가했습니다 · 단가를 현장에 맞게 고치세요`:"추천 항목이 이미 모두 들어 있습니다"); };
+  $("#eduSel").innerHTML=EDU_CAT.map(([g,L],gi)=>`<optgroup label="${g}">${L.map((x,i)=>`<option value="${gi}.${i}">${x[0]} · ${won(x[1])}원/${x[2]}${x[4]==="head"?"·전원":x[4]==="cat"?"·인당":""}</option>`).join("")}</optgroup>`).join("");
+  const eduItem=(g,x)=>{ const it={id:nid(),grp:"교육·자격",sub:g,edu:true,name:x[0],amount:x[1],cycle:x[2],months:x[3],qty:1,per:x[4]||"",note:x[5]||""};
+    if(it.per==="cat"){ it.cats=x[6]||({"보안·경비":"sec","미화·위생":"cln","시설·자격":"fac","주차":"park"}[g]||""); if(!it.cats){ it.per=""; } } return it; };
+  $("#btnAddEdu").onclick=()=>{ const [gi,i]=$("#eduSel").value.split(".").map(Number); const [g,L]=EDU_CAT[gi], it=eduItem(g,L[i]); state.others.push(it); renderAddons(); recalc(); toast(`${it.name}을(를) 추가했습니다 · 단가를 교육기관 견적에 맞게 확인하세요`); };
+  $("#btnEduRec").onclick=()=>{ const cats=new Set(state.roles.map(r=>r.cat)); if(!cats.size){ toast("먼저 인력 구성에서 직종을 추가하세요"); return; }
+    const have=new Set(state.others.map(o=>o.name)); let n=0;
+    EDU_CAT.forEach(([g,L])=>L.forEach(x=>{ if(x[6] && x[6].split(" ").some(c=>cats.has(c)) && !have.has(x[0])){ state.others.push(eduItem(g,x)); n++; } }));
+    renderAddons(); recalc(); toast(n?`투입 직종에 맞는 교육 ${n}개를 추가했습니다 · 특수경비·자격교육 등은 목록에서 골라 추가하세요`:"추천 교육이 이미 모두 들어 있습니다"); };
   $("#eqCat").innerHTML=EQUIP_CAT.map(([n,p],i)=>`<option value="${i}">${n} · ${won(p)}원</option>`).join("");
   const addEq=pk=>{ const [n0,p0]=EQUIP_CAT[+$("#eqCat").value], n=pickName(n0,pk&&pk.price?pk:null), p=pk&&pk.price?pk.price:p0; state.equips.push({id:nid(),name:n,mode:"new",qty:1,price:p,rep:5,months:60}); renderAddons(); recalc(); toast(`${n}을(를) 추가했습니다`); };
   const showEq=()=>{ const [n,p]=EQUIP_CAT[+$("#eqCat").value]; $("#eqPrev").innerHTML=eqPic(n,40); openEqPopup(n,p,addEq); };
