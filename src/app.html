@@ -283,6 +283,18 @@ textarea.inp{resize:vertical;min-height:110px;line-height:1.6}
 .home-p{display:flex;flex-direction:column;gap:16px}
 .stage{position:relative;border-radius:16px;overflow:hidden;background:#070a1c;box-shadow:0 14px 40px rgba(10,16,48,.35)}
 .stage video{display:block;width:100%;aspect-ratio:16/9;object-fit:cover;object-position:50% 55%;background:#000}
+.stage-media{position:relative;width:100%;aspect-ratio:2.2/1;max-height:min(520px,58vh);background:#000;overflow:hidden}
+.stage-media video.sv,.stage-media .sv-fx{position:absolute;inset:0;width:100%;height:100%;aspect-ratio:auto;max-height:none;object-fit:cover}
+.stage-media video.sv{pointer-events:none}
+@media (max-width:820px){.stage-media{aspect-ratio:16/10;max-height:none}}
+.stage-cap{z-index:2}
+@media (max-width:640px){.stage{display:flex;flex-direction:column}.stage-media{order:0}.stage .stage-cap{order:1}.stage .stage-hz{order:2;position:static;height:auto;padding:0 16px 14px;background:#070a1c;justify-content:flex-end}}
+.stage .sv.sv:not(.on){opacity:0;z-index:0}.stage .sv.sv.on{opacity:1;z-index:1}.sv-fx{position:absolute;inset:0;width:100%;height:100%;z-index:1;opacity:0;pointer-events:none;image-rendering:pixelated}
+.stage-dots{position:absolute;top:16px;left:16px;z-index:2;display:flex;gap:6px;padding:6px 9px;border-radius:999px;background:rgba(10,16,48,.45);backdrop-filter:blur(4px)}
+.stage-dots button{width:8px;height:8px;padding:0;border-radius:50%;border:0;background:rgba(255,255,255,.45);cursor:pointer;transition:width .3s,background .3s}
+.stage-dots button.on{width:22px;border-radius:99px;background:#8ee59f}
+.stage-k{transition:opacity .4s}.stage-k.swap{opacity:0}
+@media (max-width:640px){.stage-dots{top:auto;bottom:10px;left:10px;padding:5px 7px}.stage-dots button{width:6px;height:6px}.stage-dots button.on{width:16px}}
 .stage-ctl{position:absolute;top:14px;right:14px;display:flex;gap:6px;z-index:2}
 .vbtn{border:1px solid rgba(255,255,255,.25);background:rgba(10,16,48,.55);color:#fff;font:inherit;font-size:12px;padding:5px 10px;border-radius:999px;cursor:pointer;backdrop-filter:blur(4px)}
 .vbtn:hover{background:rgba(255,255,255,.18)}
@@ -839,7 +851,7 @@ aside.rail{gap:14px}
 <script>try{var _t=localStorage.getItem("stec_theme");if(_t==="light"||_t==="dark")document.documentElement.setAttribute("data-theme",_t)}catch(e){}</script>
 <header class="topbar">
   <button type="button" class="logo-fig" id="logoHome" title="메인화면으로" aria-label="메인화면으로"><img src="__APPICON__" alt="S-Tec 견적 시스템 앱 아이콘"></button>
-  <div class="brand" title="에스텍 그룹 용역인력 견적시스템"><b>S-Tec-Quotation-System</b><span class="ver">Ver 6.6</span></div>
+  <div class="brand" title="에스텍 그룹 용역인력 견적시스템"><b>S-Tec-Quotation-System</b><span class="ver">Ver 6.7</span></div>
   <div class="sp"><div class="gstrip" id="gstrip" aria-hidden="true"></div></div>
   <div class="tb-home home-only" id="tbHome"></div>
   <div class="tb-actions">
@@ -872,10 +884,10 @@ aside.rail{gap:14px}
     <!-- HOME -->
     <section class="panel home-p" id="p0" data-panel="0">
       <div class="stage">
-        <video id="introVid" src="__VIDEO__" poster="__POSTER__" muted playsinline preload="auto" aria-label="S-Tec 브랜드 영상"></video>
+        <div class="stage-media"><video id="introVid" class="sv on" src="__VIDEO__" poster="__POSTER__" muted playsinline preload="auto" aria-label="S-Tec 브랜드 영상"></video><video id="introVid2" class="sv" muted playsinline preload="auto" aria-hidden="true"></video><canvas id="vidFx" class="sv-fx" aria-hidden="true"></canvas><div class="stage-dots" id="vidDots" role="tablist" aria-label="영상 선택"></div></div>
         <div class="stage-ctl"><div class="vol"><button type="button" id="vidSound" class="vbtn" aria-label="소리 켜기">🔇 소리 켜기</button><input type="range" id="vidVol" min="0" max="100" step="5" value="70" aria-label="음량"><span id="vidVolN">70%</span></div></div>
         <div class="stage-hz"><button type="button" id="vidPlay" class="vplay" aria-label="영상 재생"><i>▶</i><span>재생</span></button></div>
-        <div class="stage-cap"><span class="stage-k">S-TEC GROUP · 안전 NO.1 기업</span><b>당신 곁에 언제나, 에스텍</b><small>전문성과 우수성을 갖춘 정예인력으로 안전하고 편리한 생활 서비스 환경을 만듭니다</small></div>
+        <div class="stage-cap"><span class="stage-k" id="vidKick">S-TEC GROUP · 안전 NO.1 기업</span><b>당신 곁에 언제나, 에스텍</b><small>전문성과 우수성을 갖춘 정예인력으로 안전하고 편리한 생활 서비스 환경을 만듭니다</small></div>
       </div>
 
       <div class="kpi">
@@ -2672,7 +2684,7 @@ function persistDraft(){ clearTimeout(draftT); draftT=setTimeout(()=>LS.set("ste
 function go(n){
   $$(".step").forEach(b=>b.setAttribute("aria-selected", b.dataset.step==n));
   $$("[data-panel]").forEach(p=>p.hidden = p.dataset.panel!=n);
-  { const v=$("#introVid"); if(v){ if(n==0){ if(go._last!==0) playIntro(true); } else v.pause(); } go._last=n; }
+  { const v=$("#introVid"); if(v){ if(n==0){ if(go._last!==0) playIntro(true); } else vidCur().pause(); } go._last=n; }
   document.body.classList.toggle("is-home", n==0); document.body.dataset.step=n;
   if(n==1){ initMap(); setTimeout(()=>map&&map.invalidateSize(),50); }
   if(n==3) renderAddons();
@@ -3679,27 +3691,95 @@ function initTheme(){
   document.querySelectorAll("#themeSeg [data-theme-set]").forEach(b=>b.onclick=()=>{ const v=b.dataset.themeSet; try{ localStorage.setItem("stec_theme",v); }catch(e){} applyTheme(v); });
   try{ matchMedia("(prefers-color-scheme: dark)").addEventListener("change",()=>{ let v="system"; try{ v=localStorage.getItem("stec_theme")||"system"; }catch(e){} if(v==="system") applyTheme(v); }); }catch(e){}
 }
-/* 메인 영상: 처음 실행할 때와 메인화면으로 돌아올 때 한 번 재생 → 마지막 장면에서 정지.
-   영상 아래쪽에 마우스를 올리면 ‘재생’ 버튼, 오른쪽 위에 소리 켜기 + 음량 조절 */
+/* 메인 영상: 에스텍 브랜드 영상 → 업로드 영상 10편을 차례로 이어 재생(끝나면 처음부터 반복).
+   영상이 바뀔 때 모자이크·스르륵(페이드)·블러 줌·원형 열림 효과를 번갈아 사용.
+   영상 파일은 videos/ 폴더(웹 주소·앱·아티팩트). PC에 내려받은 HTML 파일로 열면 웹 주소의 영상을 씀 */
+const VID_LIST=[
+  {k:"S-TEC GROUP · 안전 NO.1 기업"},
+  {f:"clip01",k:"SECURITY · 시설경비"},{f:"clip02",k:"INFRA · 미화 · 위생관리"},{f:"clip03",k:"SECURITY · 경호 · 수행"},
+  {f:"clip04",k:"INFRA · 방역 · 세니텍(SANITEC)"},{f:"clip05",k:"INFRA · 시설관리"},{f:"clip06",k:"S-TEC GROUP · 고객 맞춤 제안"},
+  {f:"clip07",k:"SECURITY · 주차관리"},{f:"clip08",k:"SECURITY · 물류 현장 안전관리"},{f:"clip09",k:"SECURITY · 행사 안전관리"},{f:"clip10",k:"SECURITY · 특수경비 · 설비 감시"}];
+const VID_FX=["mosaic","fade","zoom","iris"];
+const VID_WEB="https://sadness500-boop.github.io/Quotation-System/videos/";
+const VS={i:0,fxN:0,busy:false,bad:new Set(),vol:0.7,muted:true};
+function vidSrc(n){ const it=VID_LIST[n]; if(!it.f) return $("#introVid").dataset.intro||$("#introVid").getAttribute("src"); return (location.protocol==="file:"?VID_WEB:"videos/")+it.f+".mp4"; }
+function vidCur(){ return $(".stage .sv.on")||$("#introVid"); }
+function vidOther(){ const c=vidCur(); return c.id==="introVid"?$("#introVid2"):$("#introVid"); }
 function playIntro(fromStart){
-  const v=$("#introVid"); if(!v) return;
-  if(fromStart || v.ended) v.currentTime=0;
+  const v=vidCur(); if(!v) return;
+  if(fromStart && v.ended) v.currentTime=0;
+  else if(v.ended){ vidNext(); return; }
   const p=v.play(); if(p&&p.catch) p.catch(()=>{});
 }
+function vidPaintDots(){ const d=$("#vidDots"); if(!d) return; [...d.children].forEach((b,i)=>{ b.classList.toggle("on",i===VS.i); b.setAttribute("aria-selected",i===VS.i?"true":"false"); }); }
+function vidKicker(n){ const k=$("#vidKick"); if(!k) return; k.classList.add("swap"); setTimeout(()=>{ k.textContent=VID_LIST[n].k; k.classList.remove("swap"); },380); }
+function vidNextIndex(from){ for(let s=1;s<=VID_LIST.length;s++){ const n=(from+s)%VID_LIST.length; if(!VS.bad.has(n)) return n; } return from; }
+/* 다음 영상 미리 준비 (뒤쪽 영상 요소) */
+function vidPrep(n){ const b=vidOther(); const src=vidSrc(n); if(b.dataset.n===String(n) && b.getAttribute("src")) return b;
+  b.dataset.n=n; b.src=src; b.muted=VS.muted; b.volume=VS.vol; try{ b.load(); }catch(e){} return b; }
+function vidNext(to){
+  if(VS.busy) return; const a=vidCur(); const n= to==null ? vidNextIndex(VS.i) : to;
+  if(n===VS.i && to==null){ a.currentTime=0; playIntro(); return; }
+  const b=vidPrep(n); VS.busy=true;
+  const go=()=>{ b.removeEventListener("canplay",go); clearTimeout(tmo); b.currentTime=0; const p=b.play(); if(p&&p.catch) p.catch(()=>{});
+    const fx=VID_FX[VS.fxN++%VID_FX.length]; vidKicker(n); VS.i=n; vidPaintDots();
+    vidTransition(a,b,fx,()=>{ a.classList.remove("on"); b.classList.add("on"); a.pause(); [a,b].forEach(x=>{ x.style.cssText=""; }); a.style.opacity=""; VS.busy=false;
+      const nn=vidNextIndex(n); if(nn!==n) setTimeout(()=>vidPrep(nn),400); }); };
+  const fail=()=>{ b.removeEventListener("canplay",go); VS.bad.add(n); VS.busy=false; b.removeAttribute("src"); b.dataset.n=""; if(VS.bad.size<VID_LIST.length-1) vidNext(); else { a.currentTime=0; playIntro(); } };
+  const tmo=setTimeout(fail,8000);
+  b.onerror=()=>{ clearTimeout(tmo); fail(); };
+  if(b.readyState>=3) go(); else b.addEventListener("canplay",go);
+}
+/* 전환 효과: a(지금) → b(다음). 앞에 오는 요소를 위로 */
+function vidTransition(a,b,fx,done){
+  const reduce=matchMedia("(prefers-reduced-motion: reduce)").matches; if(reduce) fx="fade";
+  a.style.zIndex=0; b.style.cssText="position:absolute;inset:0;width:100%;height:100%;z-index:1;opacity:0";
+  if(fx==="mosaic"){ vidMosaic(a,b,done); return; }
+  const D=fx==="fade"?1100:1000, t0=performance.now(), ease=x=>x<.5?2*x*x:1-Math.pow(-2*x+2,2)/2;
+  const step=now=>{ const p=Math.min(1,(now-t0)/D), e=ease(p);
+    if(fx==="fade"){ b.style.opacity=e; }
+    else if(fx==="zoom"){ b.style.opacity=e; b.style.transform=`scale(${1.12-0.12*e})`; b.style.filter=`blur(${(1-e)*14}px)`; a.style.filter=`blur(${e*10}px)`; a.style.transform=`scale(${1+0.06*e})`; }
+    else if(fx==="iris"){ b.style.opacity=1; b.style.clipPath=`circle(${e*80}% at 50% 50%)`; a.style.filter=`brightness(${1-0.4*e})`; }
+    if(p<1) requestAnimationFrame(step); else done(); };
+  requestAnimationFrame(step);
+}
+/* 모자이크: 지금 영상이 점점 큰 네모 조각으로 → 다음 영상 조각이 점점 작아지며 또렷하게 */
+function vidMosaic(a,b,done){
+  const cv=$("#vidFx"), st=cv.parentElement, W=st.clientWidth, H=a.clientHeight||st.clientHeight;
+  const dpr=Math.min(2,window.devicePixelRatio||1); cv.width=Math.round(W*dpr); cv.height=Math.round(H*dpr); cv.style.height=H+"px";
+  const ctx=cv.getContext("2d"), sm=document.createElement("canvas"), sc=sm.getContext("2d");
+  const D=1300, t0=performance.now(); cv.style.opacity=1; cv.style.zIndex=1; b.style.opacity=0;
+  const draw=(v,blk)=>{ const w=Math.max(1,Math.round(cv.width/blk)), h=Math.max(1,Math.round(cv.height/blk)); sm.width=w; sm.height=h;
+    const vw=v.videoWidth||16, vh=v.videoHeight||9, r=Math.max(w/vw,h/vh), dw=vw*r, dh=vh*r; sc.drawImage(v,(w-dw)/2,(h-dh)/2,dw,dh);
+    ctx.imageSmoothingEnabled=false; ctx.drawImage(sm,0,0,w,h,0,0,cv.width,cv.height); };
+  const step=now=>{ const p=Math.min(1,(now-t0)/D); let ok=true;
+    try{ if(p<0.5){ draw(a, 1+Math.pow(p/0.5,1.6)*60*dpr); } else { draw(b, 1+Math.pow((1-p)/0.5,1.6)*60*dpr); } }catch(e){ ok=false; }
+    if(!ok){ cv.style.opacity=0; vidTransition(a,b,"fade",done); return; }
+    if(p<1) requestAnimationFrame(step); else { b.style.opacity=1; cv.style.transition="opacity .25s"; cv.style.opacity=0; setTimeout(()=>{ cv.style.transition=""; done(); },260); } };
+  requestAnimationFrame(step);
+}
 function initVideo(){
-  const v=$("#introVid"); if(!v) return;
+  const v=$("#introVid"), v2=$("#introVid2"); if(!v) return;
+  v.dataset.intro=v.getAttribute("src");
   let vol=70; try{ const s=localStorage.getItem("stec_vid_vol"); if(s!=null && !isNaN(+s)) vol=+s; }catch(e){}
+  VS.vol=Math.max(0,Math.min(1,vol/100));
   const btnS=$("#vidSound"), rng=$("#vidVol"), num=$("#vidVolN"), box=btnS.parentElement, btnP=$("#vidPlay");
-  const paint=()=>{ const off=v.muted||v.volume===0; btnS.textContent=off?"🔇 소리 켜기":"🔊 소리 끄기"; btnS.setAttribute("aria-label",off?"소리 켜기":"소리 끄기");
-    rng.value=Math.round(v.volume*100); num.textContent=Math.round(v.volume*100)+"%"; box.classList.toggle("off",off); };
-  const paintP=()=>{ const playing=!v.paused&&!v.ended; btnP.querySelector("i").textContent=playing?"❚❚":"▶"; btnP.querySelector("span").textContent=playing?"일시정지":"재생"; btnP.setAttribute("aria-label",playing?"영상 일시정지":"영상 재생"); };
-  v.volume=Math.max(0,Math.min(1,vol/100)); paint(); paintP();
-  btnS.onclick=()=>{ v.muted=!v.muted; if(!v.muted && v.volume===0){ v.volume=0.5; } if(!v.muted && (v.paused||v.ended)) playIntro(v.ended); paint(); };
-  rng.oninput=()=>{ v.volume=(+rng.value)/100; v.muted=v.volume===0; try{ localStorage.setItem("stec_vid_vol",rng.value); }catch(e){} paint(); };
-  btnP.onclick=()=>{ if(!v.paused&&!v.ended) v.pause(); else playIntro(v.ended); };
-  ["play","pause","ended"].forEach(ev=>v.addEventListener(ev,paintP));
-  v.addEventListener("volumechange",paint);
-  document.addEventListener("visibilitychange",()=>{ if(document.hidden && !v.paused){ v.pause(); v._resume=true; } else if(!document.hidden && v._resume && !$("#p0").hidden){ v._resume=false; playIntro(false); } });
+  const both=f=>[v,v2].forEach(f);
+  const paint=()=>{ const off=VS.muted||VS.vol===0; btnS.textContent=off?"🔇 소리 켜기":"🔊 소리 끄기"; btnS.setAttribute("aria-label",off?"소리 켜기":"소리 끄기");
+    rng.value=Math.round(VS.vol*100); num.textContent=Math.round(VS.vol*100)+"%"; box.classList.toggle("off",off); };
+  const paintP=()=>{ const c=vidCur(), playing=!c.paused&&!c.ended; btnP.querySelector("i").textContent=playing?"❚❚":"▶"; btnP.querySelector("span").textContent=playing?"일시정지":"재생"; btnP.setAttribute("aria-label",playing?"영상 일시정지":"영상 재생"); };
+  both(x=>{ x.volume=VS.vol; x.muted=true; }); paint(); paintP();
+  btnS.onclick=()=>{ VS.muted=!VS.muted; if(!VS.muted && VS.vol===0) VS.vol=0.5; both(x=>{ x.muted=VS.muted; x.volume=VS.vol; }); const c=vidCur(); if(!VS.muted && (c.paused||c.ended)) playIntro(); paint(); };
+  rng.oninput=()=>{ VS.vol=(+rng.value)/100; VS.muted=VS.vol===0; both(x=>{ x.volume=VS.vol; x.muted=VS.muted; }); try{ localStorage.setItem("stec_vid_vol",rng.value); }catch(e){} paint(); };
+  btnP.onclick=()=>{ const c=vidCur(); if(!c.paused&&!c.ended) c.pause(); else playIntro(); };
+  both(x=>{ ["play","pause","ended"].forEach(ev=>x.addEventListener(ev,()=>{ if(x===vidCur()) paintP(); })); });
+  /* 끝나기 직전에 다음 영상으로 전환 (마지막 장면에서 멈춰 보이지 않게) */
+  both(x=>x.addEventListener("timeupdate",()=>{ if(x!==vidCur()||VS.busy||x.paused) return; const left=(x.duration||0)-x.currentTime; if(x.duration && left<0.9) vidNext(); }));
+  both(x=>x.addEventListener("ended",()=>{ if(x===vidCur() && !VS.busy) vidNext(); }));
+  const dots=$("#vidDots"); if(dots){ dots.innerHTML=VID_LIST.map((it,i)=>`<button type="button" role="tab" aria-label="${i+1}번 영상 · ${esc(it.k)}" title="${esc(it.k)}"></button>`).join("");
+    [...dots.children].forEach((b,i)=>b.onclick=()=>{ if(i!==VS.i) vidNext(i); else playIntro(); }); vidPaintDots(); }
+  v.addEventListener("playing",()=>{ if(VS.i===0) setTimeout(()=>vidPrep(vidNextIndex(0)),1500); },{once:true});
+  document.addEventListener("visibilitychange",()=>{ const c=vidCur(); if(document.hidden && !c.paused){ c.pause(); c._resume=true; } else if(!document.hidden && c._resume && !$("#p0").hidden){ c._resume=false; playIntro(); } });
 }
 
 /* ───────── 갱신 견적 : 당해년 견적 불러오기 ───────── */
