@@ -283,10 +283,9 @@ textarea.inp{resize:vertical;min-height:110px;line-height:1.6}
 .home-p{display:flex;flex-direction:column;gap:16px}
 .stage{position:relative;border-radius:16px;overflow:hidden;background:#070a1c;box-shadow:0 14px 40px rgba(10,16,48,.35)}
 .stage video{display:block;width:100%;aspect-ratio:16/9;object-fit:cover;object-position:50% 55%;background:#000}
-.stage-media{position:relative;width:100%;aspect-ratio:2.2/1;max-height:min(520px,58vh);background:#000;overflow:hidden}
+.stage-media{position:relative;width:100%;aspect-ratio:16/9;background:#000;overflow:hidden}
 .stage-media video.sv,.stage-media .sv-fx{position:absolute;inset:0;width:100%;height:100%;aspect-ratio:auto;max-height:none;object-fit:cover}
 .stage-media video.sv{pointer-events:none}
-@media (max-width:820px){.stage-media{aspect-ratio:16/10;max-height:none}}
 .stage-cap{z-index:2}
 @media (max-width:640px){.stage{display:flex;flex-direction:column}.stage-media{order:0}.stage .stage-cap{order:1}.stage .stage-hz{order:2;position:static;height:auto;padding:0 16px 14px;background:#070a1c;justify-content:flex-end}}
 .stage .sv.sv:not(.on){opacity:0;z-index:0}.stage .sv.sv.on{opacity:1;z-index:1}.sv-fx{position:absolute;inset:0;width:100%;height:100%;z-index:1;opacity:0;pointer-events:none;image-rendering:pixelated}
@@ -844,14 +843,12 @@ aside.rail{gap:14px}
 .panel>.card+.card,.panel>section+section{margin-top:0}
 /* 견적서 출력 단계: 화면이 좁으면 오른쪽 요약칸을 접고 견적서를 넓게 */
 @media (min-width:1181px) and (max-width:1599px){body[data-step="5"] .shell{grid-template-columns:200px minmax(0,1fr)}body[data-step="5"] aside.rail{display:none}}
-.stage video{aspect-ratio:2.2/1;max-height:min(520px,58vh);object-position:50% 50%}
-@media (max-width:820px){.stage video{aspect-ratio:16/10;max-height:none}}
 </style>
 
 <script>try{var _t=localStorage.getItem("stec_theme");if(_t==="light"||_t==="dark")document.documentElement.setAttribute("data-theme",_t)}catch(e){}</script>
 <header class="topbar">
   <button type="button" class="logo-fig" id="logoHome" title="메인화면으로" aria-label="메인화면으로"><img src="__APPICON__" alt="S-Tec 견적 시스템 앱 아이콘"></button>
-  <div class="brand" title="에스텍 그룹 용역인력 견적시스템"><b>S-Tec-Quotation-System</b><span class="ver">Ver 6.7</span></div>
+  <div class="brand" title="에스텍 그룹 용역인력 견적시스템"><b>S-Tec-Quotation-System</b><span class="ver">Ver 6.8</span></div>
   <div class="sp"><div class="gstrip" id="gstrip" aria-hidden="true"></div></div>
   <div class="tb-home home-only" id="tbHome"></div>
   <div class="tb-actions">
