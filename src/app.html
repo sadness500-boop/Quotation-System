@@ -299,6 +299,16 @@ textarea.inp{resize:vertical;min-height:110px;line-height:1.6}
 .sh-strip span small{display:block;font-size:9.5px;font-weight:500;opacity:.85}
 .sh-strip .bad{background:#c0392b}
 .sh-codes td,.sh-codes th{padding:4px 5px}.sh-codes .inp{padding:5px 6px}
+.sh-codes tr.off td{opacity:.65}
+.sh-tpl{margin-top:10px;border:1px solid var(--line);border-radius:10px;padding:8px 10px;background:var(--field)}.sh-tpl summary{cursor:pointer;font-weight:700;font-size:13px;color:var(--sg-ink)}
+.pat-sum{margin:10px 0 2px;padding:10px 12px;border:1px solid var(--line);border-left:4px solid var(--sg2);border-radius:10px;background:var(--field);font-size:12.5px}
+.pat-sum .ps-h{margin-bottom:6px}.pat-sum .ps-h b{color:var(--sg-ink);margin-right:4px}
+.ps-strip{display:flex;flex-wrap:wrap;gap:3px;margin-bottom:6px}
+.ps-strip span{min-width:26px;padding:2px 0;text-align:center;border-radius:5px;color:#fff;font-weight:700;font-size:12px;line-height:1.15}.ps-strip span small{display:block;font-size:9px;font-weight:500;opacity:.85}
+.pat-sum ul{list-style:none;margin:0;padding:0;display:grid;gap:3px}
+.pat-sum li{display:flex;flex-wrap:wrap;align-items:center;gap:6px}.pat-sum li i{font-style:normal;color:#fff;font-weight:700;border-radius:4px;padding:0 6px;font-size:11.5px}
+.pat-sum li span{color:var(--muted)}
+.pat-sum .ps-f{margin-top:6px;padding-top:6px;border-top:1px dashed var(--line)}
 .sh-res{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:8px;margin-top:10px}
 .sh-res div{border:1px solid var(--line);border-radius:10px;padding:8px 10px;background:var(--field)}
 .sh-res b{display:block;font-size:20px;color:var(--navy-ink)}.sh-res small{color:var(--muted);font-size:11.5px}
@@ -885,7 +895,7 @@ aside.rail{gap:14px}
 <script>try{var _t=localStorage.getItem("stec_theme");if(_t==="light"||_t==="dark")document.documentElement.setAttribute("data-theme",_t)}catch(e){}</script>
 <header class="topbar">
   <button type="button" class="logo-fig" id="logoHome" title="메인화면으로" aria-label="메인화면으로"><img src="__APPICON__" alt="S-Tec 견적 시스템 앱 아이콘"></button>
-  <div class="brand" title="에스텍 그룹 용역인력 견적시스템"><b>S-Tec-Quotation-System</b><span class="ver">Ver 7.1</span></div>
+  <div class="brand" title="에스텍 그룹 용역인력 견적시스템"><b>S-Tec-Quotation-System</b><span class="ver">Ver 7.2</span></div>
   <div class="sp"><div class="gstrip" id="gstrip" aria-hidden="true"></div></div>
   <div class="tb-home home-only" id="tbHome"></div>
   <div class="tb-actions">
@@ -1709,7 +1719,7 @@ function monthsBetween(a,b){
 }
 
 /* ───────── 유틸 ───────── */
-function shiftLabel(r){ if(r.shift==="custom" && r.pattern) return `${r.pattern.name||("패턴 "+r.pattern.text)} (${patDays(r.pattern.text).length}일 주기)`; if(r.shift!=="custom") return SHIFTS[r.shift]?.label||""; return (+r.night>0?"교대":"주간 고정")+` (${r.dayH}h)`; }
+function shiftLabel(r){ if(r.shift==="custom" && r.pattern){ const L=patDays(r.pattern.text).length, nm=r.pattern.name||("패턴 "+r.pattern.text); return nm.includes(`${L}일`)?nm:`${nm} (${L}일 주기)`; } if(r.shift!=="custom") return SHIFTS[r.shift]?.label||""; return (+r.night>0?"교대":"주간 고정")+` (${r.dayH}h)`; }
 const $ = s => document.querySelector(s), $$ = s => [...document.querySelectorAll(s)];
 const won = v => (Math.round(v)||0).toLocaleString("ko-KR");
 const won2 = v => { const x = Math.round(v*100)/100; return Number.isInteger(x)? x.toLocaleString("ko-KR") : x.toLocaleString("ko-KR",{maximumFractionDigits:2}); };
@@ -2285,7 +2295,7 @@ const PAT_PRESETS=[
   ["5조2교대","주주야야휴휴휴휴휴휴",{}],
   ["격일제 (24h 맞교대)","당비",{}],
   ["3조 격일 (당비휴)","당비휴",{}],
-  ["주주야야휴 주주야야야휴휴 (12일)","주주야야휴주주야야야휴휴",{}]];
+  ["12일 교대 (주주야야휴 주주야야야휴휴)","주주야야휴주주야야야휴휴",{}]];
 const SHIFT_PAT={day5_8:["주주주주주휴휴",{주:["09:00","18:00",1,0]}],day5_9:["주주주주주휴휴",{주:["09:00","19:00",1,0]}],day5_10:["주주주주주휴휴",{주:["09:00","20:00",1,0]}],
   day5_11:["주주주주주휴휴",{주:["08:00","20:00",1,0]}],day5_12:["주주주주주휴휴",{주:["08:00","21:00",1,0]}],day6:["주주주주주토휴",{주:["09:00","18:00",1,0]}],
   s32:["주주야야휴휴",{}],s42:["주주야야휴휴휴휴",{}],s52:["주주야야휴휴휴휴휴휴",{}],alt24:["당비",{}],part:["주주주주주휴휴",{주:["09:00","14:00",0,0]}],custom:["주주주주주휴휴",{주:["09:00","18:00",1,0]}]};
@@ -2296,32 +2306,56 @@ function codeHours(d){ const a=tmin(d.s), b=tmin(d.e); if(a==null||b==null) retu
   let nm=0; for(let t=0;t<span;t+=5){ const m=(a+t)%1440; if(m>=1320||m<360) nm+=5; }
   const work=Math.max(0,span/60-(+d.b||0)), night=Math.max(0,Math.min(nm/60-(+d.nb||0),work));
   return {span:span/60,work,night,off:false}; }
+/* 하루 단위 근무표: P.days = [{c,s,e,b,nb}] — 없으면 패턴 글자 + 코드 기본 시간으로 만듦 */
+const WEEKD=["월","화","수","목","금","토","일"];
+function dayLabel(i,L){ if(L%7===0){ const w=Math.floor(i/7)+1, d=WEEKD[i%7]; return L===7?d:`${w}주 ${d}`; } return `${i+1}일차`; }
+function patDaysFull(P){ const days=patDays(P.text), map=Object.fromEntries(P.codes.map(d=>[d.c,d]));
+  return days.map((c,i)=>{ const own=P.days&&P.days[i]&&P.days[i].c===c?P.days[i]:null, t=map[c]||{s:"",e:"",b:0,nb:0};
+    return own? {...own} : {c,s:t.s,e:t.e,b:+t.b||0,nb:+t.nb||0}; }); }
 function calcPattern(P){
   const days=patDays(P.text), map=Object.fromEntries(P.codes.map(d=>[d.c,d])), L=days.length;
   if(!L) return {err:"근무 패턴을 입력하세요"};
-  const bad=days.filter(c=>!map[c]); if(bad.length) return {err:`정해지지 않은 코드: ${[...new Set(bad)].join(", ")} — 아래 표에 코드를 추가하세요`, bad:new Set(bad)};
-  let W=0,reg=0,otD=0,N=0,wd=0; const per={};
-  days.forEach(c=>{ const h=codeHours(map[c]); if(h.off||h.work<=0) return; wd++; W+=h.work; reg+=Math.min(8,h.work); otD+=Math.max(0,h.work-8); N+=h.night; per[c]=(per[c]||0)+1; });
+  const bad=days.filter(c=>!map[c]); if(bad.length) return {err:`정해지지 않은 코드: ${[...new Set(bad)].join(", ")} — 근무조 기본 시간 표에 코드를 추가하세요`, bad:new Set(bad)};
+  const D=patDaysFull(P);
+  let W=0,reg=0,otD=0,N=0,wd=0; const spans=[];
+  D.forEach(d=>{ const h=codeHours(d); if(h.off||h.work<=0) return; wd++; W+=h.work; reg+=Math.min(8,h.work); otD+=Math.max(0,h.work-8); N+=h.night; spans.push([h.span,+d.b||0]); });
   const WK=365/12/7, weekReg=reg*7/L, regW=Math.min(40,weekReg), otW=Math.max(0,weekReg-40), hol=regW>=15?regW/40*8:0;
   let base=Math.round((regW+hol)*WK*10)/10; if(Math.abs(base-209)<1) base=209;
   const ot=Math.round((otD*7/L+otW)*WK*10)/10, night=Math.round(N*365/12/L*10)/10;
   const holDays=P.hol? Math.round((+P.holN||0)*wd/L*10)/10 : 0;
-  const top=Object.entries(per).sort((a,b)=>b[1]-a[1])[0], td=top?codeHours(map[top[0]]):null;
-  return {L,wd,W,weekH:W*7/L,base,ot,night,holDays,dayH:td?Math.round(td.span*10)/10:8,rest:td?+map[top[0]].b||0:0};
+  const avg=(k)=>spans.length?spans.reduce((t,x)=>t+x[k],0)/spans.length:0;
+  return {L,wd,W,weekH:W*7/L,base,ot,night,holDays,dayH:Math.round(avg(0)*10)/10||8,rest:Math.round(avg(1)*10)/10, days:D};
+}
+/* 인력 카드에 보여 줄 근무 조건 요약 */
+function patSummaryHTML(r){
+  const P=r.pattern; if(!P) return "";
+  const D=patDaysFull(P), L=D.length, map=Object.fromEntries(P.codes.map(d=>[d.c,d]));
+  const grp=new Map(); D.forEach((d,i)=>{ const h=codeHours(d); const k=h.off?`off:${d.c}`:`${d.c}|${d.s}|${d.e}|${d.b}|${d.nb}`; if(!grp.has(k)) grp.set(k,{d,h,idx:[]}); grp.get(k).idx.push(i); });
+  const rng=idx=>{ if(L===7) return idx.map(i=>WEEKD[i]).join("·"); return idx.map(i=>L%7===0?dayLabel(i,L):(i+1)).join(", ")+(L%7===0?"":"일차"); };
+  const lines=[...grp.values()].map(({d,h,idx})=>{ const nm=(map[d.c]&&map[d.c].n)||d.c;
+    return h.off ? `<li><i style="background:#8a93a6">${esc(d.c)}</i><b>${esc(nm)}</b> <span>${rng(idx)}</span></li>`
+      : `<li><i style="background:${PAT_COL[d.c]||"#2a7f8f"}">${esc(d.c)}</i><b>${esc(nm)} ${esc(d.s)}~${esc(d.e)}</b> 휴게 ${+d.b}h · 실근로 ${+h.work.toFixed(2)}h${h.night?` (야간 ${+h.night.toFixed(2)}h)`:""} <span>${rng(idx)}</span></li>`; }).join("");
+  const R0=calcPattern(P);
+  return `<div class="pat-sum"><div class="ps-h"><b>근무 조건</b> ${esc(P.name||"직접 정한 패턴")} · ${L}일 주기 (근무 ${R0.wd||0}일 · 휴무 ${L-(R0.wd||0)}일)${R0.err?"":` · 주 평균 ${(Math.round(R0.weekH*10)/10)}시간`}</div>
+    <div class="ps-strip">${D.map((d,i)=>{ const off=codeHours(d).off; return `<span style="background:${off?"#8a93a6":PAT_COL[d.c]||"#2a7f8f"}" title="${esc(dayLabel(i,L))}${off?"":` ${esc(d.s)}~${esc(d.e)}`}">${esc(d.c)}<small>${esc(L===7?WEEKD[i]:String(i+1))}</small></span>`; }).join("")}</div>
+    <ul>${lines}</ul>
+    <div class="ps-f">월 기본 <b>${r.base}h</b> · 연장 <b>${r.ot}h</b> · 야간 <b>${r.night}h</b>${+r.holDays?` · 공휴일 근무 연 <b>${r.holDays}일</b>`:""}${r.watch?" · 감시단속(연장 1.0배)":" · 일반근로(연장 1.5배)"}</div></div>`;
 }
 function openShiftEditor(r){
   const pre=SHIFT_PAT[r.shift]||SHIFT_PAT.custom;
   const P=r.pattern? JSON.parse(JSON.stringify(r.pattern)) : (()=>{ const codes=PAT_DEF_CODES(); Object.entries(pre[1]).forEach(([c,v])=>{ const d=codes.find(x=>x.c===c); [d.s,d.e,d.b,d.nb]=v; }); const t=pre[0]; return {name:r.shift==="custom"?"":SHIFTS[r.shift].label, text:t, codes, hol:/[야당]/.test(t), holN:15}; })();
+  P.days=patDaysFull(P);
   const ov=document.createElement("div"); ov.className="qr-ov";
   ov.innerHTML=`<div class="sh-dlg" role="dialog" aria-modal="true" aria-labelledby="shT"><div class="dlgH"><h3 id="shT">근무 시간·패턴 조정 — ${esc(CATS[r.cat].label)} · ${esc(r.rank)}</h3><button type="button" class="dlgX" data-x aria-label="닫기">×</button></div>
-    <p class="hint" style="margin:0">근무조별 <b>시작·종료 시각(10분 단위)</b>과 <b>휴게시간</b>을 정하고, 하루씩 근무 코드를 이어 쓴 <b>근무 패턴</b>을 입력하면 월 기본·연장·야간 시간을 자동 계산합니다. 예: <b>주주야야휴주주야야야휴휴</b> (12일 주기)</p>
+    <p class="hint" style="margin:0">① 근무 패턴을 고르거나 입력하면 ② 에 <b>주기의 날짜(요일)가 한 줄씩</b> 나옵니다. 날마다 근무조를 고르고 <b>시작·종료 시각(10분 단위)·휴게시간</b>을 고치면 월 기본·연장·야간 시간이 자동 계산됩니다. 휴무·비번 날은 0시간으로 계산합니다.</p>
     <h4>① 근무 패턴</h4>
     <div class="row" style="gap:8px;flex-wrap:wrap"><input class="inp" id="shText" style="flex:1;min-width:240px;font-size:16px;letter-spacing:.12em" value="${esc(P.text)}" placeholder="예: 주주야야휴휴"><input class="inp" id="shName" style="width:220px" value="${esc(P.name||"")}" placeholder="근무형태 이름 (예: 12일 교대)"></div>
     <div class="sh-pre">${PAT_PRESETS.map((x,i)=>`<button type="button" class="btn sm" data-pp="${i}">${esc(x[0])}</button>`).join("")}</div>
-    <div class="sh-strip" id="shStrip"></div>
-    <h4>② 근무 코드 (근무조별 시간)</h4>
-    <div class="tscroll"><table class="t sh-codes"><thead><tr><th>코드</th><th>이름</th><th>시작</th><th>종료</th><th class="n">휴게(h)</th><th class="n">그중 야간휴게(h)</th><th class="n">근무(h)</th><th class="n">야간(h)</th><th></th></tr></thead><tbody id="shCodes"></tbody></table></div>
-    <button type="button" class="btn sm" id="shAdd" style="margin-top:6px">+ 근무 코드 추가</button> <small class="hint">시작·종료를 비우면 휴무로 계산합니다. 야간 = 22:00~06:00.</small>
+    <h4>② 날짜별 근무 시간 <small class="hint" id="shCyc"></small></h4>
+    <div class="tscroll"><table class="t sh-codes"><thead><tr><th>날짜</th><th>근무조</th><th>시작</th><th>종료</th><th class="n">휴게(h)</th><th class="n">그중 야간휴게(h)</th><th class="n">실근로(h)</th><th class="n">야간(h)</th></tr></thead><tbody id="shDays"></tbody></table></div>
+    <details class="sh-tpl"><summary>근무조 기본 시간 (코드표) — 바꾸면 그 근무조의 모든 날에 적용</summary>
+      <div class="tscroll"><table class="t sh-codes"><thead><tr><th>코드</th><th>이름</th><th>시작</th><th>종료</th><th class="n">휴게(h)</th><th class="n">그중 야간휴게(h)</th><th class="n">실근로(h)</th><th class="n">야간(h)</th><th></th></tr></thead><tbody id="shCodes"></tbody></table></div>
+      <button type="button" class="btn sm" id="shAdd" style="margin-top:6px">+ 근무조 추가</button> <small class="hint">시작·종료를 비우면 휴무로 계산합니다. 야간 = 22:00~06:00.</small></details>
     <h4>③ 공휴일</h4>
     <label class="chk"><input type="checkbox" id="shHol" ${P.hol?"checked":""}> 공휴일에도 패턴대로 근무 (교대·격일 근무)</label> · 연 공휴일 수 <input class="inp n" id="shHolN" value="${+P.holN||15}" style="width:60px;display:inline-block">일
     <h4>④ 계산 결과 (월 평균)</h4>
@@ -2330,30 +2364,43 @@ function openShiftEditor(r){
   document.body.appendChild(ov);
   const q=id=>ov.querySelector("#"+id), close=()=>ov.remove();
   ov.querySelectorAll("[data-x]").forEach(b=>b.onclick=close); ov.onclick=e=>{ if(e.target===ov) close(); };
-  let last=null;
-  const paint=()=>{ P.text=q("shText").value; P.name=q("shName").value.trim(); P.hol=q("shHol").checked; P.holN=+q("shHolN").value||0;
-    const R0=calcPattern(P), map=Object.fromEntries(P.codes.map(d=>[d.c,d]));
-    q("shStrip").innerHTML=patDays(P.text).map((c,i)=>`<span style="background:${map[c]?(codeHours(map[c]).off?"#8a93a6":PAT_COL[c]||"#2a7f8f"):"#c0392b"}" class="${map[c]?"":"bad"}" title="${i+1}일차">${esc(c)}<small>${i+1}</small></span>`).join("");
-    q("shCodes").querySelectorAll("tr").forEach((tr,i)=>{ const h=codeHours(P.codes[i]); tr.querySelector("[data-w]").textContent=h.off?"휴무":h.work.toFixed(2).replace(/\.?0+$/,""); tr.querySelector("[data-n]").textContent=h.off?"-":h.night.toFixed(2).replace(/\.?0+$/,""); });
+  let last=null; const f2=v=>(+(+v).toFixed(2)).toString();
+  const codeOpts=sel=>P.codes.map(d=>`<option value="${esc(d.c)}" ${d.c===sel?"selected":""}>${esc(d.c)} · ${esc(d.n)}</option>`).join("");
+  const syncText=()=>{ P.text=P.days.map(d=>d.c).join(""); q("shText").value=P.text; };
+  const drawDays=()=>{ const L=P.days.length;
+    q("shCyc").textContent=L?`${L}일 주기${L%7===0?` (${L/7}주)`:""}`:"";
+    q("shDays").innerHTML=P.days.map((d,i)=>{ const off=codeHours(d).off; return `<tr data-i="${i}" class="${off?"off":""}"><td><b>${esc(dayLabel(i,L))}</b></td>
+      <td><select class="inp" data-k="c" style="min-width:120px;border-left:5px solid ${off?"#8a93a6":PAT_COL[d.c]||"#2a7f8f"}">${codeOpts(d.c)}</select></td>
+      <td><input class="inp" type="time" step="600" data-k="s" value="${esc(d.s)}" style="width:118px"></td><td><input class="inp" type="time" step="600" data-k="e" value="${esc(d.e)}" style="width:118px"></td>
+      <td><input class="inp n" data-k="b" value="${d.b}" inputmode="decimal" style="width:60px"></td><td><input class="inp n" data-k="nb" value="${d.nb}" inputmode="decimal" style="width:60px"></td><td class="n num" data-w></td><td class="n num" data-n></td></tr>`; }).join("");
+    q("shDays").querySelectorAll("tr").forEach(tr=>{ const i=+tr.dataset.i, d=P.days[i];
+      tr.querySelector('[data-k="c"]').onchange=e=>{ const t=P.codes.find(x=>x.c===e.target.value)||{s:"",e:"",b:0,nb:0}; P.days[i]={c:e.target.value,s:t.s,e:t.e,b:+t.b||0,nb:+t.nb||0}; syncText(); drawDays(); paint(); };
+      tr.querySelectorAll('input[data-k]').forEach(inp=>inp.addEventListener("input",()=>{ const k=inp.dataset.k; d[k]=(k==="b"||k==="nb")?(+inp.value||0):inp.value.trim(); paint(); })); }); };
+  const drawCodes=()=>{ q("shCodes").innerHTML=P.codes.map((d,i)=>`<tr data-i="${i}"><td><input class="inp" data-k="c" value="${esc(d.c)}" maxlength="1" style="width:42px;text-align:center;font-weight:700"></td><td><input class="inp" data-k="n" value="${esc(d.n)}" style="width:110px"></td>
+      <td><input class="inp" type="time" step="600" data-k="s" value="${esc(d.s)}" style="width:118px"></td><td><input class="inp" type="time" step="600" data-k="e" value="${esc(d.e)}" style="width:118px"></td>
+      <td><input class="inp n" data-k="b" value="${d.b}" inputmode="decimal" style="width:60px"></td><td><input class="inp n" data-k="nb" value="${d.nb}" inputmode="decimal" style="width:60px"></td><td class="n num" data-w></td><td class="n num" data-n></td><td><button type="button" class="btn sm ghost" data-del>삭제</button></td></tr>`).join("");
+    q("shCodes").querySelectorAll("tr").forEach(tr=>{ const d=P.codes[+tr.dataset.i];
+      tr.querySelectorAll("[data-k]").forEach(i=>i.addEventListener("change",()=>{ const k=i.dataset.k, old=d.c; d[k]= (k==="b"||k==="nb")? (+i.value||0) : i.value.trim();
+        P.days.forEach(x=>{ if(k==="c"){ if(x.c===old) x.c=d.c; } else if(x.c===d.c && k!=="n") x[k]=d[k]; }); syncText(); drawDays(); drawCodes(); paint(); }));
+      tr.querySelector("[data-del]").onclick=()=>{ P.codes.splice(+tr.dataset.i,1); drawCodes(); drawDays(); paint(); }; }); };
+  const paint=()=>{ P.name=q("shName").value.trim(); P.hol=q("shHol").checked; P.holN=+q("shHolN").value||0;
+    const R0=calcPattern(P);
+    const fill=(tb,list)=>tb.querySelectorAll("tr").forEach((tr,i)=>{ const h=codeHours(list[i]); tr.querySelector("[data-w]").textContent=h.off?"휴무":f2(h.work); tr.querySelector("[data-n]").textContent=h.off?"-":f2(h.night); });
+    fill(q("shDays"),P.days); fill(q("shCodes"),P.codes);
     if(R0.err){ q("shRes").innerHTML=`<p style="color:#c0392b;font-weight:700">${esc(R0.err)}</p>`; q("shApply").disabled=true; last=null; return; }
     q("shApply").disabled=false; last=R0; const f=v=>(Math.round(v*10)/10).toLocaleString("ko-KR");
     q("shRes").innerHTML=`<div class="sh-res"><div><small>월 기본시간 (주휴 포함)</small><b>${f(R0.base)}h</b></div><div><small>월 연장근로</small><b>${f(R0.ot)}h</b></div><div><small>월 야간근로</small><b>${f(R0.night)}h</b></div><div><small>공휴일 근무 (연)</small><b>${f(R0.holDays)}일</b></div></div>
-      <p class="hint" style="margin:8px 0 0">${R0.L}일 주기 · 근무 ${R0.wd}일 / 휴무 ${R0.L-R0.wd}일 · 주 평균 실근로 ${f(R0.weekH)}시간 · 1일 8시간·주 40시간 초과분 = 연장근로 · 월 = 365÷12일 기준${r.watch?" · <b>감시단속 승인</b>: 연장은 가산 없이(1.0배) 계산됩니다":""}</p>`;
-  };
-  const drawCodes=()=>{ q("shCodes").innerHTML=P.codes.map((d,i)=>`<tr data-i="${i}"><td><input class="inp" data-k="c" value="${esc(d.c)}" maxlength="1" style="width:42px;text-align:center;font-weight:700"></td><td><input class="inp" data-k="n" value="${esc(d.n)}" style="width:110px"></td>
-      <td><input class="inp" type="time" step="600" data-k="s" value="${esc(d.s)}" style="width:110px"></td><td><input class="inp" type="time" step="600" data-k="e" value="${esc(d.e)}" style="width:110px"></td>
-      <td><input class="inp n" data-k="b" value="${d.b}" inputmode="decimal" style="width:64px"></td><td><input class="inp n" data-k="nb" value="${d.nb}" inputmode="decimal" style="width:64px"></td><td class="n num" data-w></td><td class="n num" data-n></td><td><button type="button" class="btn sm ghost" data-del>삭제</button></td></tr>`).join("");
-    q("shCodes").querySelectorAll("tr").forEach(tr=>{ const d=P.codes[+tr.dataset.i];
-      tr.querySelectorAll("[data-k]").forEach(i=>i.addEventListener("input",()=>{ const k=i.dataset.k; d[k]= (k==="b"||k==="nb")? (+i.value||0) : i.value.trim(); paint(); }));
-      tr.querySelector("[data-del]").onclick=()=>{ P.codes.splice(+tr.dataset.i,1); drawCodes(); paint(); }; }); };
-  q("shAdd").onclick=()=>{ const used=new Set(P.codes.map(d=>d.c)); const c=["A","B","C","D","E","오","석"].find(x=>!used.has(x))||"X"; P.codes.push({c,n:"새 근무조",s:"09:00",e:"18:00",b:1,nb:0}); drawCodes(); paint(); };
-  ov.querySelectorAll("[data-pp]").forEach(b=>b.onclick=()=>{ const x=PAT_PRESETS[+b.dataset.pp]; q("shText").value=x[1]; q("shName").value=x[0]; const D=PAT_DEF_CODES(); Object.entries(x[2]).forEach(([c,v])=>{ const d=D.find(z=>z.c===c); [d.s,d.e,d.b,d.nb]=v; });
-    P.codes.forEach(d=>{ if(!D.some(z=>z.c===d.c)) D.push(d); }); P.codes=D; q("shHol").checked=/[야당]/.test(x[1]); drawCodes(); paint(); });
-  ["shText","shName","shHolN"].forEach(id=>q(id).addEventListener("input",paint)); q("shHol").addEventListener("change",paint);
-  q("shApply").onclick=()=>{ if(!last) return; P.text=patDays(P.text).join("");
+      <p class="hint" style="margin:8px 0 0">${R0.L}일 주기 · 근무 ${R0.wd}일 / 휴무 ${R0.L-R0.wd}일 · 주 평균 실근로 ${f(R0.weekH)}시간 · 1일 8시간·주 40시간 초과분 = 연장근로 · 휴무·비번 날 = 0시간 · 월 = 365÷12일 기준${r.watch?" · <b>감시단속 승인</b>: 연장은 가산 없이(1.0배)":" · 일반근로: 연장 1.5배"}</p>`; };
+  /* 패턴 글자 → 날짜 목록 (같은 자리·같은 근무조면 고친 시간을 유지) */
+  q("shText").addEventListener("input",()=>{ P.text=q("shText").value; const old=P.days; P.days=patDaysFull({...P,days:old}); drawDays(); paint(); });
+  q("shAdd").onclick=()=>{ const used=new Set(P.codes.map(d=>d.c)); const c=["A","B","C","D","E","오","석"].find(x=>!used.has(x))||"X"; P.codes.push({c,n:"새 근무조",s:"09:00",e:"18:00",b:1,nb:0}); drawCodes(); drawDays(); paint(); };
+  ov.querySelectorAll("[data-pp]").forEach(b=>b.onclick=()=>{ const x=PAT_PRESETS[+b.dataset.pp]; q("shName").value=x[0]; const D=PAT_DEF_CODES(); Object.entries(x[2]).forEach(([c,v])=>{ const d=D.find(z=>z.c===c); [d.s,d.e,d.b,d.nb]=v; });
+    P.codes.forEach(d=>{ if(!D.some(z=>z.c===d.c)) D.push(d); }); P.codes=D; P.text=x[1]; q("shText").value=x[1]; P.days=patDaysFull({...P,days:null}); q("shHol").checked=/[야당]/.test(x[1]); drawCodes(); drawDays(); paint(); });
+  ["shName","shHolN"].forEach(id=>q(id).addEventListener("input",paint)); q("shHol").addEventListener("change",paint);
+  q("shApply").onclick=()=>{ if(!last) return; P.text=patDays(P.text).join(""); P.days=last.days;
     Object.assign(r,{shift:"custom",pattern:JSON.parse(JSON.stringify(P)),base:last.base,ot:last.ot,night:last.night,holDays:last.holDays,dayH:last.dayH,rest:last.rest});
     close(); renderRoles(); recalc(); toast(`근무형태를 적용했습니다 · 기본 ${last.base}h · 연장 ${last.ot}h · 야간 ${last.night}h (월)`); };
-  drawCodes(); paint();
+  drawCodes(); drawDays(); paint();
 }
 
 /* ───────── 렌더: STEP 2 인력 ───────── */
@@ -2383,6 +2430,7 @@ function roleCard(r){
       ${F("night","야간근로(h/월)",r.night)}
       ${F("pos","직책수당",r.pos)}
     </div>
+    ${r.shift==="custom"&&r.pattern?patSummaryHTML(r):""}
     ${C.jobs?`<datalist id="dl_${r.cat}">${C.jobs.map(x=>`<option value="${esc(x)}">`).join("")}</datalist>`:""}
     <div class="calcline" data-out="line"></div>
     <details class="more" ${r._open?"open":""}><summary>세부 조건 — 산출내역서 항목 (수당·연차·상여·4대보험·경비·기타수당)</summary>
